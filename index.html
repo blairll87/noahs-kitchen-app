@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noah's Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF8EA;
+    --butter: #F5C451;
+    --tomato: #E8654A;
+    --sage: #7FA684;
+    --sage-deep: #5E8564;
+    --cocoa: #4A3428;
+    --sky: #6FA8C9;
+    --sky-deep: #4E86A6;
+    --paper: #FFFFFF;
+    --shadow: rgba(74, 52, 40, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 90% 8%, rgba(245, 196, 81, 0.35) 0%, transparent 45%),
+      radial-gradient(circle at 8% 92%, rgba(111, 168, 201, 0.25) 0%, transparent 40%);
+    color: var(--cocoa);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+
+  .app { width: 100%; max-width: 460px; padding: 20px 14px 60px; }
+
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- Shared header ---- */
+  .header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .header svg.badge-icon { width: 52px; height: 52px; flex-shrink: 0; cursor: pointer; }
+  .greeting { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 22px; line-height: 1.1; color: var(--cocoa); }
+  .greeting .sub { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: #9C8E7F; margin-top: 2px; }
+
+  .day-badge {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
+    background: var(--tomato); color: white; font-family: 'Baloo 2', sans-serif;
+    font-weight: 700; font-size: 13px; padding: 4px 12px; border-radius: 100px;
+  }
+
+  /* ---- Back button ---- */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px;
+    color: var(--cocoa); background: white; border: 2px solid #E9DCC0;
+    border-radius: 100px; padding: 8px 16px 8px 12px; margin-bottom: 16px;
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .back-btn:active { transform: scale(0.96); }
+  .back-btn svg { width: 18px; height: 18px; }
+
+  /* ---- Card shell ---- */
+  .card {
+    background: var(--paper); border-radius: 28px; padding: 24px 20px 22px;
+    box-shadow: 0 10px 30px var(--shadow); border: 3px solid var(--cocoa);
+    position: relative; overflow: hidden; margin-bottom: 16px;
+  }
+  .card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    background: repeating-linear-gradient(90deg, var(--tomato) 0px, var(--tomato) 18px,
+      var(--butter) 18px, var(--butter) 36px, var(--sage) 36px, var(--sage) 54px,
+      var(--sky) 54px, var(--sky) 72px);
+  }
+  .card-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 8px; margin-bottom: 4px; }
+  .card-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 22px; color: var(--tomato); }
+  .card-sub { font-size: 12.5px; font-weight: 700; color: #9C8E7F; margin-bottom: 16px; }
+
+  .progress-badge {
+    background: var(--butter); border: 2.5px solid var(--cocoa); border-radius: 14px;
+    padding: 6px 10px; text-align: center; font-family: 'Baloo 2', sans-serif; flex-shrink: 0;
+  }
+  .progress-badge .num { font-size: 20px; font-weight: 800; line-height: 1; color: var(--cocoa); }
+  .progress-badge .label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cocoa); opacity: 0.75; }
+
+  .section-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--sage-deep); margin-bottom: 10px; }
+
+  /* ---- Ingredients ---- */
+  .ingredients { display: flex; gap: 10px; margin-bottom: 22px; }
+  .ingredient { flex: 1; background: #FBF3E1; border: 2px solid #E9DCC0; border-radius: 16px; padding: 10px 6px 8px; text-align: center; }
+  .ingredient svg { width: 34px; height: 34px; }
+  .ingredient span { display: block; font-size: 11px; font-weight: 700; margin-top: 4px; color: var(--cocoa); }
+
+  /* ---- Steps ---- */
+  .steps { display: flex; flex-direction: column; gap: 10px; }
+  .step {
+    display: flex; align-items: center; gap: 12px; background: #FBF6EA;
+    border: 2.5px solid #E9DCC0; border-radius: 18px; padding: 10px 12px; cursor: pointer;
+    transition: transform 0.12s ease, background 0.25s ease, border-color 0.25s ease;
+    user-select: none; -webkit-tap-highlight-color: transparent; position: relative;
+  }
+  .step:active { transform: scale(0.97); }
+  .step.done { background: #E9F2E7; border-color: var(--sage); }
+  .step-num {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: white;
+    background: var(--sky); width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.25s ease;
+  }
+  .step.done .step-num { background: var(--sage-deep); }
+  .step-icon { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+  .step-icon svg { width: 100%; height: 100%; }
+  .step-text { flex: 1; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 16px; color: var(--cocoa); }
+  .step-text .es { display: block; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11.5px; font-style: italic; color: var(--sky-deep); margin-top: 1px; }
+  .step-check {
+    width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid #D8C9A8; background: white;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease;
+  }
+  .step.done .step-check { background: var(--sage-deep); border-color: var(--sage-deep); }
+  .step-check svg { width: 16px; height: 16px; opacity: 0; transform: scale(0.5); transition: all 0.2s ease; }
+  .step.done .step-check svg { opacity: 1; transform: scale(1); }
+
+  .then-footer {
+    margin-top: 20px; display: flex; align-items: center; gap: 12px; background: var(--sky);
+    border-radius: 18px; padding: 12px 16px; color: white;
+  }
+  .then-footer svg { width: 34px; height: 34px; flex-shrink: 0; }
+  .then-footer .then-text { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.25; }
+  .then-footer .then-text b { font-size: 16px; }
+
+  .all-done {
+    display: none; margin-top: 16px; text-align: center; background: var(--butter);
+    border: 2.5px solid var(--cocoa); border-radius: 18px; padding: 14px;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 16px; color: var(--cocoa);
+  }
+  .all-done.show { display: block; }
+
+  /* ---- Cook animation ---- */
+  @keyframes iconPop { 0% { transform: scale(1) rotate(0deg); } 35% { transform: scale(1.3) rotate(-8deg); } 60% { transform: scale(0.9) rotate(5deg); } 100% { transform: scale(1) rotate(0deg); } }
+  .step.just-done .step-icon { animation: iconPop 0.55s ease; }
+  @keyframes checkPop { 0% { transform: scale(0.4) rotate(-15deg); opacity: 0; } 60% { transform: scale(1.25) rotate(6deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+  .step.just-done .step-check svg { animation: checkPop 0.4s ease; }
+  @keyframes stepFlash { 0% { background: #FCEFC7; } 100% { background: #E9F2E7; } }
+  .step.just-done { animation: stepFlash 0.6s ease; }
+  .steam-wisp {
+    position: absolute; bottom: 50%; left: 50%; width: 7px; height: 7px; border-radius: 50%;
+    pointer-events: none; opacity: 0; animation: steamRise 0.85s ease-out forwards;
+  }
+  @keyframes steamRise { 0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translate(-50%, -34px) scale(1.4); opacity: 0; } }
+
+  /* ---- Spanish toggle ---- */
+  .lang-toggle {
+    display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; background: white;
+    border: 2px solid #E9DCC0; border-radius: 100px; padding: 4px 10px 4px 4px; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .lang-toggle .switch { width: 34px; height: 20px; border-radius: 100px; background: #D8C9A8; position: relative; transition: background 0.2s ease; flex-shrink: 0; }
+  .lang-toggle .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; transition: transform 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  .lang-toggle.on .switch { background: var(--sky); }
+  .lang-toggle.on .switch::after { transform: translateX(14px); }
+  .lang-toggle .label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+
+  /* ---- Swipeable week carousel ---- */
+  .carousel-wrap { position: relative; margin: 0 -4px; }
+  .carousel {
+    display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding: 4px 4px 10px; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+  .carousel-card {
+    scroll-snap-align: center; flex: 0 0 30%; text-align: center; background: #FBF3E1;
+    border: 2px solid #E9DCC0; border-radius: 16px; padding: 12px 6px; cursor: pointer;
+    transition: transform 0.15s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  .carousel-card:active { transform: scale(0.96); }
+  .carousel-card .day-icon { width: 32px; height: 32px; margin: 0 auto 4px; }
+  .carousel-card .day-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+  .carousel-card.is-today { background: var(--butter); border-color: var(--cocoa); box-shadow: 0 6px 16px rgba(245, 196, 81, 0.5); }
+  .today-flag {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--tomato);
+    color: white; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 9px;
+    letter-spacing: 0.5px; padding: 3px 10px; border-radius: 100px; white-space: nowrap;
+  }
+  .swipe-hint { text-align: center; font-size: 11px; font-weight: 700; color: #B3A489; margin-top: 2px; }
+
+  /* ---- Week list ---- */
+  .week-list { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .week-row {
+    display: flex; align-items: center; gap: 12px; background: #FBF6EA; border: 2.5px solid #E9DCC0;
+    border-radius: 16px; padding: 10px 12px; border-left: 8px solid var(--sage); cursor: pointer;
+    transition: transform 0.12s ease, background 0.2s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .week-row:active { transform: scale(0.98); }
+  .week-row.home-day { border-left-color: var(--sky); }
+  .week-row.is-today { background: #FCEFC7; border-color: var(--cocoa); }
+  .day-letter {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: white;
+    background: var(--sage-deep); width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .home-day .day-letter { background: var(--sky-deep); }
+  .row-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 15px; color: var(--cocoa); flex: 1; }
+  .row-name .es { display: block; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; font-style: italic; color: var(--sky-deep); }
+  .row-tag {
+    display: flex; align-items: center; gap: 6px; font-family: 'Baloo 2', sans-serif; font-weight: 700;
+    font-size: 12px; color: var(--sage-deep); background: #E9F2E7; padding: 5px 10px; border-radius: 100px; flex-shrink: 0;
+  }
+  .home-day .row-tag { color: var(--sky-deep); background: #E6F1F7; }
+  .row-tag svg { width: 16px; height: 16px; }
+
+  /* ---- Home screen stations (all equal size) ---- */
+  .stations-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px;
+  }
+  .stations-grid .station:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .station {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+    background: var(--paper); border: 3px solid var(--cocoa); border-radius: 22px; padding: 18px 10px;
+    box-shadow: 0 8px 20px var(--shadow); cursor: pointer; transition: transform 0.12s ease;
+    user-select: none; -webkit-tap-highlight-color: transparent; position: relative;
+  }
+  .station:active { transform: scale(0.96); }
+  .station .icon-wrap {
+    width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .station svg { width: 34px; height: 34px; }
+  .station .station-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: var(--cocoa); line-height: 1.15; }
+  .station .station-sub { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; color: #9C8E7F; }
+  .station.dimmed { opacity: 0.72; }
+  .soon-tag {
+    position: absolute; top: -8px; right: -6px; background: var(--tomato); color: white;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 8px; padding: 3px 6px; border-radius: 100px;
+  }
+  .soon-toast {
+    display: none; text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px;
+    color: var(--cocoa); background: var(--butter); border: 2px solid var(--cocoa); border-radius: 14px;
+    padding: 10px; margin-top: 14px;
+  }
+  .soon-toast.show { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ---- Placeholder note ---- */
+  .placeholder-note {
+    display: flex; align-items: center; gap: 8px; background: #FCEFC7; border: 2px solid var(--butter);
+    border-radius: 14px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; font-weight: 700; color: var(--cocoa);
+  }
+
+  /* ---- Scene cards (Get Ready for School) ---- */
+  .scene-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .scene-card {
+    background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 18px; padding: 14px 8px; text-align: center;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .scene-card:active { transform: scale(0.96); }
+  .scene-card svg { width: 36px; height: 36px; margin-bottom: 6px; }
+  .scene-card .scene-title { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--cocoa); }
+
+  /* ---- Word cards (Kitchen Words) ---- */
+  .word-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .word-card {
+    background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 18px; padding: 14px 8px; text-align: center;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .word-card:active { transform: scale(0.96); }
+  .word-card svg { width: 32px; height: 32px; margin-bottom: 6px; }
+  .word-card .word-en { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--cocoa); }
+  .word-card .word-es { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11.5px; font-style: italic; color: var(--sky-deep); }
+  .word-card.add-card {
+    background: #E9F2E7; border: 2.5px dashed var(--sage); display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .word-card.add-card .plus { font-size: 26px; color: var(--sage-deep); font-weight: 800; line-height: 1; }
+
+  .add-word-form { display: none; margin-top: 14px; background: #FBF6EA; border: 2px solid #E9DCC0; border-radius: 16px; padding: 14px; }
+  .add-word-form.show { display: block; animation: fadeIn 0.2s ease; }
+  .add-word-form label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12px; color: var(--sage-deep); display: block; margin-bottom: 4px; margin-top: 8px; }
+  .add-word-form input {
+    width: 100%; border: 2px solid #E9DCC0; border-radius: 10px; padding: 8px 10px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 14px; color: var(--cocoa); background: white;
+  }
+  .add-word-form .save-btn {
+    margin-top: 12px; width: 100%; background: var(--sage-deep); color: white; border: none; border-radius: 12px;
+    padding: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+
+  /* ---- Practice games ---- */
+  .game-card { margin-bottom: 16px; }
+  .order-tray { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .order-chip {
+    background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 14px; padding: 8px 10px; display: flex;
+    align-items: center; gap: 6px; cursor: pointer; transition: all 0.15s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .order-chip svg { width: 26px; height: 26px; }
+  .order-chip span { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+  .order-chip.placed { opacity: 0.35; pointer-events: none; }
+  .order-slots { display: flex; gap: 6px; margin-bottom: 8px; }
+  .order-slot {
+    flex: 1; aspect-ratio: 1; background: #FBF6EA; border: 2.5px dashed #D8C9A8; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .order-slot .num { position: absolute; top: 2px; left: 5px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 10px; color: #B3A489; }
+  .order-slot svg { width: 26px; height: 26px; }
+  .order-slot.filled { border-style: solid; border-color: var(--sage); background: #E9F2E7; }
+  .game-feedback { text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--sage-deep); min-height: 18px; }
+
+  .pattern-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .pattern-chip { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #FBF3E1; border: 2.5px solid #E9DCC0; }
+  .pattern-chip svg { width: 28px; height: 28px; }
+  .pattern-chip.blank { border: 2.5px dashed var(--tomato); background: #FCEFEA; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 20px; color: var(--tomato); }
+  .pattern-choices { display: flex; gap: 12px; justify-content: center; }
+  .pattern-choice {
+    width: 60px; height: 60px; border-radius: 16px; background: white; border: 3px solid var(--cocoa);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.12s ease;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .pattern-choice:active { transform: scale(0.93); }
+  .pattern-choice svg { width: 34px; height: 34px; }
+  .pattern-choice.correct { background: #E9F2E7; border-color: var(--sage-deep); }
+  .pattern-choice.wrong { background: #FCEFEA; border-color: var(--tomato); }
+
+  /* ---- Parent panel ---- */
+  .parent-list { display: flex; flex-direction: column; gap: 10px; }
+  .parent-row {
+    display: flex; align-items: center; justify-content: space-between; background: var(--paper);
+    border: 2.5px solid #E9DCC0; border-radius: 16px; padding: 14px 16px; cursor: pointer;
+    transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .parent-row:active { transform: scale(0.98); }
+  .parent-row .p-title { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 15px; color: var(--cocoa); }
+  .parent-row .p-sub { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11.5px; color: #9C8E7F; }
+  .parent-row .chevron { color: #B3A489; font-size: 18px; }
+
+  .edit-row {
+    display: flex; align-items: center; gap: 8px; background: #FBF6EA; border: 2px solid #E9DCC0;
+    border-radius: 14px; padding: 10px; margin-bottom: 8px;
+  }
+  .edit-row input {
+    flex: 1; border: 1.5px solid #E9DCC0; border-radius: 8px; padding: 6px 8px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 13px; color: var(--cocoa); background: white; min-width: 0;
+  }
+  .edit-row .remove-btn {
+    background: #FCEFEA; color: var(--tomato); border: none; border-radius: 8px; width: 28px; height: 28px;
+    font-weight: 800; cursor: pointer; flex-shrink: 0;
+  }
+  .add-row-btn {
+    width: 100%; background: #E9F2E7; color: var(--sage-deep); border: 2px dashed var(--sage); border-radius: 12px;
+    padding: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 4px;
+  }
+  .day-toggle-row {
+    display: flex; align-items: center; justify-content: space-between; background: #FBF6EA; border: 2px solid #E9DCC0;
+    border-radius: 14px; padding: 10px 14px; margin-bottom: 8px;
+  }
+  .day-toggle-row .dt-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; color: var(--cocoa); }
+  .type-pill-group { display: flex; gap: 6px; }
+  .type-pill {
+    font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 100px;
+    border: 2px solid #E9DCC0; background: white; color: #9C8E7F; cursor: pointer;
+  }
+  .type-pill.active-school { background: var(--sage); border-color: var(--sage-deep); color: white; }
+  .type-pill.active-home { background: var(--sky); border-color: var(--sky-deep); color: white; }
+  .saved-toast {
+    display: none; text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px;
+    color: white; background: var(--sage-deep); border-radius: 14px; padding: 10px; margin-top: 12px;
+  }
+  .saved-toast.show { display: block; animation: fadeIn 0.2s ease; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ HOME VIEW ============ -->
+  <div class="view active" id="view-home">
+    <div class="header">
+      <svg class="badge-icon" id="sunIcon" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="15" fill="#F5C451" stroke="#4A3428" stroke-width="3"/>
+        <g stroke="#4A3428" stroke-width="3" stroke-linecap="round">
+          <line x1="32" y1="4" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="60"/>
+          <line x1="4" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="60" y2="32"/>
+          <line x1="12" y1="12" x2="17.5" y2="17.5"/><line x1="46.5" y1="46.5" x2="52" y2="52"/>
+          <line x1="12" y1="52" x2="17.5" y2="46.5"/><line x1="46.5" y1="17.5" x2="52" y2="12"/>
+        </g>
+      </svg>
+      <div>
+        <div class="greeting">Good morning, Noah!</div>
+        <div class="day-badge">🏫 SCHOOL DAY — TUESDAY</div>
+      </div>
+    </div>
+
+    <div class="stations-grid">
+      <div class="station" data-goto="view-day">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M8 20 a12 12 0 0 1 24 0 v6 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="27" width="28" height="4" rx="2" fill="#4A3428"/><line x1="20" y1="6" x2="20" y2="2" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title">My Day</div>
+        <div class="station-sub">What's cooking today</div>
+      </div>
+      <div class="station" data-goto="view-week">
+        <div class="icon-wrap" style="background:#E6F1F7">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="26" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="8" y="8" width="24" height="7" rx="3" fill="#4A3428"/><line x1="13" y1="21" x2="27" y2="21" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="27" x2="27" y2="27" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title">This Week</div>
+        <div class="station-sub">See the week</div>
+      </div>
+      <div class="station" data-goto="view-school">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/></svg>
+        </div>
+        <div class="station-title">Get Ready<br>for School</div>
+        <div class="station-sub">Before we go</div>
+      </div>
+      <div class="station" data-goto="view-words">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M20 7 A13 13 0 0 1 20 33" stroke="#4A3428" stroke-width="2" fill="none"/></svg>
+        </div>
+        <div class="station-title">Kitchen Words</div>
+        <div class="station-sub">Spanish words</div>
+      </div>
+      <div class="station" data-goto="view-practice">
+        <div class="icon-wrap" style="background:#FCEFEA">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="12" height="12" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="22" y="6" width="12" height="12" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/><rect x="6" y="22" width="12" height="12" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="22" y="22" width="12" height="12" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>
+        </div>
+        <div class="station-title">Practice</div>
+        <div class="station-sub">Play and learn</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MY DAY VIEW ============ -->
+  <div class="view" id="view-day">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleDay">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title-row">
+        <div>
+          <div class="card-title">Noah's Morning Recipe</div>
+          <div class="card-sub">Makes: 1 ready-for-school kid</div>
+        </div>
+        <div class="progress-badge"><div class="num" id="progressNum">0/5</div><div class="label">steps done</div></div>
+      </div>
+
+      <div class="section-label">You'll need</div>
+      <div class="ingredients">
+        <div class="ingredient"><svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="16" y="19" width="8" height="8" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg><span>Backpack</span></div>
+        <div class="ingredient"><svg viewBox="0 0 40 40" fill="none"><rect x="14" y="12" width="12" height="20" rx="5" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="7" width="8" height="6" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg><span>Water Bottle</span></div>
+        <div class="ingredient"><svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="4" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M14 14 Q16 8 20 8 Q24 8 26 14" fill="none" stroke="#4A3428" stroke-width="2.5"/><path d="M14 22 Q17 19 20 22 Q23 25 26 22" fill="none" stroke="#4A3428" stroke-width="2"/></svg><span>Dino Lunchbox</span></div>
+      </div>
+
+      <div class="section-label">Steps</div>
+      <div class="steps" id="stepsList"></div>
+
+      <div class="all-done" id="allDone">🎉 You made it! Ready for school! 🎉</div>
+
+      <div class="then-footer">
+        <svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="white" fill-opacity="0.25" stroke="white" stroke-width="2.5"/><rect x="17" y="24" width="6" height="10" fill="white"/></svg>
+        <div class="then-text">THEN...<br><b>You come back home after school! 🏠</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MY WEEK VIEW ============ -->
+  <div class="view" id="view-week">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleWeek">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Yesterday, Today &amp; Tomorrow</div>
+      <div class="card-sub">Swipe or tap a day to hear it</div>
+      <div class="carousel-wrap">
+        <div class="carousel" id="carousel"></div>
+      </div>
+      <div class="swipe-hint">← swipe →</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">The Full Week</div>
+      <div class="card-sub">Monday through Sunday</div>
+      <div class="week-list" id="weekList"></div>
+    </div>
+  </div>
+
+  <!-- ============ GET READY FOR SCHOOL ============ -->
+  <div class="view" id="view-school">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Here's What's Cooking at School</div>
+      <div class="card-sub">Some things that happen at school</div>
+      <div class="placeholder-note">📝 Placeholder — update this after talking with Noah's teacher</div>
+      <div class="scene-grid" id="sceneGrid"></div>
+      <div class="then-footer">
+        <svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="white" fill-opacity="0.25" stroke="white" stroke-width="2.5"/><rect x="17" y="24" width="6" height="10" fill="white"/></svg>
+        <div class="then-text">THEN...<br><b>You come back home after school! 🏠</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ KITCHEN WORDS ============ -->
+  <div class="view" id="view-words">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Kitchen Words</div>
+      <div class="card-sub">6 new words today — tap to hear them in English &amp; Spanish</div>
+      <div class="word-grid" id="wordGrid"></div>
+      <div class="add-word-form" id="addWordForm">
+        <label>English word</label>
+        <input type="text" id="newWordEn" placeholder="e.g. Spoon">
+        <label>Spanish word (optional)</label>
+        <input type="text" id="newWordEs" placeholder="e.g. Cuchara">
+        <button class="save-btn" id="saveWordBtn">Add word</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PRACTICE ============ -->
+  <div class="view" id="view-practice">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="card game-card">
+      <div class="card-title">Recipe Order</div>
+      <div class="card-sub">Tap the morning steps in the right order</div>
+      <div class="order-slots" id="orderSlots"></div>
+      <div class="order-tray" id="orderTray"></div>
+      <div class="game-feedback" id="orderFeedback"></div>
+    </div>
+
+    <div class="card game-card">
+      <div class="card-title">What Comes Next?</div>
+      <div class="card-sub">Look at the pattern — what's next?</div>
+      <div class="pattern-row" id="patternRow"></div>
+      <div class="pattern-choices" id="patternChoices"></div>
+      <div class="game-feedback" id="patternFeedback"></div>
+    </div>
+  </div>
+
+  <!-- ============ PARENT PANEL: MENU ============ -->
+  <div class="view" id="view-parent">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Parent Panel</div>
+      <div class="card-sub">Edit what Noah sees</div>
+      <div class="parent-list">
+        <div class="parent-row" data-goto="view-parent-day">
+          <div><div class="p-title">Edit My Day steps</div><div class="p-sub">Rename, add, or remove morning steps</div></div>
+          <div class="chevron">›</div>
+        </div>
+        <div class="parent-row" data-goto="view-parent-week">
+          <div><div class="p-title">Edit Week Pattern</div><div class="p-sub">Set which days are school or home</div></div>
+          <div class="chevron">›</div>
+        </div>
+        <div class="parent-row" data-goto="view-words">
+          <div><div class="p-title">Edit Kitchen Words</div><div class="p-sub">Add or remove words</div></div>
+          <div class="chevron">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PARENT PANEL: EDIT MY DAY ============ -->
+  <div class="view" id="view-parent-day">
+    <div class="back-btn" data-goto="view-parent">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </div>
+    <div class="card">
+      <div class="card-title">Edit My Day Steps</div>
+      <div class="card-sub">Changes show up in Noah's My Day right away</div>
+      <div id="parentDayEditRows"></div>
+      <button class="add-row-btn" id="addStepBtn">+ Add a step</button>
+      <div class="saved-toast" id="daySavedToast">Saved ✓</div>
+    </div>
+  </div>
+
+  <!-- ============ PARENT PANEL: EDIT WEEK ============ -->
+  <div class="view" id="view-parent-week">
+    <div class="back-btn" data-goto="view-parent">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </div>
+    <div class="card">
+      <div class="card-title">Edit Week Pattern</div>
+      <div class="card-sub">Set each day as a School Day or Home Day</div>
+      <div id="parentWeekEditRows"></div>
+      <div class="saved-toast show" style="margin-top:14px;">Changes apply instantly ✓</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ---------- Navigation ---------- */
+  function goto(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    window.speechSynthesis.cancel();
+  }
+  document.querySelectorAll('[data-goto]').forEach(el => {
+    el.addEventListener('click', () => goto(el.getAttribute('data-goto')));
+  });
+
+  /* ---------- Shared speech ---------- */
+  let voicesCache = [];
+  function loadVoices() { voicesCache = window.speechSynthesis.getVoices(); }
+  if ('speechSynthesis' in window) {
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  function pickVoice(lang) {
+    if (!voicesCache.length) return null;
+    const prefix = lang.split('-')[0].toLowerCase();
+    const candidates = voicesCache.filter(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
+    if (!candidates.length) return null;
+    const preferredNames = prefix === 'es'
+      ? ['google español', 'google espanol', 'paulina', 'mónica', 'monica', 'female', 'natural']
+      : ['samantha', 'google us english', 'karen', 'moira', 'fiona', 'zira', 'female', 'natural'];
+    for (const name of preferredNames) {
+      const match = candidates.find(v => v.name.toLowerCase().includes(name));
+      if (match) return match;
+    }
+    return candidates[0];
+  }
+
+  function speak(text, lang) {
+    if (!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.88;
+    u.pitch = 1.12;
+    if (lang) {
+      u.lang = lang;
+      const v = pickVoice(lang);
+      if (v) u.voice = v;
+    }
+    window.speechSynthesis.speak(u);
+  }
+
+  /* ---------- MY DAY ---------- */
+  const daySteps = [
+    { text: "Get dressed", es: "Vestirse", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { text: "Brush teeth", es: "Cepillarse los dientes", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="17" y="6" width="6" height="20" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" transform="rotate(20 20 16)"/><path d="M10 30 Q20 24 30 30" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>` },
+    { text: "Eat breakfast", es: "Desayunar", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="14" ry="6" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M6 24 C6 30 12 34 20 34 C28 34 34 30 34 24" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="6" width="3" height="10" rx="1.5" fill="#4A3428"/><rect x="21" y="6" width="3" height="10" rx="1.5" fill="#4A3428"/></svg>` },
+    { text: "Go potty", es: "Ir al baño", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="12" y="6" width="16" height="10" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M10 20 h20 a2 2 0 0 1 2 2 v2 a10 8 0 0 1 -12 8 a10 8 0 0 1 -12 -8 v-2 a2 2 0 0 1 2 -2 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { text: "Grab backpack, water bottle & lunch", es: "Agarra la mochila, el agua y el almuerzo", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="14" width="20" height="20" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M11 14 V11 a5 5 0 0 1 10 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="13" y="21" width="7" height="7" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/><path d="M29 16 Q26 20 26 24 a3 3 0 0 0 6 0 Q32 20 29 16 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2" transform="rotate(15 29 24)"/></svg>` },
+    { text: "Go to school", es: "Ir a la escuela", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+  ];
+
+  const stepsList = document.getElementById('stepsList');
+  const progressNum = document.getElementById('progressNum');
+  const allDone = document.getElementById('allDone');
+  const langToggleDay = document.getElementById('langToggleDay');
+  const doneSteps = new Set();
+  let spanishOnDay = true;
+
+  langToggleDay.addEventListener('click', () => {
+    spanishOnDay = !spanishOnDay;
+    langToggleDay.classList.toggle('on', spanishOnDay);
+  });
+
+  function speakStepWord(step) {
+    window.speechSynthesis.cancel();
+    speak(step.text, "en-US");
+    if (spanishOnDay) speak(step.es, "es-MX");
+  }
+
+  const wispColors = ["#E8654A", "#F5C451", "#7FA684", "#6FA8C9"];
+  function triggerCookEffect(iconEl) {
+    for (let i = 0; i < 5; i++) {
+      const wisp = document.createElement('div');
+      wisp.className = 'steam-wisp';
+      wisp.style.background = wispColors[i % wispColors.length];
+      wisp.style.left = (35 + Math.random() * 30) + '%';
+      wisp.style.animationDelay = (Math.random() * 0.15) + 's';
+      iconEl.appendChild(wisp);
+      setTimeout(() => wisp.remove(), 1000);
+    }
+  }
+
+  function renderDay(justDoneIndex) {
+    stepsList.innerHTML = '';
+    daySteps.forEach((step, i) => {
+      const el = document.createElement('div');
+      const isDone = doneSteps.has(i);
+      el.className = 'step' + (isDone ? ' done' : '') + (i === justDoneIndex ? ' just-done' : '');
+      el.innerHTML = `
+        <div class="step-num">${i + 1}</div>
+        <div class="step-icon">${step.icon}</div>
+        <div class="step-text">${step.text}<span class="es">${step.es}</span></div>
+        <div class="step-check"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12 L9 18 L20 6" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      `;
+      el.addEventListener('click', () => {
+        if (doneSteps.has(i)) {
+          doneSteps.delete(i);
+          renderDay();
+        } else {
+          doneSteps.add(i);
+          speakStepWord(step);
+          renderDay(i);
+          const newIconEl = stepsList.children[i]?.querySelector('.step-icon');
+          if (newIconEl) triggerCookEffect(newIconEl);
+        }
+      });
+      stepsList.appendChild(el);
+    });
+    progressNum.textContent = `${doneSteps.size}/${daySteps.length}`;
+    allDone.classList.toggle('show', doneSteps.size === daySteps.length);
+  }
+  renderDay();
+
+  /* ---------- MY WEEK ---------- */
+  const schoolIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
+  const homeIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
+
+  const week = [
+    { abbr: "M", full: "Monday",    es: "Lunes",     type: "school" },
+    { abbr: "T", full: "Tuesday",   es: "Martes",    type: "school" },
+    { abbr: "W", full: "Wednesday", es: "Miércoles", type: "school" },
+    { abbr: "T", full: "Thursday",  es: "Jueves",    type: "school" },
+    { abbr: "F", full: "Friday",    es: "Viernes",   type: "school" },
+    { abbr: "S", full: "Saturday",  es: "Sábado",    type: "home" },
+    { abbr: "S", full: "Sunday",    es: "Domingo",   type: "home" },
+  ];
+  const TODAY_INDEX = 1; // Tuesday
+
+  const carousel = document.getElementById('carousel');
+  const weekList = document.getElementById('weekList');
+  const langToggleWeek = document.getElementById('langToggleWeek');
+  let spanishOnWeek = true;
+
+  langToggleWeek.addEventListener('click', () => {
+    spanishOnWeek = !spanishOnWeek;
+    langToggleWeek.classList.toggle('on', spanishOnWeek);
+  });
+
+  function speakDay(day) {
+    window.speechSynthesis.cancel();
+    speak(day.full, "en-US");
+    if (spanishOnWeek) speak(day.es, "es-MX");
+  }
+
+  function icon(type) { return type === "school" ? schoolIcon : homeIcon; }
+
+  function renderCarousel() {
+    const yIdx = (TODAY_INDEX + 6) % 7;
+    const tIdx = (TODAY_INDEX + 1) % 7;
+    carousel.innerHTML = week.map((d, i) => {
+      let flag = '';
+      if (i === TODAY_INDEX) flag = '<div class="today-flag">TODAY</div>';
+      else if (i === yIdx) flag = '<div class="today-flag" style="background:#B3A489">YESTERDAY</div>';
+      else if (i === tIdx) flag = '<div class="today-flag" style="background:#B3A489">TOMORROW</div>';
+      return `
+      <div class="carousel-card ${i === TODAY_INDEX ? 'is-today' : ''}" data-i="${i}">
+        ${flag}
+        <div class="day-icon">${icon(d.type)}</div>
+        <div class="day-name">${d.full}</div>
+      </div>
+    `;
+    }).join('');
+    carousel.querySelectorAll('.carousel-card').forEach((el, i) => {
+      el.addEventListener('click', () => speakDay(week[i]));
+    });
+  }
+
+  function renderWeekList() {
+    weekList.innerHTML = week.map((d, i) => `
+      <div class="week-row ${d.type === 'home' ? 'home-day' : ''} ${i === TODAY_INDEX ? 'is-today' : ''}">
+        <div class="day-letter">${d.abbr}</div>
+        <div class="row-name">${d.full}<span class="es">${d.es}</span></div>
+        <div class="row-tag">${icon(d.type)} ${d.type === 'school' ? 'School Day' : 'Home Day'}</div>
+      </div>
+    `).join('');
+    weekList.querySelectorAll('.week-row').forEach((el, i) => {
+      el.addEventListener('click', () => speakDay(week[i]));
+    });
+  }
+
+  renderCarousel();
+  renderWeekList();
+
+  // center carousel on today after layout
+  window.addEventListener('load', () => {
+    const todayCard = carousel.querySelector('.is-today');
+    if (todayCard) {
+      const offset = todayCard.offsetLeft - (carousel.clientWidth - todayCard.clientWidth) / 2;
+      carousel.scrollLeft = offset;
+    }
+  });
+
+  /* ---------- Long-press sun icon → parent panel ---------- */
+  const sunIcon = document.getElementById('sunIcon');
+  let pressTimer;
+  sunIcon.addEventListener('pointerdown', () => {
+    pressTimer = setTimeout(() => goto('view-parent'), 650);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(evt => {
+    sunIcon.addEventListener(evt, () => clearTimeout(pressTimer));
+  });
+
+  /* ---------- GET READY FOR SCHOOL ---------- */
+  const scenes = [
+    { text: "Circle Time", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="none" stroke="#4A3428" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="20" cy="9" r="3" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/><circle cx="29" cy="18" r="3" fill="#F5C451" stroke="#4A3428" stroke-width="1.5"/><circle cx="25" cy="29" r="3" fill="#7FA684" stroke="#4A3428" stroke-width="1.5"/><circle cx="14" cy="29" r="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="1.5"/><circle cx="10" cy="18" r="3" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { text: "P.E.", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="12" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M12 20 Q20 12 28 20 Q20 28 12 20 Z" fill="none" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { text: "Recess", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 L14 12 L20 34" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linejoin="round"/><path d="M14 12 L28 18 L14 20 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { text: "Snack Time", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="12" ry="5" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M8 24 C8 29 13 32 20 32 C27 32 32 29 32 24" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { text: "Learning Time", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="10" width="24" height="20" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><line x1="20" y1="10" x2="20" y2="30" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { text: "Lunch", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="10" y="14" width="20" height="16" rx="3" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M15 14 V10 h10 v4" fill="none" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+  ];
+  const sceneGrid = document.getElementById('sceneGrid');
+  if (sceneGrid) {
+    sceneGrid.innerHTML = scenes.map(s => `
+      <div class="scene-card" data-text="${s.text}">${s.icon}<div class="scene-title">${s.text}</div></div>
+    `).join('');
+    sceneGrid.querySelectorAll('.scene-card').forEach((el, i) => {
+      el.addEventListener('click', () => { window.speechSynthesis.cancel(); speak(scenes[i].text, "en-US"); });
+    });
+  }
+
+  /* ---------- KITCHEN WORDS ---------- */
+  const kitchenWordsPool = [
+    { en: "Water", es: "Agua", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 6 C20 6 10 20 10 27 a10 10 0 0 0 20 0 C30 20 20 6 20 6 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Kitchen", es: "Cocina", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><circle cx="14" cy="20" r="2" fill="#4A3428"/><circle cx="20" cy="20" r="2" fill="#4A3428"/><circle cx="26" cy="20" r="2" fill="#4A3428"/></svg>` },
+    { en: "Mix", es: "Mezclar", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="13" ry="8" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><line x1="22" y1="10" x2="20" y2="24" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Cook", es: "Cocinar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 22 a10 10 0 0 1 20 0 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="8" y="22" width="24" height="4" rx="2" fill="#4A3428"/></svg>` },
+    { en: "Plate", es: "Plato", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="20" r="7" fill="none" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Spoon", es: "Cuchara", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="13" rx="7" ry="9" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><line x1="20" y1="21" x2="20" y2="33" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Fork", es: "Tenedor", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="17" y="18" width="6" height="15" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="14" y="6" width="2.5" height="13" rx="1" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/><rect x="18.7" y="6" width="2.5" height="13" rx="1" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/><rect x="23.5" y="6" width="2.5" height="13" rx="1" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Bowl", es: "Tazón", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><ellipse cx="20" cy="18" rx="12" ry="3" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Egg", es: "Huevo", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="10" ry="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="24" r="5" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Milk", es: "Leche", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 h12 v6 l4 4 v16 a2 2 0 0 1 -2 2 H12 a2 2 0 0 1 -2 -2 V18 l4 -4 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Bread", es: "Pan", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 22 a12 10 0 0 1 24 0 v6 a3 3 0 0 1 -3 3 H11 a3 3 0 0 1 -3 -3 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M13 20 q3 -4 6 0 q3 -4 6 0 q3 -4 6 0" stroke="#4A3428" stroke-width="1.5" fill="none"/></svg>` },
+    { en: "Apple", es: "Manzana", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 14 c6 -6 14 -2 12 6 c-2 8 -8 14 -12 14 c-4 0 -10 -6 -12 -14 c-2 -8 6 -12 12 -6 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 14 v-5" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><path d="M20 9 q4 -3 6 0" stroke="#7FA684" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Hot", es: "Caliente", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 6 C14 14 10 18 10 24 a10 10 0 0 0 20 0 c0 -4 -2 -7 -4 -9 c0 3 -2 5 -4 5 c1 -6 -2 -9 -2 -14 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Cold", es: "Frío", icon: `<svg viewBox="0 0 40 40" fill="none"><g stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="6" x2="20" y2="34"/><line x1="8" y1="20" x2="32" y2="20"/><line x1="11" y1="11" x2="29" y2="29"/><line x1="29" y1="11" x2="11" y2="29"/></g><circle cx="20" cy="20" r="4" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/></svg>` },
+  ];
+  const kitchenWordsCustom = [];
+  const WORDS_PER_DAY = 6;
+
+  function getDailySubset(pool, n) {
+    const dayIndex = Math.floor(Date.now() / 86400000); // whole days since epoch
+    const start = (dayIndex * n) % pool.length;
+    const result = [];
+    for (let i = 0; i < n; i++) result.push(pool[(start + i) % pool.length]);
+    return result;
+  }
+
+  const wordGrid = document.getElementById('wordGrid');
+  const addWordForm = document.getElementById('addWordForm');
+
+  function renderWords() {
+    const todaysWords = getDailySubset(kitchenWordsPool, WORDS_PER_DAY);
+    const allShown = [...todaysWords, ...kitchenWordsCustom];
+    wordGrid.innerHTML = allShown.map(w => `
+      <div class="word-card" data-en="${w.en}" data-es="${w.es}">${w.icon}<div class="word-en">${w.en}</div><div class="word-es">${w.es}</div></div>
+    `).join('') + `<div class="word-card add-card" id="addWordCard"><div class="plus">+</div><div class="word-en">Add word</div></div>`;
+
+    wordGrid.querySelectorAll('.word-card:not(.add-card)').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        window.speechSynthesis.cancel();
+        speak(allShown[i].en, "en-US");
+        speak(allShown[i].es, "es-MX");
+      });
+    });
+    document.getElementById('addWordCard').addEventListener('click', () => {
+      addWordForm.classList.toggle('show');
+    });
+  }
+  if (wordGrid) {
+    renderWords();
+    document.getElementById('saveWordBtn').addEventListener('click', () => {
+      const en = document.getElementById('newWordEn').value.trim();
+      const es = document.getElementById('newWordEs').value.trim() || "—";
+      if (!en) return;
+      kitchenWordsCustom.push({ en, es, icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/></svg>` });
+      document.getElementById('newWordEn').value = '';
+      document.getElementById('newWordEs').value = '';
+      addWordForm.classList.remove('show');
+      renderWords();
+    });
+  }
+
+  /* ---------- PRACTICE: Recipe Order game ---------- */
+  const orderSlots = document.getElementById('orderSlots');
+  const orderTray = document.getElementById('orderTray');
+  const orderFeedback = document.getElementById('orderFeedback');
+  let orderShuffled = [], orderPlacedCount = 0;
+
+  function shuffle(arr) { return arr.map(v => [Math.random(), v]).sort((a,b) => a[0]-b[0]).map(v => v[1]); }
+
+  function setupOrderGame() {
+    orderPlacedCount = 0;
+    orderFeedback.textContent = '';
+    const indices = daySteps.map((_, i) => i);
+    orderShuffled = shuffle(indices);
+    orderSlots.innerHTML = daySteps.map((_, i) => `<div class="order-slot" data-slot="${i}"><span class="num">${i+1}</span></div>`).join('');
+    orderTray.innerHTML = orderShuffled.map(i => `<div class="order-chip" data-step="${i}">${daySteps[i].icon}<span>${daySteps[i].text}</span></div>`).join('');
+    orderTray.querySelectorAll('.order-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const stepIndex = parseInt(chip.getAttribute('data-step'));
+        if (stepIndex === orderPlacedCount) {
+          const slot = orderSlots.querySelector(`[data-slot="${orderPlacedCount}"]`);
+          slot.classList.add('filled');
+          slot.innerHTML = `<span class="num">${orderPlacedCount+1}</span>${daySteps[stepIndex].icon}`;
+          chip.classList.add('placed');
+          window.speechSynthesis.cancel();
+          speak(daySteps[stepIndex].text, "en-US");
+          orderPlacedCount++;
+          if (orderPlacedCount === daySteps.length) {
+            orderFeedback.textContent = "🎉 You got the order right!";
+          } else {
+            orderFeedback.textContent = "Great! What's next?";
+          }
+        } else {
+          chip.style.transform = 'translateX(4px)';
+          setTimeout(() => chip.style.transform = '', 150);
+        }
+      });
+    });
+  }
+  if (orderSlots) setupOrderGame();
+
+  /* ---------- PRACTICE: What Comes Next pattern game ---------- */
+  const patternRow = document.getElementById('patternRow');
+  const patternChoices = document.getElementById('patternChoices');
+  const patternFeedback = document.getElementById('patternFeedback');
+
+  function setupPatternGame() {
+    // pull a 3-day sequence from the real week pattern, ask what's day 4
+    const startIdx = Math.floor(Math.random() * 4); // keeps 4-day window in bounds (0..3 start within Mon-Thu-ish range for simplicity)
+    const seq = [0,1,2,3].map(o => week[(startIdx + o) % 7]);
+    const shown = seq.slice(0, 3);
+    const answer = seq[3];
+    patternRow.innerHTML = shown.map(d => `<div class="pattern-chip">${icon(d.type)}</div>`).join('') + `<div class="pattern-chip blank">?</div>`;
+    const choices = shuffle([answer.type, answer.type === 'school' ? 'home' : 'school']);
+    patternChoices.innerHTML = choices.map(t => `<div class="pattern-choice" data-type="${t}">${icon(t)}</div>`).join('');
+    patternFeedback.textContent = '';
+    patternChoices.querySelectorAll('.pattern-choice').forEach(el => {
+      el.addEventListener('click', () => {
+        const chosen = el.getAttribute('data-type');
+        patternChoices.querySelectorAll('.pattern-choice').forEach(c => c.classList.remove('correct','wrong'));
+        if (chosen === answer.type) {
+          el.classList.add('correct');
+          patternFeedback.textContent = "🎉 That's right!";
+          window.speechSynthesis.cancel();
+          speak(answer.type === 'school' ? "School day!" : "Home day!", "en-US");
+          setTimeout(setupPatternGame, 1400);
+        } else {
+          el.classList.add('wrong');
+          patternFeedback.textContent = "Try again!";
+        }
+      });
+    });
+  }
+  if (patternRow) setupPatternGame();
+
+  /* ---------- PARENT PANEL: Edit My Day steps ---------- */
+  const parentDayEditRows = document.getElementById('parentDayEditRows');
+  function renderParentDayEdit() {
+    if (!parentDayEditRows) return;
+    parentDayEditRows.innerHTML = daySteps.map((s, i) => `
+      <div class="edit-row">
+        <input type="text" data-field="text" data-i="${i}" value="${s.text}">
+        <input type="text" data-field="es" data-i="${i}" value="${s.es}">
+        <button class="remove-btn" data-remove="${i}">×</button>
+      </div>
+    `).join('');
+    parentDayEditRows.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const i = parseInt(inp.getAttribute('data-i'));
+        const field = inp.getAttribute('data-field');
+        daySteps[i][field] = inp.value;
+        renderDay();
+        showSaved('daySavedToast');
+      });
+    });
+    parentDayEditRows.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        daySteps.splice(parseInt(btn.getAttribute('data-remove')), 1);
+        renderParentDayEdit();
+        renderDay();
+        showSaved('daySavedToast');
+      });
+    });
+  }
+  function showSaved(id) {
+    const t = document.getElementById(id);
+    if (!t) return;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 1200);
+  }
+  const addStepBtn = document.getElementById('addStepBtn');
+  if (addStepBtn) {
+    addStepBtn.addEventListener('click', () => {
+      daySteps.push({ text: "New step", es: "Nuevo paso", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/></svg>` });
+      renderParentDayEdit();
+      renderDay();
+      setupOrderGame();
+    });
+  }
+  if (parentDayEditRows) renderParentDayEdit();
+
+  /* ---------- PARENT PANEL: Edit Week pattern ---------- */
+  const parentWeekEditRows = document.getElementById('parentWeekEditRows');
+  function renderParentWeekEdit() {
+    if (!parentWeekEditRows) return;
+    parentWeekEditRows.innerHTML = week.map((d, i) => `
+      <div class="day-toggle-row">
+        <div class="dt-name">${d.full}${i === TODAY_INDEX ? ' (Today)' : ''}</div>
+        <div class="type-pill-group">
+          <div class="type-pill ${d.type === 'school' ? 'active-school' : ''}" data-i="${i}" data-type="school">School</div>
+          <div class="type-pill ${d.type === 'home' ? 'active-home' : ''}" data-i="${i}" data-type="home">Home</div>
+        </div>
+      </div>
+    `).join('');
+    parentWeekEditRows.querySelectorAll('.type-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const i = parseInt(pill.getAttribute('data-i'));
+        week[i].type = pill.getAttribute('data-type');
+        renderParentWeekEdit();
+        renderCarousel();
+        renderWeekList();
+      });
+    });
+  }
+  if (parentWeekEditRows) renderParentWeekEdit();
+</script>
+</body>
+</html>
