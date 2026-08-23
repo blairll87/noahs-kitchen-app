@@ -293,6 +293,46 @@
 
   /* ---- Practice games ---- */
   .game-card { margin-bottom: 16px; }
+
+  .card-title-row-game { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+  .card-title-row-game .card-title { margin-top: 0; }
+  .speak-btn {
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--sky);
+    border: 2px solid var(--cocoa); color: white; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: transform 0.12s ease;
+  }
+  .speak-btn:active { transform: scale(0.9); }
+
+  /* ---- School Day or Home Day game ---- */
+  .sh-day { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 6px 0 18px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .sh-day .sh-icon-box { width: 72px; height: 72px; border-radius: 20px; background: #FBF3E1; border: 2.5px solid #E9DCC0; display: flex; align-items: center; justify-content: center; }
+  .sh-day .sh-icon-box svg { width: 44px; height: 44px; }
+  .sh-day .sh-label { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 17px; color: var(--cocoa); }
+  .sh-choices { display: flex; gap: 12px; justify-content: center; }
+  .sh-choice {
+    flex: 1; max-width: 150px; text-align: center; padding: 14px 8px; border-radius: 16px; background: white;
+    border: 3px solid var(--cocoa); font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .sh-choice:active { transform: scale(0.95); }
+  .sh-choice.correct { background: #E9F2E7; border-color: var(--sage-deep); }
+  .sh-choice.wrong { background: #FCEFEA; border-color: var(--tomato); }
+
+  /* ---- Before & After game ---- */
+  .ba-ref { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 6px 0 16px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .ba-icon-box { width: 58px; height: 58px; border-radius: 16px; background: var(--butter); border: 2.5px solid var(--cocoa); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ba-icon-box svg { width: 34px; height: 34px; }
+  .ba-icon-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); text-align: center; }
+  .ba-choices { display: flex; gap: 12px; justify-content: center; }
+  .ba-choice {
+    flex: 1; max-width: 150px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: #FBF6EA; border: 2.5px solid #E9DCC0; border-radius: 16px; padding: 12px 8px;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .ba-choice:active { transform: scale(0.96); }
+  .ba-choice.correct { background: #E9F2E7; border-color: var(--sage-deep); }
+  .ba-choice.wrong { background: #FCEFEA; border-color: var(--tomato); }
+
   .order-tray { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
   .order-chip {
     background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 14px; padding: 8px 10px; display: flex;
@@ -312,9 +352,12 @@
   .game-feedback { text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--sage-deep); min-height: 18px; }
 
   .pattern-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 16px; }
-  .pattern-chip { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #FBF3E1; border: 2.5px solid #E9DCC0; }
-  .pattern-chip svg { width: 28px; height: 28px; }
-  .pattern-chip.blank { border: 2.5px dashed var(--tomato); background: #FCEFEA; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 20px; color: var(--tomato); }
+  .pattern-chip { width: 52px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .pattern-chip .chip-box { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #FBF3E1; border: 2.5px solid #E9DCC0; }
+  .pattern-chip .chip-box svg { width: 28px; height: 28px; }
+  .pattern-chip .chip-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 11px; color: var(--cocoa); }
+  .pattern-chip.blank .chip-box { border: 2.5px dashed var(--tomato); background: #FCEFEA; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 20px; color: var(--tomato); }
+  .pattern-chip.blank .chip-label { color: var(--tomato); }
   .pattern-choices { display: flex; gap: 12px; justify-content: center; }
   .pattern-choice {
     width: 60px; height: 60px; border-radius: 16px; background: white; border: 3px solid var(--cocoa);
@@ -549,7 +592,10 @@
     </div>
 
     <div class="card game-card">
-      <div class="card-title">Recipe Order</div>
+      <div class="card-title-row-game">
+        <div class="card-title">Recipe Order</div>
+        <button class="speak-btn" data-instructions="recipeOrder" aria-label="Hear instructions">🔊</button>
+      </div>
       <div class="card-sub">Tap the morning steps in the right order</div>
       <div class="order-slots" id="orderSlots"></div>
       <div class="order-tray" id="orderTray"></div>
@@ -557,11 +603,25 @@
     </div>
 
     <div class="card game-card">
-      <div class="card-title">What Comes Next?</div>
-      <div class="card-sub">Look at the pattern — what's next?</div>
-      <div class="pattern-row" id="patternRow"></div>
-      <div class="pattern-choices" id="patternChoices"></div>
-      <div class="game-feedback" id="patternFeedback"></div>
+      <div class="card-title-row-game">
+        <div class="card-title">School Day or Home Day?</div>
+        <button class="speak-btn" data-instructions="schoolHome" aria-label="Hear instructions">🔊</button>
+      </div>
+      <div class="card-sub">Tap the day to hear it, then choose School or Home</div>
+      <div class="sh-day" id="shDay"></div>
+      <div class="sh-choices" id="shChoices"></div>
+      <div class="game-feedback" id="shFeedback"></div>
+    </div>
+
+    <div class="card game-card">
+      <div class="card-title-row-game">
+        <div class="card-title">Before &amp; After</div>
+        <button class="speak-btn" data-instructions="beforeAfter" aria-label="Hear instructions">🔊</button>
+      </div>
+      <div class="card-sub" id="baPrompt">What happens next?</div>
+      <div class="ba-ref" id="baRef"></div>
+      <div class="ba-choices" id="baChoices"></div>
+      <div class="game-feedback" id="baFeedback"></div>
     </div>
   </div>
 
@@ -963,39 +1023,96 @@
   }
   if (orderSlots) setupOrderGame();
 
-  /* ---------- PRACTICE: What Comes Next pattern game ---------- */
-  const patternRow = document.getElementById('patternRow');
-  const patternChoices = document.getElementById('patternChoices');
-  const patternFeedback = document.getElementById('patternFeedback');
+  /* ---------- PRACTICE: School Day or Home Day? ---------- */
+  const shDay = document.getElementById('shDay');
+  const shChoices = document.getElementById('shChoices');
+  const shFeedback = document.getElementById('shFeedback');
+  let shCurrent;
 
-  function setupPatternGame() {
-    // pull a 3-day sequence from the real week pattern, ask what's day 4
-    const startIdx = Math.floor(Math.random() * 4); // keeps 4-day window in bounds (0..3 start within Mon-Thu-ish range for simplicity)
-    const seq = [0,1,2,3].map(o => week[(startIdx + o) % 7]);
-    const shown = seq.slice(0, 3);
-    const answer = seq[3];
-    patternRow.innerHTML = shown.map(d => `<div class="pattern-chip">${icon(d.type)}</div>`).join('') + `<div class="pattern-chip blank">?</div>`;
-    const choices = shuffle([answer.type, answer.type === 'school' ? 'home' : 'school']);
-    patternChoices.innerHTML = choices.map(t => `<div class="pattern-choice" data-type="${t}">${icon(t)}</div>`).join('');
-    patternFeedback.textContent = '';
-    patternChoices.querySelectorAll('.pattern-choice').forEach(el => {
-      el.addEventListener('click', () => {
-        const chosen = el.getAttribute('data-type');
-        patternChoices.querySelectorAll('.pattern-choice').forEach(c => c.classList.remove('correct','wrong'));
-        if (chosen === answer.type) {
-          el.classList.add('correct');
-          patternFeedback.textContent = "🎉 That's right!";
+  function setupSchoolHomeGame() {
+    shCurrent = week[Math.floor(Math.random() * week.length)];
+    shDay.innerHTML = `<div class="sh-icon-box">${icon(shCurrent.type)}</div><div class="sh-label">${shCurrent.full}</div>`;
+    shDay.onclick = () => { window.speechSynthesis.cancel(); speak(shCurrent.full, "en-US"); };
+    shFeedback.textContent = '';
+    shChoices.innerHTML = `
+      <div class="sh-choice" data-type="school">🏫 School</div>
+      <div class="sh-choice" data-type="home">🏠 Home</div>
+    `;
+    shChoices.querySelectorAll('.sh-choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = btn.getAttribute('data-type');
+        shChoices.querySelectorAll('.sh-choice').forEach(c => c.classList.remove('correct', 'wrong'));
+        if (chosen === shCurrent.type) {
+          btn.classList.add('correct');
+          shFeedback.textContent = "🎉 That's right!";
           window.speechSynthesis.cancel();
-          speak(answer.type === 'school' ? "School day!" : "Home day!", "en-US");
-          setTimeout(setupPatternGame, 1400);
+          speak(`${shCurrent.full} is a ${shCurrent.type === 'school' ? 'school' : 'home'} day!`, "en-US");
+          setTimeout(setupSchoolHomeGame, 1400);
         } else {
-          el.classList.add('wrong');
-          patternFeedback.textContent = "Try again!";
+          btn.classList.add('wrong');
+          shFeedback.textContent = "Try again!";
         }
       });
     });
   }
-  if (patternRow) setupPatternGame();
+  if (shDay) setupSchoolHomeGame();
+
+  /* ---------- PRACTICE: Before & After ---------- */
+  const baRef = document.getElementById('baRef');
+  const baChoices = document.getElementById('baChoices');
+  const baFeedback = document.getElementById('baFeedback');
+  const baPrompt = document.getElementById('baPrompt');
+  let baAnswerIndex, baRefStep;
+
+  function setupBeforeAfterGame() {
+    baFeedback.textContent = '';
+    const refIndex = 1 + Math.floor(Math.random() * (daySteps.length - 2)); // keeps both a before and an after in range
+    const mode = Math.random() < 0.5 ? 'before' : 'after';
+    baAnswerIndex = mode === 'before' ? refIndex - 1 : refIndex + 1;
+    baRefStep = daySteps[refIndex];
+    baPrompt.textContent = mode === 'before' ? "What happens BEFORE this?" : "What happens AFTER this?";
+    baRef.innerHTML = `<div class="ba-icon-box">${baRefStep.icon}</div><div class="ba-icon-label">${baRefStep.text}</div>`;
+    baRef.onclick = () => { window.speechSynthesis.cancel(); speak(baRefStep.text, "en-US"); };
+
+    const distractorPool = daySteps.map((_, i) => i).filter(i => i !== baAnswerIndex && i !== refIndex);
+    const distractor = distractorPool[Math.floor(Math.random() * distractorPool.length)];
+    const options = shuffle([baAnswerIndex, distractor]);
+
+    baChoices.innerHTML = options.map(i => `
+      <div class="ba-choice" data-i="${i}">${daySteps[i].icon}<div class="ba-icon-label">${daySteps[i].text}</div></div>
+    `).join('');
+    baChoices.querySelectorAll('.ba-choice').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        baChoices.querySelectorAll('.ba-choice').forEach(c => c.classList.remove('correct', 'wrong'));
+        if (i === baAnswerIndex) {
+          el.classList.add('correct');
+          baFeedback.textContent = "🎉 That's right!";
+          window.speechSynthesis.cancel();
+          speak(daySteps[i].text, "en-US");
+          setTimeout(setupBeforeAfterGame, 1400);
+        } else {
+          el.classList.add('wrong');
+          baFeedback.textContent = "Try again!";
+        }
+      });
+    });
+  }
+  if (baRef) setupBeforeAfterGame();
+
+  /* ---------- Spoken instructions for each game ---------- */
+  const gameInstructions = {
+    recipeOrder: "Tap the steps in the order you do them every morning.",
+    schoolHome: "Look at the day. Tap School if it's a school day, or Home if it's a home day.",
+    beforeAfter: "Look at the step. Tap what happens before it, or after it."
+  };
+  document.querySelectorAll('.speak-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.speechSynthesis.cancel();
+      speak(gameInstructions[btn.getAttribute('data-instructions')], "en-US");
+    });
+  });
 
   /* ---------- PARENT PANEL: Edit My Day steps ---------- */
   const parentDayEditRows = document.getElementById('parentDayEditRows');
