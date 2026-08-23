@@ -392,7 +392,7 @@
       </svg>
       <div>
         <div class="greeting">Good morning, Noah!</div>
-        <div class="day-badge">🏫 SCHOOL DAY — TUESDAY</div>
+        <div class="day-badge" id="dayBadge">🏫 SCHOOL DAY — TUESDAY</div>
       </div>
     </div>
 
@@ -755,7 +755,17 @@
     { abbr: "S", full: "Saturday",  es: "Sábado",    type: "home" },
     { abbr: "S", full: "Sunday",    es: "Domingo",   type: "home" },
   ];
-  const TODAY_INDEX = 1; // Tuesday
+  const TODAY_INDEX = (new Date().getDay() + 6) % 7; // Mon=0 ... Sun=6, based on the real date
+
+  function updateHomeBadge() {
+    const badge = document.getElementById('dayBadge');
+    if (!badge) return;
+    const d = week[TODAY_INDEX];
+    const emoji = d.type === 'school' ? '🏫' : '🏠';
+    const label = d.type === 'school' ? 'SCHOOL DAY' : 'HOME DAY';
+    badge.textContent = `${emoji} ${label} — ${d.full.toUpperCase()}`;
+  }
+  updateHomeBadge();
 
   const carousel = document.getElementById('carousel');
   const weekList = document.getElementById('weekList');
@@ -1054,6 +1064,7 @@
         renderParentWeekEdit();
         renderCarousel();
         renderWeekList();
+        updateHomeBadge();
       });
     });
   }
