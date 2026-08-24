@@ -457,7 +457,7 @@
         </g>
       </svg>
       <div>
-        <div class="greeting">Good morning, Noah!</div>
+        <div class="greeting" id="homeGreeting">Good morning, Noah!</div>
         <div class="day-badge" id="dayBadge">🏫 SCHOOL DAY — TUESDAY</div>
       </div>
     </div>
@@ -974,6 +974,17 @@
     }
   }
 
+  function updateGreeting() {
+    const el = document.getElementById('homeGreeting');
+    if (!el) return;
+    const hour = new Date().getHours();
+    let text;
+    if (hour < 12) text = "Good morning, Noah!";
+    else if (hour < 19) text = "Good afternoon, Noah!";
+    else text = "Good evening, Noah!";
+    el.textContent = text;
+  }
+
   let lastMode = null;
   function setupDayView() {
     const mode = getDayMode();
@@ -981,6 +992,7 @@
     doneSteps.clear();
     updateDayStationButton(mode);
     updateHomeBadge();
+    updateGreeting();
 
     if (mode === 'school') {
       document.getElementById('ingredientsSection').style.display = '';
