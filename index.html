@@ -168,7 +168,30 @@
   .lang-toggle.on .switch::after { transform: translateX(14px); }
   .lang-toggle .label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
 
-  /* ---- Swipeable week carousel ---- */
+  /* ---- Day counter & week tally ---- */
+  .day-counter {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--butter); border: 2px solid var(--cocoa);
+    border-radius: 100px; padding: 5px 14px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 13px;
+    color: var(--cocoa); margin-bottom: 14px;
+  }
+  .week-tally { display: flex; gap: 10px; margin-bottom: 14px; }
+  .tally-chip {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; background: #E9F2E7;
+    border: 2px solid var(--sage); border-radius: 14px; padding: 9px; font-family: 'Baloo 2', sans-serif;
+    font-weight: 700; font-size: 13px; color: var(--sage-deep);
+  }
+  .tally-chip.home-tally { background: #E6F1F7; border-color: var(--sky); color: var(--sky-deep); }
+
+  /* ---- Past day styling ---- */
+  .week-row.is-past { opacity: 0.5; }
+  .week-row .day-letter { position: relative; }
+  .week-row.is-past .day-letter::after {
+    content: "✓"; position: absolute; bottom: -3px; right: -3px; width: 15px; height: 15px; border-radius: 50%;
+    background: white; border: 1.5px solid var(--sage-deep); color: var(--sage-deep); font-size: 9px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .carousel-card.is-past { opacity: 0.55; }
+
   .carousel-wrap { position: relative; margin: 0 -4px; }
   .carousel {
     display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
@@ -441,11 +464,11 @@
 
     <div class="stations-grid">
       <div class="station" data-goto="view-day">
-        <div class="icon-wrap" style="background:#FCEFC7">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M8 20 a12 12 0 0 1 24 0 v6 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="27" width="28" height="4" rx="2" fill="#4A3428"/><line x1="20" y1="6" x2="20" y2="2" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <div class="icon-wrap" id="dayStationIconWrap" style="background:#FCEFC7">
+          <svg id="dayStationIcon" viewBox="0 0 40 40" fill="none"><path d="M8 20 a12 12 0 0 1 24 0 v6 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="27" width="28" height="4" rx="2" fill="#4A3428"/><line x1="20" y1="6" x2="20" y2="2" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>
         </div>
-        <div class="station-title">My Day</div>
-        <div class="station-sub">What's cooking today</div>
+        <div class="station-title" id="dayStationTitle">My Day</div>
+        <div class="station-sub" id="dayStationSub">What's cooking today</div>
       </div>
       <div class="station" data-goto="view-week">
         <div class="icon-wrap" style="background:#E6F1F7">
@@ -475,6 +498,13 @@
         <div class="station-title">Practice</div>
         <div class="station-sub">Play and learn</div>
       </div>
+      <div class="station" data-goto="view-extra">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M20 12 L22 18 L28 18 L23 22 L25 28 L20 24 L15 28 L17 22 L12 18 L18 18 Z" fill="#E8654A" stroke="#4A3428" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="station-title">Extra Practice</div>
+        <div class="station-sub">Sounds &amp; more, any day</div>
+      </div>
     </div>
   </div>
 
@@ -493,28 +523,53 @@
     <div class="card">
       <div class="card-title-row">
         <div>
-          <div class="card-title">Noah's Morning Recipe</div>
-          <div class="card-sub">Makes: 1 ready-for-school kid</div>
+          <div class="card-title" id="dayCardTitle">Noah's Morning Recipe</div>
+          <div class="card-sub" id="dayCardSub">Makes: 1 ready-for-school kid</div>
         </div>
         <div class="progress-badge"><div class="num" id="progressNum">0/5</div><div class="label">steps done</div></div>
       </div>
 
-      <div class="section-label">You'll need</div>
-      <div class="ingredients">
-        <div class="ingredient"><svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="16" y="19" width="8" height="8" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg><span>Backpack</span></div>
-        <div class="ingredient"><svg viewBox="0 0 40 40" fill="none"><rect x="14" y="12" width="12" height="20" rx="5" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="7" width="8" height="6" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg><span>Water Bottle</span></div>
-        <div class="ingredient"><svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="4" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M14 14 Q16 8 20 8 Q24 8 26 14" fill="none" stroke="#4A3428" stroke-width="2.5"/><path d="M14 22 Q17 19 20 22 Q23 25 26 22" fill="none" stroke="#4A3428" stroke-width="2"/></svg><span>Dino Lunchbox</span></div>
+      <div id="ingredientsSection">
+        <div class="section-label">You'll need</div>
+        <div class="ingredients" id="ingredientsList"></div>
       </div>
 
-      <div class="section-label">Steps</div>
+      <div class="section-label" id="stepsSectionLabel">Steps</div>
       <div class="steps" id="stepsList"></div>
 
       <div class="all-done" id="allDone">🎉 You made it! Ready for school! 🎉</div>
 
-      <div class="then-footer">
+      <div class="then-footer" id="dayThenFooter">
         <svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="white" fill-opacity="0.25" stroke="white" stroke-width="2.5"/><rect x="17" y="24" width="6" height="10" fill="white"/></svg>
-        <div class="then-text">THEN...<br><b>You come back home after school! 🏠</b></div>
+        <div class="then-text" id="dayThenText">THEN...<br><b>You come back home after school! 🏠</b></div>
       </div>
+    </div>
+  </div>
+
+  <!-- ============ EXTRA PRACTICE VIEW ============ -->
+  <div class="view" id="view-extra">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleExtra">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title-row">
+        <div>
+          <div class="card-title">Extra Practice</div>
+          <div class="card-sub">Sounds, letters, numbers, shapes &amp; colors — any day!</div>
+        </div>
+        <div class="progress-badge"><div class="num" id="extraProgressNum">0/7</div><div class="label">steps done</div></div>
+      </div>
+
+      <div class="steps" id="extraStepsList"></div>
+
+      <div class="all-done" id="extraAllDone">🎉 Great practicing! 🎉</div>
     </div>
   </div>
 
@@ -533,6 +588,7 @@
     <div class="card">
       <div class="card-title">Yesterday, Today &amp; Tomorrow</div>
       <div class="card-sub">Swipe or tap a day to hear it</div>
+      <div class="day-counter" id="dayCounter"></div>
       <div class="carousel-wrap">
         <div class="carousel" id="carousel"></div>
       </div>
@@ -542,6 +598,7 @@
     <div class="card">
       <div class="card-title">The Full Week</div>
       <div class="card-sub">Monday through Sunday</div>
+      <div class="week-tally" id="weekTally"></div>
       <div class="week-list" id="weekList"></div>
     </div>
   </div>
@@ -572,15 +629,8 @@
     </div>
     <div class="card">
       <div class="card-title">Kitchen Words</div>
-      <div class="card-sub">6 new words today — tap to hear them in English &amp; Spanish</div>
+      <div class="card-sub">6 new words today — tap to hear them in English &amp; Spanish. New ones rotate in daily!</div>
       <div class="word-grid" id="wordGrid"></div>
-      <div class="add-word-form" id="addWordForm">
-        <label>English word</label>
-        <input type="text" id="newWordEn" placeholder="e.g. Spoon">
-        <label>Spanish word (optional)</label>
-        <input type="text" id="newWordEs" placeholder="e.g. Cuchara">
-        <button class="save-btn" id="saveWordBtn">Add word</button>
-      </div>
     </div>
   </div>
 
@@ -641,10 +691,6 @@
         </div>
         <div class="parent-row" data-goto="view-parent-week">
           <div><div class="p-title">Edit Week Pattern</div><div class="p-sub">Set which days are school or home</div></div>
-          <div class="chevron">›</div>
-        </div>
-        <div class="parent-row" data-goto="view-words">
-          <div><div class="p-title">Edit Kitchen Words</div><div class="p-sub">Add or remove words</div></div>
           <div class="chevron">›</div>
         </div>
       </div>
@@ -740,12 +786,111 @@
     { text: "Go to school", es: "Ir a la escuela", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>` },
   ];
 
+  const nightSteps = [
+    { text: "Shower", es: "Ducharse", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 14 a10 6 0 0 1 20 0" stroke="#4A3428" stroke-width="2.5" fill="#6FA8C9"/><line x1="14" y1="20" x2="12" y2="26" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="20" x2="19" y2="28" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="20" x2="28" y2="26" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>` },
+    { text: "Pajamas", es: "Ponerse la pijama", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="17" cy="22" r="1.5" fill="#F5C451"/><circle cx="23" cy="26" r="1.5" fill="#F5C451"/><circle cx="20" cy="18" r="1.5" fill="#F5C451"/></svg>` },
+    { text: "Brush teeth", es: "Cepillarse los dientes", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="17" y="6" width="6" height="20" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" transform="rotate(20 20 16)"/><path d="M10 30 Q20 24 30 30" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>` },
+    { text: "Sleepy sloth drink", es: "Leche tibia", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 16 h16 v12 a8 6 0 0 1 -16 0 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><path d="M26 18 h4 a4 4 0 0 1 0 8 h-4" stroke="#4A3428" stroke-width="2" fill="none"/><path d="M14 10 q2 -4 0 -8" stroke="#4A3428" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/><path d="M20 10 q2 -4 0 -8" stroke="#4A3428" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/></svg>` },
+    { text: "Story", es: "Cuento", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 12 C16 8 10 8 6 10 V30 C10 28 16 28 20 32 C24 28 30 28 34 30 V10 C30 8 24 8 20 12 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="20" y1="12" x2="20" y2="32" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { text: "Bed", es: "Dormir", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="20" width="28" height="10" rx="2" fill="#9B7EDE" stroke="#4A3428" stroke-width="2.5"/><rect x="8" y="15" width="8" height="7" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><line x1="6" y1="30" x2="6" y2="34" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="30" x2="34" y2="34" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+  ];
+
+  const schoolIngredients = [
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="16" y="19" width="8" height="8" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Backpack" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="14" y="12" width="12" height="20" rx="5" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="7" width="8" height="6" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Water Bottle" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="4" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M14 14 Q16 8 20 8 Q24 8 26 14" fill="none" stroke="#4A3428" stroke-width="2.5"/><path d="M14 22 Q17 19 20 22 Q23 25 26 22" fill="none" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Dino Lunchbox" },
+  ];
+  const nightIngredients = [
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="20" cy="20" r="1.5" fill="#F5C451"/></svg>`, label: "Pajamas" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 16 h16 v12 a8 6 0 0 1 -16 0 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><path d="M26 18 h4 a4 4 0 0 1 0 8 h-4" stroke="#4A3428" stroke-width="2" fill="none"/></svg>`, label: "Sloth Cup" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 12 C16 8 10 8 6 10 V30 C10 28 16 28 20 32 C24 28 30 28 34 30 V10 C30 8 24 8 20 12 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="20" y1="12" x2="20" y2="32" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Book" },
+  ];
+  function renderIngredients(list) {
+    const el = document.getElementById('ingredientsList');
+    if (!el) return;
+    el.innerHTML = list.map(item => `<div class="ingredient">${item.icon}<span>${item.label}</span></div>`).join('');
+  }
+
+  /* ---------- HOME DAY: syllables, letters, numbers ---------- */
+  function makeTextIcon(text, bg, fontSize) {
+    return `<div style="width:100%;height:100%;border-radius:10px;background:${bg};display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;color:white;font-size:${fontSize || 16}px;text-align:center;line-height:1.1;">${text}</div>`;
+  }
+
+  const syllablePool = [
+    { syllable: "ma", cue: "manzana" }, { syllable: "me", cue: "medusa" }, { syllable: "mi", cue: "mitón" }, { syllable: "mo", cue: "moño" }, { syllable: "mu", cue: "murciélago" },
+    { syllable: "pa", cue: "pato" }, { syllable: "pe", cue: "pez" }, { syllable: "pi", cue: "pies" }, { syllable: "po", cue: "pollito" }, { syllable: "pu", cue: "pulpo" },
+    { syllable: "sa", cue: "sandía" }, { syllable: "se", cue: "seis" }, { syllable: "si", cue: "sirena" }, { syllable: "so", cue: "sombrilla" }, { syllable: "su", cue: "subir" },
+    { syllable: "la", cue: "lámpara" }, { syllable: "le", cue: "león" }, { syllable: "li", cue: "limón" }, { syllable: "lo", cue: "lobo" }, { syllable: "lu", cue: "luna" },
+    { syllable: "ta", cue: "taco" }, { syllable: "te", cue: "tenedor" }, { syllable: "ti", cue: "tigre" }, { syllable: "to", cue: "tortuga" }, { syllable: "tu", cue: "tucán" },
+    { syllable: "da", cue: "dados" }, { syllable: "de", cue: "detective" }, { syllable: "di", cue: "dinosaurio" }, { syllable: "do", cue: "domir" }, { syllable: "du", cue: "dulce" },
+    { syllable: "na", cue: "naranja" }, { syllable: "ne", cue: "nevera" }, { syllable: "ni", cue: "nido" }, { syllable: "no", cue: "nopal" }, { syllable: "nu", cue: "nuez" },
+    { syllable: "ba", cue: "bandera" }, { syllable: "be", cue: "bellota" }, { syllable: "bi", cue: "bigote" }, { syllable: "bo", cue: "botón" }, { syllable: "bu", cue: "búho" },
+    { syllable: "fa", cue: "faro" }, { syllable: "fe", cue: "feliz" }, { syllable: "fi", cue: "fideo" }, { syllable: "fo", cue: "foca" }, { syllable: "fu", cue: "fuego" },
+    { syllable: "ra", cue: "ratón" }, { syllable: "re", cue: "regalo" }, { syllable: "ri", cue: "rinoceronte" }, { syllable: "ro", cue: "rosa" }, { syllable: "ru", cue: "rueda" },
+    { syllable: "va", cue: "vaso" }, { syllable: "ve", cue: "vela" }, { syllable: "vi", cue: "víbora" }, { syllable: "vo", cue: "volante" }, { syllable: "vu", cue: "vuelo" },
+    { syllable: "ja", cue: "jarra" }, { syllable: "je", cue: "jengibre" }, { syllable: "ji", cue: "jirafa" }, { syllable: "jo", cue: "joya" }, { syllable: "ju", cue: "jugo" },
+  ];
+  const letterPool = [
+    { letter: "Aa", cue: "avión" }, { letter: "Ee", cue: "estrella" }, { letter: "Ii", cue: "imán" }, { letter: "Oo", cue: "oso" }, { letter: "Uu", cue: "uvas" },
+    { letter: "Bb", cue: "bandera" }, { letter: "Mm", cue: "mano" }, { letter: "Ss", cue: "sombrero" }, { letter: "Tt", cue: "tortuga" }, { letter: "Ll", cue: "luna" },
+  ];
+  const numberPool = [
+    { numeral: "1", word: "uno" }, { numeral: "2", word: "dos" }, { numeral: "3", word: "tres" }, { numeral: "4", word: "cuatro" }, { numeral: "5", word: "cinco" },
+    { numeral: "6", word: "seis" }, { numeral: "7", word: "siete" }, { numeral: "8", word: "ocho" }, { numeral: "9", word: "nueve" }, { numeral: "10", word: "diez" },
+  ];
+  const shapePool = [
+    { es: "círculo", en: "circle", icon: `<div style="width:100%;height:100%;border-radius:50%;background:#E8654A;border:3px solid #4A3428;"></div>` },
+    { es: "cuadrado", en: "square", icon: `<div style="width:70%;height:70%;margin:15%;background:#F5C451;border:3px solid #4A3428;"></div>` },
+    { es: "triángulo", en: "triangle", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,6 34,32 6,32" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { es: "estrella", en: "star", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15" fill="#9B7EDE" stroke="#4A3428" stroke-width="2" stroke-linejoin="round"/></svg>` },
+    { es: "corazón", en: "heart", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 33 C6 23 4 14 11 9 C15 6 19 8 20 13 C21 8 25 6 29 9 C36 14 34 23 20 33 Z" fill="#E88FB0" stroke="#4A3428" stroke-width="2" stroke-linejoin="round"/></svg>` },
+    { es: "óvalo", en: "oval", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="16" ry="10" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { es: "rectángulo", en: "rectangle", icon: `<div style="width:80%;height:55%;margin:22.5% 10%;background:#6FA8C9;border:3px solid #4A3428;"></div>` },
+    { es: "rombo", en: "diamond", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,4 34,20 20,36 6,20" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { es: "trapecio", en: "trapezoid", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="14,10 26,10 34,30 6,30" fill="#F0973D" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { es: "medialuna", en: "crescent", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M25 6 A16 16 0 1 0 25 34 A12 12 0 1 1 25 6 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+  ];
+  const colorPool = [
+    { es: "rojo", en: "red", hex: "#E8654A" }, { es: "anaranjado", en: "orange", hex: "#F0973D" }, { es: "amarillo", en: "yellow", hex: "#F5C451" },
+    { es: "verde", en: "green", hex: "#7FA684" }, { es: "azul", en: "blue", hex: "#6FA8C9" }, { es: "morado", en: "purple", hex: "#9B7EDE" },
+    { es: "rosado", en: "pink", hex: "#E88FB0" }, { es: "café", en: "brown", hex: "#8B5E3C" }, { es: "negro", en: "black", hex: "#3A3A3A" }, { es: "blanco", en: "white", hex: "#FFFFFF" },
+  ];
+
+  function getHomeRotation(pool, n, variant) {
+    const dayIndex = Math.floor(Date.now() / 86400000);
+    const variantShift = variant ? Math.floor(pool.length / 2) : 0;
+    const start = (dayIndex * n + variantShift) % pool.length;
+    const result = [];
+    for (let i = 0; i < n; i++) result.push(pool[(start + i) % pool.length]);
+    return result;
+  }
+
+  function getHomePracticeSteps(variant) {
+    const syl = getHomeRotation(syllablePool, 3, variant).map(s => ({
+      text: s.syllable, es: s.cue, icon: makeTextIcon(s.syllable, '#E8654A', 18)
+    }));
+    const letterItems = getHomeRotation(letterPool, 1, variant).map(l => ({
+      text: l.letter, es: l.cue, icon: makeTextIcon(l.letter, '#6FA8C9', 18)
+    }));
+    const numberItems = getHomeRotation(numberPool, 1, variant).map(n => ({
+      text: n.word, es: n.numeral, icon: makeTextIcon(n.numeral, '#7FA684', 20)
+    }));
+    const shapeItems = getHomeRotation(shapePool, 1, variant).map(s => ({
+      text: s.en, es: s.es, icon: s.icon
+    }));
+    const colorItems = getHomeRotation(colorPool, 1, variant).map(c => ({
+      text: c.en, es: c.es, icon: `<div style="width:100%;height:100%;border-radius:50%;background:${c.hex};border:3px solid #4A3428;"></div>`
+    }));
+    return [...syl, ...letterItems, ...numberItems, ...shapeItems, ...colorItems];
+  }
+
   const stepsList = document.getElementById('stepsList');
   const progressNum = document.getElementById('progressNum');
   const allDone = document.getElementById('allDone');
   const langToggleDay = document.getElementById('langToggleDay');
   const doneSteps = new Set();
   let spanishOnDay = true;
+  let activeSteps = daySteps;
 
   langToggleDay.addEventListener('click', () => {
     spanishOnDay = !spanishOnDay;
@@ -773,7 +918,7 @@
 
   function renderDay(justDoneIndex) {
     stepsList.innerHTML = '';
-    daySteps.forEach((step, i) => {
+    activeSteps.forEach((step, i) => {
       const el = document.createElement('div');
       const isDone = doneSteps.has(i);
       el.className = 'step' + (isDone ? ' done' : '') + (i === justDoneIndex ? ' just-done' : '');
@@ -797,10 +942,133 @@
       });
       stepsList.appendChild(el);
     });
-    progressNum.textContent = `${doneSteps.size}/${daySteps.length}`;
-    allDone.classList.toggle('show', doneSteps.size === daySteps.length);
+    progressNum.textContent = `${doneSteps.size}/${activeSteps.length}`;
+    allDone.classList.toggle('show', doneSteps.size === activeSteps.length);
   }
-  renderDay();
+
+  function getDayMode() {
+    const hour = new Date().getHours();
+    if (hour >= 19) return 'night';
+    return week[TODAY_INDEX].type; // 'school' or 'home'
+  }
+
+  const moonIconSvg = `<svg viewBox="0 0 40 40" fill="none"><path d="M25 6 A16 16 0 1 0 25 34 A12 12 0 1 1 25 6 Z" fill="#9B7EDE" stroke="#4A3428" stroke-width="2.5"/></svg>`;
+  const sunIconSvg = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 20 a12 12 0 0 1 24 0 v6 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="27" width="28" height="4" rx="2" fill="#4A3428"/><line x1="20" y1="6" x2="20" y2="2" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+
+  function updateDayStationButton(mode) {
+    const title = document.getElementById('dayStationTitle');
+    const sub = document.getElementById('dayStationSub');
+    const iconWrap = document.getElementById('dayStationIconWrap');
+    const icon = document.getElementById('dayStationIcon');
+    if (!title) return;
+    if (mode === 'night') {
+      title.textContent = 'My Night';
+      sub.textContent = 'Time to wind down';
+      iconWrap.style.background = '#EDE4F9';
+      icon.outerHTML = moonIconSvg.replace('<svg ', '<svg id="dayStationIcon" ');
+    } else {
+      title.textContent = 'My Day';
+      sub.textContent = "What's cooking today";
+      iconWrap.style.background = '#FCEFC7';
+      icon.outerHTML = sunIconSvg.replace('<svg ', '<svg id="dayStationIcon" ');
+    }
+  }
+
+  let lastMode = null;
+  function setupDayView() {
+    const mode = getDayMode();
+    lastMode = mode;
+    doneSteps.clear();
+    updateDayStationButton(mode);
+    updateHomeBadge();
+
+    if (mode === 'school') {
+      document.getElementById('ingredientsSection').style.display = '';
+      document.getElementById('stepsSectionLabel').textContent = 'Steps';
+      renderIngredients(schoolIngredients);
+      activeSteps = daySteps;
+      document.getElementById('dayCardTitle').textContent = "Noah's Morning Recipe";
+      document.getElementById('dayCardSub').textContent = "Makes: 1 ready-for-school kid";
+      allDone.textContent = "🎉 You made it! Ready for school! 🎉";
+      document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>You come back home after school! 🏠</b>';
+    } else if (mode === 'home') {
+      document.getElementById('ingredientsSection').style.display = 'none';
+      document.getElementById('stepsSectionLabel').textContent = 'Practice';
+      activeSteps = getHomePracticeSteps(0);
+      document.getElementById('dayCardTitle').textContent = "Noah's Practice Recipe";
+      document.getElementById('dayCardSub').textContent = "Sounds, letters & numbers to practice today";
+      allDone.textContent = "🎉 Great practicing today! 🎉";
+      document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>Play time! 🧸</b>';
+    } else {
+      document.getElementById('ingredientsSection').style.display = '';
+      document.getElementById('stepsSectionLabel').textContent = 'Steps';
+      renderIngredients(nightIngredients);
+      activeSteps = nightSteps;
+      document.getElementById('dayCardTitle').textContent = "Noah's Bedtime Recipe";
+      document.getElementById('dayCardSub').textContent = "Makes: 1 sleepy, cozy kid";
+      allDone.textContent = "🌙 All done! Sweet dreams! 🌙";
+      document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>Sleep tight! See you in the morning! 🌙</b>';
+    }
+    renderDay();
+  }
+
+  // Check every minute in case the app is left open across the 7pm switch
+  setInterval(() => {
+    if (getDayMode() !== lastMode) setupDayView();
+  }, 60000);
+
+  /* ---------- EXTRA PRACTICE (available any day) ---------- */
+  const extraStepsList = document.getElementById('extraStepsList');
+  const extraProgressNum = document.getElementById('extraProgressNum');
+  const extraAllDone = document.getElementById('extraAllDone');
+  const langToggleExtra = document.getElementById('langToggleExtra');
+  const extraDoneSteps = new Set();
+  let spanishOnExtra = true;
+  let extraSteps = [];
+
+  langToggleExtra.addEventListener('click', () => {
+    spanishOnExtra = !spanishOnExtra;
+    langToggleExtra.classList.toggle('on', spanishOnExtra);
+  });
+
+  function renderExtraPractice(justDoneIndex) {
+    extraStepsList.innerHTML = '';
+    extraSteps.forEach((step, i) => {
+      const el = document.createElement('div');
+      const isDone = extraDoneSteps.has(i);
+      el.className = 'step' + (isDone ? ' done' : '') + (i === justDoneIndex ? ' just-done' : '');
+      el.innerHTML = `
+        <div class="step-num">${i + 1}</div>
+        <div class="step-icon">${step.icon}</div>
+        <div class="step-text">${step.text}<span class="es">${step.es}</span></div>
+        <div class="step-check"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12 L9 18 L20 6" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      `;
+      el.addEventListener('click', () => {
+        if (extraDoneSteps.has(i)) {
+          extraDoneSteps.delete(i);
+          renderExtraPractice();
+        } else {
+          extraDoneSteps.add(i);
+          window.speechSynthesis.cancel();
+          speak(step.text, "en-US");
+          if (spanishOnExtra) speak(step.es, "es-MX");
+          renderExtraPractice(i);
+          const newIconEl = extraStepsList.children[i]?.querySelector('.step-icon');
+          if (newIconEl) triggerCookEffect(newIconEl);
+        }
+      });
+      extraStepsList.appendChild(el);
+    });
+    extraProgressNum.textContent = `${extraDoneSteps.size}/${extraSteps.length}`;
+    extraAllDone.classList.toggle('show', extraDoneSteps.size === extraSteps.length);
+  }
+
+  function setupExtraPractice() {
+    extraDoneSteps.clear();
+    extraSteps = getHomePracticeSteps(1);
+    renderExtraPractice();
+  }
+  setupExtraPractice();
 
   /* ---------- MY WEEK ---------- */
   const schoolIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
@@ -821,6 +1089,11 @@
     const badge = document.getElementById('dayBadge');
     if (!badge) return;
     const d = week[TODAY_INDEX];
+    const mode = getDayMode();
+    if (mode === 'night') {
+      badge.textContent = `🌙 BEDTIME — ${d.full.toUpperCase()}`;
+      return;
+    }
     const emoji = d.type === 'school' ? '🏫' : '🏠';
     const label = d.type === 'school' ? 'SCHOOL DAY' : 'HOME DAY';
     badge.textContent = `${emoji} ${label} — ${d.full.toUpperCase()}`;
@@ -854,7 +1127,7 @@
       else if (i === yIdx) flag = '<div class="today-flag" style="background:#B3A489">YESTERDAY</div>';
       else if (i === tIdx) flag = '<div class="today-flag" style="background:#B3A489">TOMORROW</div>';
       return `
-      <div class="carousel-card ${i === TODAY_INDEX ? 'is-today' : ''}" data-i="${i}">
+      <div class="carousel-card ${i === TODAY_INDEX ? 'is-today' : ''} ${i < TODAY_INDEX ? 'is-past' : ''}" data-i="${i}">
         ${flag}
         <div class="day-icon">${icon(d.type)}</div>
         <div class="day-name">${d.full}</div>
@@ -868,7 +1141,7 @@
 
   function renderWeekList() {
     weekList.innerHTML = week.map((d, i) => `
-      <div class="week-row ${d.type === 'home' ? 'home-day' : ''} ${i === TODAY_INDEX ? 'is-today' : ''}">
+      <div class="week-row ${d.type === 'home' ? 'home-day' : ''} ${i === TODAY_INDEX ? 'is-today' : ''} ${i < TODAY_INDEX ? 'is-past' : ''}">
         <div class="day-letter">${d.abbr}</div>
         <div class="row-name">${d.full}<span class="es">${d.es}</span></div>
         <div class="row-tag">${icon(d.type)} ${d.type === 'school' ? 'School Day' : 'Home Day'}</div>
@@ -879,8 +1152,27 @@
     });
   }
 
+  function renderDayCounter() {
+    const el = document.getElementById('dayCounter');
+    if (el) el.textContent = `📅 Day ${TODAY_INDEX + 1} of 7 this week!`;
+  }
+
+  function renderWeekTally() {
+    const el = document.getElementById('weekTally');
+    if (!el) return;
+    const schoolCount = week.filter(d => d.type === 'school').length;
+    const homeCount = week.filter(d => d.type === 'home').length;
+    el.innerHTML = `
+      <div class="tally-chip">🏫 ${schoolCount} School Day${schoolCount === 1 ? '' : 's'}</div>
+      <div class="tally-chip home-tally">🏠 ${homeCount} Home Day${homeCount === 1 ? '' : 's'}</div>
+    `;
+  }
+
   renderCarousel();
   renderWeekList();
+  renderDayCounter();
+  renderWeekTally();
+  setupDayView();
 
   // center carousel on today after layout
   window.addEventListener('load', () => {
@@ -936,8 +1228,16 @@
     { en: "Apple", es: "Manzana", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 14 c6 -6 14 -2 12 6 c-2 8 -8 14 -12 14 c-4 0 -10 -6 -12 -14 c-2 -8 6 -12 12 -6 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 14 v-5" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><path d="M20 9 q4 -3 6 0" stroke="#7FA684" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
     { en: "Hot", es: "Caliente", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 6 C14 14 10 18 10 24 a10 10 0 0 0 20 0 c0 -4 -2 -7 -4 -9 c0 3 -2 5 -4 5 c1 -6 -2 -9 -2 -14 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/></svg>` },
     { en: "Cold", es: "Frío", icon: `<svg viewBox="0 0 40 40" fill="none"><g stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="6" x2="20" y2="34"/><line x1="8" y1="20" x2="32" y2="20"/><line x1="11" y1="11" x2="29" y2="29"/><line x1="29" y1="11" x2="11" y2="29"/></g><circle cx="20" cy="20" r="4" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Pot", es: "Olla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="14" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="3" y="19" width="6" height="4" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="31" y="19" width="6" height="4" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="10" y="12" width="20" height="4" rx="2" fill="#4A3428"/></svg>` },
+    { en: "Oven", es: "Horno", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="24" rx="3" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="12" y="16" width="16" height="12" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="28" cy="12" r="1.5" fill="#4A3428"/></svg>` },
+    { en: "Stove", es: "Estufa", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="10" width="28" height="20" rx="3" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><circle cx="14" cy="18" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="26" cy="18" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Table", es: "Mesa", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="12" width="28" height="5" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><line x1="10" y1="17" x2="10" y2="32" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="17" x2="30" y2="32" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Cut", es: "Cortar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 30 L28 12 a3 3 0 0 1 4 4 L14 34 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="8" y1="32" x2="12" y2="28" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Wash", es: "Lavar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 8 C20 8 12 20 12 26 a8 8 0 0 0 16 0 C28 20 20 8 20 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><circle cx="29" cy="14" r="2" fill="#F5C451" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Bake", es: "Hornear", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="24" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M14 26 q6 -8 12 0" stroke="#4A3428" stroke-width="2" fill="none"/></svg>` },
+    { en: "Sweet", es: "Dulce", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="12" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 12 v16 M12 20 h16" stroke="#FBF3E1" stroke-width="2" stroke-linecap="round"/></svg>` },
+    { en: "Finished", es: "Terminado", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M13 20 L18 25 L28 14" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
   ];
-  const kitchenWordsCustom = [];
   const WORDS_PER_DAY = 6;
 
   function getDailySubset(pool, n) {
@@ -949,39 +1249,22 @@
   }
 
   const wordGrid = document.getElementById('wordGrid');
-  const addWordForm = document.getElementById('addWordForm');
 
   function renderWords() {
     const todaysWords = getDailySubset(kitchenWordsPool, WORDS_PER_DAY);
-    const allShown = [...todaysWords, ...kitchenWordsCustom];
-    wordGrid.innerHTML = allShown.map(w => `
+    wordGrid.innerHTML = todaysWords.map(w => `
       <div class="word-card" data-en="${w.en}" data-es="${w.es}">${w.icon}<div class="word-en">${w.en}</div><div class="word-es">${w.es}</div></div>
-    `).join('') + `<div class="word-card add-card" id="addWordCard"><div class="plus">+</div><div class="word-en">Add word</div></div>`;
+    `).join('');
 
-    wordGrid.querySelectorAll('.word-card:not(.add-card)').forEach((el, i) => {
+    wordGrid.querySelectorAll('.word-card').forEach((el, i) => {
       el.addEventListener('click', () => {
         window.speechSynthesis.cancel();
-        speak(allShown[i].en, "en-US");
-        speak(allShown[i].es, "es-MX");
+        speak(todaysWords[i].en, "en-US");
+        speak(todaysWords[i].es, "es-MX");
       });
     });
-    document.getElementById('addWordCard').addEventListener('click', () => {
-      addWordForm.classList.toggle('show');
-    });
   }
-  if (wordGrid) {
-    renderWords();
-    document.getElementById('saveWordBtn').addEventListener('click', () => {
-      const en = document.getElementById('newWordEn').value.trim();
-      const es = document.getElementById('newWordEs').value.trim() || "—";
-      if (!en) return;
-      kitchenWordsCustom.push({ en, es, icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/></svg>` });
-      document.getElementById('newWordEn').value = '';
-      document.getElementById('newWordEs').value = '';
-      addWordForm.classList.remove('show');
-      renderWords();
-    });
-  }
+  if (wordGrid) renderWords();
 
   /* ---------- PRACTICE: Recipe Order game ---------- */
   const orderSlots = document.getElementById('orderSlots');
@@ -1181,7 +1464,9 @@
         renderParentWeekEdit();
         renderCarousel();
         renderWeekList();
+        renderWeekTally();
         updateHomeBadge();
+        if (i === TODAY_INDEX) setupDayView();
       });
     });
   }
