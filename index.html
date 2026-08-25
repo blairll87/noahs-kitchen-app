@@ -156,6 +156,39 @@
   }
   @keyframes steamRise { 0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translate(-50%, -34px) scale(1.4); opacity: 0; } }
 
+  /* ---- Let's Cook game ---- */
+  .cook-pot-wrap { position: relative; width: 220px; height: 150px; margin: 10px auto 20px; }
+  .cook-pot-svg { width: 100%; height: 100%; transition: transform 0.1s ease; }
+  .cook-pot-svg.pot-stirring { animation: potShake 0.4s ease infinite; }
+  @keyframes potShake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+  .pot-contents {
+    position: absolute; top: 44%; left: 14%; width: 72%; height: 44%;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; padding: 4px;
+  }
+  .pot-chip { width: 26px; height: 26px; flex-shrink: 0; animation: iconPop 0.4s ease; }
+  .cook-tray { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 4px 0 18px; }
+  .cook-ingredient {
+    width: 56px; height: 56px; border-radius: 14px; background: #FBF3E1; border: 2.5px solid #E9DCC0;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: transform 0.12s ease, opacity 0.2s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .cook-ingredient svg { width: 34px; height: 34px; }
+  .cook-ingredient.used { opacity: 0.25; pointer-events: none; transform: scale(0.9); }
+  .cook-ingredient:active { transform: scale(0.92); }
+  .cook-btn, .cook-again-btn {
+    width: 100%; border: 3px solid var(--cocoa); border-radius: 16px; padding: 14px;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; color: white;
+  }
+  .cook-btn { background: var(--tomato); }
+  .cook-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .cook-again-btn { background: var(--sage-deep); margin-top: 10px; }
+  .ready-banner {
+    display: none; text-align: center; background: var(--butter); border: 2.5px solid var(--cocoa);
+    border-radius: 16px; padding: 14px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px;
+    color: var(--cocoa); margin: 14px 0;
+  }
+  .ready-banner.show { display: block; animation: fadeIn 0.3s ease; }
+
   /* ---- Spanish toggle ---- */
   .lang-toggle {
     display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; background: white;
@@ -505,6 +538,13 @@
         <div class="station-title">Extra Practice</div>
         <div class="station-sub">Sounds &amp; more, any day</div>
       </div>
+      <div class="station" data-goto="view-let-cook">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="4" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="31" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/></svg>
+        </div>
+        <div class="station-title">Let's Cook!</div>
+        <div class="station-sub">Make a pretend dish</div>
+      </div>
     </div>
   </div>
 
@@ -570,6 +610,42 @@
       <div class="steps" id="extraStepsList"></div>
 
       <div class="all-done" id="extraAllDone">🎉 Great practicing! 🎉</div>
+    </div>
+  </div>
+
+  <!-- ============ LET'S COOK VIEW ============ -->
+  <div class="view" id="view-let-cook">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleCook">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Let's Cook!</div>
+      <div class="card-sub">Tap ingredients to add them to the pot</div>
+
+      <div class="cook-pot-wrap">
+        <svg class="cook-pot-svg" viewBox="0 0 200 140" fill="none">
+          <ellipse cx="100" cy="42" rx="82" ry="12" fill="#4A3428"/>
+          <rect x="18" y="42" width="164" height="80" rx="12" fill="#6FA8C9" stroke="#4A3428" stroke-width="4"/>
+          <rect x="-2" y="52" width="26" height="18" rx="9" fill="#6FA8C9" stroke="#4A3428" stroke-width="4"/>
+          <rect x="176" y="52" width="26" height="18" rx="9" fill="#6FA8C9" stroke="#4A3428" stroke-width="4"/>
+        </svg>
+        <div class="pot-contents" id="potContents"></div>
+      </div>
+
+      <div class="ready-banner" id="cookReadyBanner">🎉 Noah's Special Dish is ready! 🎉</div>
+
+      <div class="section-label">Ingredients</div>
+      <div class="cook-tray" id="cookTray"></div>
+
+      <button class="cook-btn" id="cookBtn" disabled>🔥 Cook it!</button>
+      <button class="cook-again-btn" id="cookAgainBtn" style="display:none;">🔄 Cook Again</button>
     </div>
   </div>
 
@@ -796,19 +872,27 @@
   ];
 
   const schoolIngredients = [
-    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="16" y="19" width="8" height="8" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Backpack" },
-    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="14" y="12" width="12" height="20" rx="5" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="7" width="8" height="6" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Water Bottle" },
-    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="4" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M14 14 Q16 8 20 8 Q24 8 26 14" fill="none" stroke="#4A3428" stroke-width="2.5"/><path d="M14 22 Q17 19 20 22 Q23 25 26 22" fill="none" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Dino Lunchbox" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="16" y="19" width="8" height="8" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Backpack", es: "Mochila" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="14" y="12" width="12" height="20" rx="5" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="7" width="8" height="6" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Water Bottle", es: "Botella de Agua" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="4" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M14 14 Q16 8 20 8 Q24 8 26 14" fill="none" stroke="#4A3428" stroke-width="2.5"/><path d="M14 22 Q17 19 20 22 Q23 25 26 22" fill="none" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Dino Lunchbox", es: "Lonchera de Dinosaurio" },
   ];
   const nightIngredients = [
-    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="20" cy="20" r="1.5" fill="#F5C451"/></svg>`, label: "Pajamas" },
-    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 16 h16 v12 a8 6 0 0 1 -16 0 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><path d="M26 18 h4 a4 4 0 0 1 0 8 h-4" stroke="#4A3428" stroke-width="2" fill="none"/></svg>`, label: "Sloth Cup" },
-    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 12 C16 8 10 8 6 10 V30 C10 28 16 28 20 32 C24 28 30 28 34 30 V10 C30 8 24 8 20 12 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="20" y1="12" x2="20" y2="32" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Book" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="20" cy="20" r="1.5" fill="#F5C451"/></svg>`, label: "Pajamas", es: "Pijama" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 16 h16 v12 a8 6 0 0 1 -16 0 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><path d="M26 18 h4 a4 4 0 0 1 0 8 h-4" stroke="#4A3428" stroke-width="2" fill="none"/></svg>`, label: "Sloth Cup", es: "Taza de Perezoso" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 12 C16 8 10 8 6 10 V30 C10 28 16 28 20 32 C24 28 30 28 34 30 V10 C30 8 24 8 20 12 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="20" y1="12" x2="20" y2="32" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Book", es: "Libro" },
   ];
   function renderIngredients(list) {
     const el = document.getElementById('ingredientsList');
     if (!el) return;
     el.innerHTML = list.map(item => `<div class="ingredient">${item.icon}<span>${item.label}</span></div>`).join('');
+    el.querySelectorAll('.ingredient').forEach((div, i) => {
+      div.style.cursor = 'pointer';
+      div.addEventListener('click', () => {
+        window.speechSynthesis.cancel();
+        speak(list[i].label, "en-US");
+        if (spanishOnDay) speak(list[i].es, "es-MX");
+      });
+    });
   }
 
   /* ---------- HOME DAY: syllables, letters, numbers ---------- */
@@ -867,13 +951,13 @@
 
   function getHomePracticeSteps(variant) {
     const syl = getHomeRotation(syllablePool, 3, variant).map(s => ({
-      text: s.syllable, es: s.cue, icon: makeTextIcon(s.syllable, '#E8654A', 18)
+      text: s.syllable, es: s.cue, icon: makeTextIcon(s.syllable, '#E8654A', 18), spanishOnly: true
     }));
     const letterItems = getHomeRotation(letterPool, 1, variant).map(l => ({
-      text: l.letter, es: l.cue, icon: makeTextIcon(l.letter, '#6FA8C9', 18)
+      text: l.letter, es: l.cue, icon: makeTextIcon(l.letter, '#6FA8C9', 18), spanishOnly: true
     }));
     const numberItems = getHomeRotation(numberPool, 1, variant).map(n => ({
-      text: n.word, es: n.numeral, icon: makeTextIcon(n.numeral, '#7FA684', 20)
+      text: n.numeral, es: n.word, icon: makeTextIcon(n.numeral, '#7FA684', 20)
     }));
     const shapeItems = getHomeRotation(shapePool, 1, variant).map(s => ({
       text: s.en, es: s.es, icon: s.icon
@@ -899,8 +983,13 @@
 
   function speakStepWord(step) {
     window.speechSynthesis.cancel();
-    speak(step.text, "en-US");
-    if (spanishOnDay) speak(step.es, "es-MX");
+    if (step.spanishOnly) {
+      speak(step.text, "es-MX");
+      if (spanishOnDay) speak(step.es, "es-MX");
+    } else {
+      speak(step.text, "en-US");
+      if (spanishOnDay) speak(step.es, "es-MX");
+    }
   }
 
   const wispColors = ["#E8654A", "#F5C451", "#7FA684", "#6FA8C9"];
@@ -1062,8 +1151,13 @@
         } else {
           extraDoneSteps.add(i);
           window.speechSynthesis.cancel();
-          speak(step.text, "en-US");
-          if (spanishOnExtra) speak(step.es, "es-MX");
+          if (step.spanishOnly) {
+            speak(step.text, "es-MX");
+            if (spanishOnExtra) speak(step.es, "es-MX");
+          } else {
+            speak(step.text, "en-US");
+            if (spanishOnExtra) speak(step.es, "es-MX");
+          }
           renderExtraPractice(i);
           const newIconEl = extraStepsList.children[i]?.querySelector('.step-icon');
           if (newIconEl) triggerCookEffect(newIconEl);
@@ -1081,6 +1175,82 @@
     renderExtraPractice();
   }
   setupExtraPractice();
+
+  /* ---------- LET'S COOK ---------- */
+  const cookIngredients = [
+    { en: "Water", es: "Agua", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 6 C20 6 10 20 10 27 a10 10 0 0 0 20 0 C30 20 20 6 20 6 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Egg", es: "Huevo", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="10" ry="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="24" r="5" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Milk", es: "Leche", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 h12 v6 l4 4 v16 a2 2 0 0 1 -2 2 H12 a2 2 0 0 1 -2 -2 V18 l4 -4 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Bread", es: "Pan", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 22 a12 10 0 0 1 24 0 v6 a3 3 0 0 1 -3 3 H11 a3 3 0 0 1 -3 -3 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M13 20 q3 -4 6 0 q3 -4 6 0 q3 -4 6 0" stroke="#4A3428" stroke-width="1.5" fill="none"/></svg>` },
+    { en: "Apple", es: "Manzana", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 14 c6 -6 14 -2 12 6 c-2 8 -8 14 -12 14 c-4 0 -10 -6 -12 -14 c-2 -8 6 -12 12 -6 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 14 v-5" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><path d="M20 9 q4 -3 6 0" stroke="#7FA684" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Sweet", es: "Dulce", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="12" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 12 v16 M12 20 h16" stroke="#FBF3E1" stroke-width="2" stroke-linecap="round"/></svg>` },
+  ];
+  let cookAdded = [];
+  let cookLangOn = true;
+  const cookLangToggle = document.getElementById('langToggleCook');
+  const cookTray = document.getElementById('cookTray');
+  const potContents = document.getElementById('potContents');
+  const cookBtn = document.getElementById('cookBtn');
+  const cookAgainBtn = document.getElementById('cookAgainBtn');
+  const cookReadyBanner = document.getElementById('cookReadyBanner');
+  const cookPotSvg = document.querySelector('.cook-pot-svg');
+
+  cookLangToggle.addEventListener('click', () => {
+    cookLangOn = !cookLangOn;
+    cookLangToggle.classList.toggle('on', cookLangOn);
+  });
+
+  function renderCookTray() {
+    cookTray.innerHTML = cookIngredients.map((ing, i) => `
+      <div class="cook-ingredient ${cookAdded.includes(i) ? 'used' : ''}" data-i="${i}">${ing.icon}</div>
+    `).join('');
+    cookTray.querySelectorAll('.cook-ingredient').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        if (cookAdded.includes(i)) return;
+        cookAdded.push(i);
+        const ing = cookIngredients[i];
+        window.speechSynthesis.cancel();
+        speak(ing.en, "en-US");
+        if (cookLangOn) speak(ing.es, "es-MX");
+        const chip = document.createElement('div');
+        chip.className = 'pot-chip';
+        chip.innerHTML = ing.icon;
+        potContents.appendChild(chip);
+        renderCookTray();
+        cookBtn.disabled = cookAdded.length === 0;
+      });
+    });
+  }
+
+  cookBtn.addEventListener('click', () => {
+    cookPotSvg.classList.add('pot-stirring');
+    window.speechSynthesis.cancel();
+    speak("Mixing it all together!", "en-US");
+    setTimeout(() => {
+      cookPotSvg.classList.remove('pot-stirring');
+      cookReadyBanner.classList.add('show');
+      cookBtn.style.display = 'none';
+      cookAgainBtn.style.display = '';
+      window.speechSynthesis.cancel();
+      speak("Yum! Your dish is ready!", "en-US");
+      if (cookLangOn) speak("¡Qué rico! Tu plato está listo!", "es-MX");
+      triggerCookEffect(document.querySelector('.cook-pot-wrap'));
+    }, 1400);
+  });
+
+  cookAgainBtn.addEventListener('click', setupCookGame);
+
+  function setupCookGame() {
+    cookAdded = [];
+    potContents.innerHTML = '';
+    cookReadyBanner.classList.remove('show');
+    cookAgainBtn.style.display = 'none';
+    cookBtn.style.display = '';
+    cookBtn.disabled = true;
+    renderCookTray();
+  }
+  setupCookGame();
 
   /* ---------- MY WEEK ---------- */
   const schoolIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
