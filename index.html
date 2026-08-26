@@ -580,6 +580,13 @@
         <div class="station-title">Let's Cook!</div>
         <div class="station-sub">Make a pretend dish</div>
       </div>
+      <div class="station" data-goto="view-baking">
+        <div class="icon-wrap" style="background:#FCEFEA">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="28" height="28" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="11" y="11" width="18" height="14" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="28" cy="29" r="1.5" fill="#4A3428"/></svg>
+        </div>
+        <div class="station-title">Let's Bake!</div>
+        <div class="station-sub">Sweet treats</div>
+      </div>
     </div>
   </div>
 
@@ -687,6 +694,47 @@
 
       <button class="cook-btn" id="cookBtn" disabled>🔥 Cook it!</button>
       <button class="cook-again-btn" id="cookAgainBtn" style="display:none;">🔄 Cook Again</button>
+    </div>
+  </div>
+
+  <!-- ============ LET'S BAKE VIEW ============ -->
+  <div class="view" id="view-baking">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleBake">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Let's Bake!</div>
+      <div class="card-sub" id="bakeSubtitle">Tap ingredients to add them to the bowl</div>
+
+      <div class="section-label">Pick a Recipe (optional)</div>
+      <div class="chip-scroll-row" id="bakeRecipeRow"></div>
+
+      <div class="cook-pot-wrap" id="bakeOvenWrap">
+        <svg class="cook-pot-svg" id="bakeOvenSvg" viewBox="0 0 200 160" fill="none">
+          <rect x="10" y="10" width="180" height="140" rx="14" fill="#E8654A" stroke="#4A3428" stroke-width="5"/>
+          <rect x="30" y="30" width="140" height="90" rx="8" fill="#FBF3E1" stroke="#4A3428" stroke-width="4"/>
+          <circle cx="170" cy="135" r="6" fill="#4A3428"/>
+        </svg>
+        <div class="pot-contents" id="bakeContents" style="top:22%; left:16%; width:68%; height:52%;"></div>
+      </div>
+
+      <div class="ready-banner" id="bakeReadyBanner">🎉 Noah's Yummy Bake is ready! 🎉</div>
+
+      <div class="section-label">Utensils</div>
+      <div class="utensil-row" id="bakeUtensilRow"></div>
+
+      <div class="section-label">Ingredients</div>
+      <div class="cook-tray" id="bakeTray"></div>
+
+      <button class="cook-btn" id="bakeBtn" disabled>🔥 Bake it!</button>
+      <button class="cook-again-btn" id="bakeAgainBtn" style="display:none;">🔄 Bake Again</button>
     </div>
   </div>
 
@@ -1229,14 +1277,14 @@
     { en: "Tomato", es: "Tomate", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="23" r="13" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 Q20 6 26 12" stroke="#7FA684" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>` },
     { en: "Carrot", es: "Zanahoria", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 14 L28 34 L12 34 Z" fill="#F0973D" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 14 L18 6 M20 14 L22 6 M20 14 L20 5" stroke="#7FA684" stroke-width="2.5" stroke-linecap="round"/></svg>` },
     { en: "Orange", es: "Naranja", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="21" r="13" fill="#F0973D" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="8" r="2" fill="#7FA684"/></svg>` },
-    { en: "Sugar", es: "Azúcar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 14 h20 l-3 18 h-14 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="20" r="1" fill="#4A3428"/><circle cx="22" cy="22" r="1" fill="#4A3428"/><circle cx="19" cy="26" r="1" fill="#4A3428"/></svg>` },
     { en: "Salt", es: "Sal", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 14 h12 l2 18 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="15" y="8" width="10" height="6" rx="2" fill="#4A3428"/></svg>` },
     { en: "Rice", es: "Arroz", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><ellipse cx="16" cy="23" rx="2" ry="1" fill="#4A3428"/><ellipse cx="22" cy="25" rx="2" ry="1" fill="#4A3428"/><ellipse cx="19" cy="21" rx="2" ry="1" fill="#4A3428"/></svg>` },
-    { en: "Cookie", es: "Galleta", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#F0973D" stroke="#4A3428" stroke-width="2.5"/><circle cx="15" cy="16" r="1.5" fill="#4A3428"/><circle cx="24" cy="15" r="1.5" fill="#4A3428"/><circle cx="26" cy="23" r="1.5" fill="#4A3428"/><circle cx="16" cy="25" r="1.5" fill="#4A3428"/><circle cx="21" cy="21" r="1.5" fill="#4A3428"/></svg>` },
-    { en: "Cake", es: "Pastel", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="20" width="24" height="12" rx="2" fill="#E88FB0" stroke="#4A3428" stroke-width="2.5"/><path d="M8 20 Q14 14 20 20 Q26 14 32 20" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><line x1="20" y1="14" x2="20" y2="8" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="6" r="2" fill="#F5C451"/></svg>` },
     { en: "Butter", es: "Mantequilla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="14" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><line x1="8" y1="20" x2="32" y2="20" stroke="#4A3428" stroke-width="1.5"/></svg>` },
     { en: "Chicken", es: "Pollo", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="16" cy="16" r="10" fill="#F0973D" stroke="#4A3428" stroke-width="2.5"/><path d="M22 22 L30 30" stroke="#FBF3E1" stroke-width="6" stroke-linecap="round"/><path d="M22 22 L30 30" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>` },
     { en: "Strawberry", es: "Fresa", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 34 C10 24 8 16 14 12 C17 10 20 12 20 15 C20 12 23 10 26 12 C32 16 30 24 20 34 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 10 Q20 6 26 10" stroke="#7FA684" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="20" r="1" fill="#FBF3E1"/><circle cx="22" cy="22" r="1" fill="#FBF3E1"/><circle cx="18" cy="27" r="1" fill="#FBF3E1"/></svg>` },
+    { en: "Fish", es: "Pescado", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="18" cy="20" rx="12" ry="8" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><path d="M28 20 L36 12 L36 28 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="12" cy="18" r="1.5" fill="#4A3428"/></svg>` },
+    { en: "Onion", es: "Cebolla", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="12" ry="13" fill="#E88FB0" stroke="#4A3428" stroke-width="2.5"/><path d="M20 9 Q18 4 20 2 Q22 4 20 9" stroke="#7FA684" stroke-width="2" fill="none"/></svg>` },
+    { en: "Potato", es: "Papa", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="21" rx="13" ry="10" fill="#C89666" stroke="#4A3428" stroke-width="2.5"/><circle cx="15" cy="18" r="1" fill="#4A3428"/><circle cx="24" cy="24" r="1" fill="#4A3428"/><circle cx="22" cy="16" r="1" fill="#4A3428"/></svg>` },
   ];
 
   const cookUtensils = [
@@ -1247,16 +1295,16 @@
   ];
 
   const cookRecipes = [
-    { name: "Fruit Salad", es: "Ensalada de Frutas", items: [4, 5, 9, 17] },
-    { name: "Pancakes", es: "Panqueques", items: [1, 2, 10, 15] },
+    { name: "Fruit Salad", es: "Ensalada de Frutas", items: [4, 5, 9, 14] },
+    { name: "Pancakes", es: "Panqueques", items: [1, 2, 12, 10] },
     { name: "Sandwich", es: "Sándwich", items: [3, 6, 7] },
-    { name: "Soup", es: "Sopa", items: [0, 8, 7, 16] },
-    { name: "Smoothie", es: "Batido", items: [1, 5, 17] },
-    { name: "Cookies", es: "Galletas", items: [15, 10, 2] },
-    { name: "Birthday Cake", es: "Pastel de Cumpleaños", items: [15, 10, 2, 1] },
-    { name: "Rice Bowl", es: "Plato de Arroz", items: [12, 16, 8] },
-    { name: "Cheese Toast", es: "Pan con Queso", items: [3, 6, 15] },
+    { name: "Soup", es: "Sopa", items: [0, 8, 7, 13] },
+    { name: "Smoothie", es: "Batido", items: [1, 5, 14] },
+    { name: "Fish Dinner", es: "Cena de Pescado", items: [15, 17, 8] },
+    { name: "Rice Bowl", es: "Plato de Arroz", items: [11, 13, 8] },
+    { name: "Cheese Toast", es: "Pan con Queso", items: [3, 6, 12] },
     { name: "Garden Salad", es: "Ensalada", items: [7, 8, 6] },
+    { name: "Veggie Stew", es: "Guiso de Verduras", items: [0, 8, 17, 16, 7] },
   ];
 
   let potItems = []; // ingredient indices, in order added, duplicates allowed
@@ -1385,6 +1433,175 @@
     renderCookTray();
   }
   setupCookGame();
+
+  /* ---------- LET'S BAKE ---------- */
+  const bakeIngredients = [
+    { en: "Flour", es: "Harina", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M12 10 h16 l4 8 v14 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 V18 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 10 V6 h12 v4" stroke="#4A3428" stroke-width="2" fill="none"/></svg>` },
+    { en: "Sugar", es: "Azúcar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 14 h20 l-3 18 h-14 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="20" r="1" fill="#4A3428"/><circle cx="22" cy="22" r="1" fill="#4A3428"/><circle cx="19" cy="26" r="1" fill="#4A3428"/></svg>` },
+    { en: "Egg", es: "Huevo", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="10" ry="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="24" r="5" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Milk", es: "Leche", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 h12 v6 l4 4 v16 a2 2 0 0 1 -2 2 H12 a2 2 0 0 1 -2 -2 V18 l4 -4 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Butter", es: "Mantequilla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="14" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><line x1="8" y1="20" x2="32" y2="20" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Banana", es: "Plátano", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M12 8 C10 16 10 26 16 32 C22 36 30 32 30 26 C24 30 16 26 14 18 C13 13 13 9 16 6 C14 6 13 7 12 8 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Chocolate Chips", es: "Chispas de Chocolate", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="13" cy="13" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="24" cy="11" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="18" cy="21" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="28" cy="24" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="10" cy="26" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Vanilla", es: "Vainilla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="15" y="6" width="10" height="6" rx="2" fill="#4A3428"/><path d="M13 12 h14 l2 4 v16 a2 2 0 0 1 -2 2 H13 a2 2 0 0 1 -2 -2 V16 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Baking Powder", es: "Polvo de Hornear", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="12" y="10" width="16" height="22" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="6" width="12" height="6" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Cinnamon", es: "Canela", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="8" rx="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><circle cx="10" cy="20" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="30" cy="20" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Frosting", es: "Glaseado", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 30 Q10 30 10 24 Q10 18 16 18 Q14 12 20 12 Q26 12 24 18 Q30 18 30 24 Q30 30 26 30 Z" fill="#E88FB0" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Sprinkles", es: "Chispitas", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="24" width="24" height="8" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><line x1="12" y1="16" x2="14" y2="10" stroke="#E8654A" stroke-width="2.5" stroke-linecap="round"/><line x1="19" y1="16" x2="19" y2="9" stroke="#6FA8C9" stroke-width="2.5" stroke-linecap="round"/><line x1="26" y1="16" x2="24" y2="10" stroke="#7FA684" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Honey", es: "Miel", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M12 14 h16 v14 a8 6 0 0 1 -16 0 Z" fill="#F0973D" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="8" width="12" height="6" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Cocoa", es: "Cacao", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Nuts", es: "Nueces", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="9" ry="14" fill="#C89666" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Strawberry", es: "Fresa", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 34 C10 24 8 16 14 12 C17 10 20 12 20 15 C20 12 23 10 26 12 C32 16 30 24 20 34 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 10 Q20 6 26 10" stroke="#7FA684" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="20" r="1" fill="#FBF3E1"/><circle cx="22" cy="22" r="1" fill="#FBF3E1"/><circle cx="18" cy="27" r="1" fill="#FBF3E1"/></svg>` },
+    { en: "Whipped Cream", es: "Crema Batida", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 30 Q10 30 10 24 Q10 18 16 18 Q14 12 20 12 Q26 12 24 18 Q30 18 30 24 Q30 30 26 30 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Raisins", es: "Pasas", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="14" cy="16" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="24" cy="13" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="18" cy="23" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="27" cy="24" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="10" cy="26" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/></svg>` },
+  ];
+
+  const bakeUtensils = [
+    { en: "Whisking it up!", es: "¡Batiendo!", icon: `<svg viewBox="0 0 40 40" fill="none"><line x1="20" y1="4" x2="20" y2="16" stroke="#4A3428" stroke-width="3" stroke-linecap="round"/><path d="M14 16 Q20 28 26 16 M12 16 Q20 32 28 16 M16 16 Q20 24 24 16" stroke="#4A3428" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Rolling it out!", es: "¡Estirando!", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="8" rx="4" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><rect x="2" y="18" width="6" height="4" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/><rect x="32" y="18" width="6" height="4" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Cutting shapes!", es: "¡Cortando formas!", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15" fill="none" stroke="#4A3428" stroke-width="3" stroke-linejoin="round"/></svg>` },
+    { en: "Into the oven!", es: "¡Al horno!", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 34 V20 a6 6 0 0 1 12 0 v14 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="12" y="6" width="16" height="14" rx="6" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+  ];
+
+  const bakeRecipes = [
+    { name: "Chocolate Chip Cookies", es: "Galletas con Chispas", items: [0, 1, 4, 2, 6] },
+    { name: "Birthday Cake", es: "Pastel de Cumpleaños", items: [0, 1, 4, 2, 3, 10, 11] },
+    { name: "Muffins", es: "Panquecitos", items: [0, 1, 2, 3, 8] },
+    { name: "Banana Bread", es: "Pan de Plátano", items: [0, 1, 2, 4, 5] },
+    { name: "Cinnamon Rolls", es: "Rollos de Canela", items: [0, 1, 4, 9] },
+    { name: "Brownies", es: "Brownies", items: [0, 1, 2, 4, 13] },
+    { name: "Cupcakes", es: "Cupcakes", items: [0, 1, 2, 3, 10] },
+    { name: "Honey Cake", es: "Pastel de Miel", items: [0, 1, 2, 12] },
+    { name: "Vanilla Cake", es: "Pastel de Vainilla", items: [0, 1, 2, 3, 7] },
+    { name: "Nutty Cookies", es: "Galletas con Nueces", items: [0, 1, 4, 14] },
+  ];
+
+  let bakeItems = [];
+  let selectedBakeRecipe = null;
+  let bakeLangOn = true;
+  const bakeLangToggle = document.getElementById('langToggleBake');
+  const bakeTray = document.getElementById('bakeTray');
+  const bakeContents = document.getElementById('bakeContents');
+  const bakeBtn = document.getElementById('bakeBtn');
+  const bakeAgainBtn = document.getElementById('bakeAgainBtn');
+  const bakeReadyBanner = document.getElementById('bakeReadyBanner');
+  const bakeOvenSvg = document.getElementById('bakeOvenSvg');
+  const bakeRecipeRow = document.getElementById('bakeRecipeRow');
+  const bakeUtensilRow = document.getElementById('bakeUtensilRow');
+  const bakeSubtitle = document.getElementById('bakeSubtitle');
+
+  bakeLangToggle.addEventListener('click', () => {
+    bakeLangOn = !bakeLangOn;
+    bakeLangToggle.classList.toggle('on', bakeLangOn);
+  });
+
+  function renderBakeRecipeRow() {
+    bakeRecipeRow.innerHTML = bakeRecipes.map((r, i) => `
+      <div class="recipe-chip ${selectedBakeRecipe === i ? 'active' : ''}" data-i="${i}">${r.name}</div>
+    `).join('');
+    bakeRecipeRow.querySelectorAll('.recipe-chip').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        selectedBakeRecipe = selectedBakeRecipe === i ? null : i;
+        if (selectedBakeRecipe !== null) {
+          const r = bakeRecipes[i];
+          bakeSubtitle.textContent = `Baking: ${r.name} 🍰`;
+          window.speechSynthesis.cancel();
+          speak(r.name, "en-US");
+          if (bakeLangOn) speak(r.es, "es-MX");
+        } else {
+          bakeSubtitle.textContent = "Tap ingredients to add them to the bowl";
+        }
+        renderBakeRecipeRow();
+        renderBakeTray();
+      });
+    });
+  }
+
+  function renderBakeTray() {
+    const suggested = selectedBakeRecipe !== null ? bakeRecipes[selectedBakeRecipe].items : [];
+    bakeTray.innerHTML = bakeIngredients.map((ing, i) => {
+      const count = bakeItems.filter(x => x === i).length;
+      return `<div class="cook-ingredient ${suggested.includes(i) ? 'suggested' : ''}" data-i="${i}">${ing.icon}${count > 0 ? `<span class="ing-count">${count}</span>` : ''}</div>`;
+    }).join('');
+    bakeTray.querySelectorAll('.cook-ingredient').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        bakeItems.push(i);
+        const ing = bakeIngredients[i];
+        window.speechSynthesis.cancel();
+        speak(ing.en, "en-US");
+        if (bakeLangOn) speak(ing.es, "es-MX");
+        renderBakeBowl();
+        renderBakeTray();
+        bakeBtn.disabled = bakeItems.length === 0;
+      });
+    });
+  }
+
+  function renderBakeBowl() {
+    bakeContents.innerHTML = bakeItems.map((ingIndex, idx) => `
+      <div class="pot-chip" data-idx="${idx}">${bakeIngredients[ingIndex].icon}</div>
+    `).join('');
+    bakeContents.querySelectorAll('.pot-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const idx = parseInt(chip.getAttribute('data-idx'));
+        bakeItems.splice(idx, 1);
+        renderBakeBowl();
+        renderBakeTray();
+        bakeBtn.disabled = bakeItems.length === 0;
+      });
+    });
+  }
+
+  function renderBakeUtensils() {
+    bakeUtensilRow.innerHTML = bakeUtensils.map((u, i) => `<div class="utensil-btn" data-i="${i}">${u.icon}</div>`).join('');
+    bakeUtensilRow.querySelectorAll('.utensil-btn').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        const u = bakeUtensils[i];
+        bakeOvenSvg.classList.add('pot-stirring');
+        window.speechSynthesis.cancel();
+        speak(u.en, "en-US");
+        if (bakeLangOn) speak(u.es, "es-MX");
+        triggerCookEffect(document.getElementById('bakeOvenWrap'));
+        setTimeout(() => bakeOvenSvg.classList.remove('pot-stirring'), 600);
+      });
+    });
+  }
+
+  bakeBtn.addEventListener('click', () => {
+    bakeOvenSvg.classList.add('pot-stirring');
+    window.speechSynthesis.cancel();
+    speak("Baking it up!", "en-US");
+    setTimeout(() => {
+      bakeOvenSvg.classList.remove('pot-stirring');
+      bakeReadyBanner.classList.add('show');
+      bakeBtn.style.display = 'none';
+      bakeAgainBtn.style.display = '';
+      window.speechSynthesis.cancel();
+      speak("Yum! Your bake is ready!", "en-US");
+      if (bakeLangOn) speak("¡Delicioso! Tu postre está listo!", "es-MX");
+      triggerCookEffect(document.getElementById('bakeOvenWrap'));
+    }, 1400);
+  });
+
+  bakeAgainBtn.addEventListener('click', setupBakeGame);
+
+  function setupBakeGame() {
+    bakeItems = [];
+    selectedBakeRecipe = null;
+    bakeSubtitle.textContent = "Tap ingredients to add them to the bowl";
+    bakeContents.innerHTML = '';
+    bakeReadyBanner.classList.remove('show');
+    bakeAgainBtn.style.display = 'none';
+    bakeBtn.style.display = '';
+    bakeBtn.disabled = true;
+    renderBakeRecipeRow();
+    renderBakeUtensils();
+    renderBakeTray();
+  }
+  setupBakeGame();
 
   /* ---------- MY WEEK ---------- */
   const schoolIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
