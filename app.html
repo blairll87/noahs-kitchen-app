@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Noah's Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF8EA;
+    --butter: #F5C451;
+    --tomato: #E8654A;
+    --sage: #7FA684;
+    --sage-deep: #5E8564;
+    --cocoa: #4A3428;
+    --sky: #6FA8C9;
+    --sky-deep: #4E86A6;
+    --paper: #FFFFFF;
+    --shadow: rgba(74, 52, 40, 0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 90% 8%, rgba(245, 196, 81, 0.35) 0%, transparent 45%),
+      radial-gradient(circle at 8% 92%, rgba(111, 168, 201, 0.25) 0%, transparent 40%);
+    color: var(--cocoa);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+
+  .app { width: 100%; max-width: 460px; padding: 20px 14px 60px; }
+
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- Shared header ---- */
+  .header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .header svg.badge-icon { width: 52px; height: 52px; flex-shrink: 0; cursor: pointer; }
+  .greeting { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 22px; line-height: 1.1; color: var(--cocoa); }
+  .greeting .sub { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; color: #9C8E7F; margin-top: 2px; }
+
+  .day-badge {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
+    background: var(--tomato); color: white; font-family: 'Baloo 2', sans-serif;
+    font-weight: 700; font-size: 13px; padding: 4px 12px; border-radius: 100px;
+  }
+
+  /* ---- Back button ---- */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px;
+    color: var(--cocoa); background: white; border: 2px solid #E9DCC0;
+    border-radius: 100px; padding: 8px 16px 8px 12px; margin-bottom: 16px;
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .back-btn:active { transform: scale(0.96); }
+  .back-btn svg { width: 18px; height: 18px; }
+
+  /* ---- Card shell ---- */
+  .card {
+    background: var(--paper); border-radius: 28px; padding: 24px 20px 22px;
+    box-shadow: 0 10px 30px var(--shadow); border: 3px solid var(--cocoa);
+    position: relative; overflow: hidden; margin-bottom: 16px;
+  }
+  .card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    background: repeating-linear-gradient(90deg, var(--tomato) 0px, var(--tomato) 18px,
+      var(--butter) 18px, var(--butter) 36px, var(--sage) 36px, var(--sage) 54px,
+      var(--sky) 54px, var(--sky) 72px);
+  }
+  .card-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 8px; margin-bottom: 4px; }
+  .card-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 22px; color: var(--tomato); }
+  .card-sub { font-size: 12.5px; font-weight: 700; color: #9C8E7F; margin-bottom: 16px; }
+
+  .progress-badge {
+    background: var(--butter); border: 2.5px solid var(--cocoa); border-radius: 14px;
+    padding: 6px 10px; text-align: center; font-family: 'Baloo 2', sans-serif; flex-shrink: 0;
+  }
+  .progress-badge .num { font-size: 20px; font-weight: 800; line-height: 1; color: var(--cocoa); }
+  .progress-badge .label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--cocoa); opacity: 0.75; }
+
+  .section-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--sage-deep); margin-bottom: 10px; }
+
+  /* ---- Ingredients ---- */
+  .ingredients { display: flex; gap: 10px; margin-bottom: 22px; }
+  .ingredient { flex: 1; background: #FBF3E1; border: 2px solid #E9DCC0; border-radius: 16px; padding: 10px 6px 8px; text-align: center; }
+  .ingredient svg { width: 34px; height: 34px; }
+  .ingredient span { display: block; font-size: 11px; font-weight: 700; margin-top: 4px; color: var(--cocoa); }
+
+  /* ---- Steps ---- */
+  .steps { display: flex; flex-direction: column; gap: 10px; }
+  .step {
+    display: flex; align-items: center; gap: 12px; background: #FBF6EA;
+    border: 2.5px solid #E9DCC0; border-radius: 18px; padding: 10px 12px; cursor: pointer;
+    transition: transform 0.12s ease, background 0.25s ease, border-color 0.25s ease;
+    user-select: none; -webkit-tap-highlight-color: transparent; position: relative;
+  }
+  .step:active { transform: scale(0.97); }
+  .step.done { background: #E9F2E7; border-color: var(--sage); }
+  .step-num {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: white;
+    background: var(--sky); width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.25s ease;
+  }
+  .step.done .step-num { background: var(--sage-deep); }
+  .step-icon { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+  .step-icon svg { width: 100%; height: 100%; }
+  .step-text { flex: 1; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 16px; color: var(--cocoa); }
+  .step-text .es { display: block; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11.5px; font-style: italic; color: var(--sky-deep); margin-top: 1px; }
+  .step-check {
+    width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid #D8C9A8; background: white;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease;
+  }
+  .step.done .step-check { background: var(--sage-deep); border-color: var(--sage-deep); }
+  .step-check svg { width: 16px; height: 16px; opacity: 0; transform: scale(0.5); transition: all 0.2s ease; }
+  .step.done .step-check svg { opacity: 1; transform: scale(1); }
+
+  .then-footer {
+    margin-top: 20px; display: flex; align-items: center; gap: 12px; background: var(--sky);
+    border-radius: 18px; padding: 12px 16px; color: white;
+  }
+  .then-footer svg { width: 34px; height: 34px; flex-shrink: 0; }
+  .then-footer .then-text { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; line-height: 1.25; }
+  .then-footer .then-text b { font-size: 16px; }
+
+  .all-done {
+    display: none; margin-top: 16px; text-align: center; background: var(--butter);
+    border: 2.5px solid var(--cocoa); border-radius: 18px; padding: 14px;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 16px; color: var(--cocoa);
+  }
+  .all-done.show { display: block; }
+
+  /* ---- Cook animation ---- */
+  @keyframes iconPop { 0% { transform: scale(1) rotate(0deg); } 35% { transform: scale(1.3) rotate(-8deg); } 60% { transform: scale(0.9) rotate(5deg); } 100% { transform: scale(1) rotate(0deg); } }
+  .step.just-done .step-icon { animation: iconPop 0.55s ease; }
+  @keyframes checkPop { 0% { transform: scale(0.4) rotate(-15deg); opacity: 0; } 60% { transform: scale(1.25) rotate(6deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+  .step.just-done .step-check svg { animation: checkPop 0.4s ease; }
+  @keyframes stepFlash { 0% { background: #FCEFC7; } 100% { background: #E9F2E7; } }
+  .step.just-done { animation: stepFlash 0.6s ease; }
+  .steam-wisp {
+    position: absolute; bottom: 50%; left: 50%; width: 7px; height: 7px; border-radius: 50%;
+    pointer-events: none; opacity: 0; animation: steamRise 0.85s ease-out forwards;
+  }
+  @keyframes steamRise { 0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translate(-50%, -34px) scale(1.4); opacity: 0; } }
+
+  /* ---- Let's Cook game ---- */
+  .cook-pot-wrap { position: relative; width: 220px; height: 150px; margin: 10px auto 20px; }
+  .cook-pot-svg { width: 100%; height: 100%; transition: transform 0.1s ease; }
+  .cook-pot-svg.pot-stirring { animation: potShake 0.4s ease infinite; }
+  @keyframes potShake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+  .pot-contents {
+    position: absolute; top: 44%; left: 14%; width: 72%; height: 44%;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3px; padding: 4px;
+    overflow-y: auto;
+  }
+  .pot-chip {
+    width: 24px; height: 24px; flex-shrink: 0; animation: iconPop 0.4s ease; cursor: pointer;
+    transition: transform 0.1s ease; border-radius: 6px;
+  }
+  .pot-chip:active { transform: scale(0.85); }
+
+  /* ---- Recipe picker ---- */
+  .chip-scroll-row {
+    display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .chip-scroll-row::-webkit-scrollbar { display: none; }
+  .recipe-chip {
+    flex: 0 0 auto; background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 100px;
+    padding: 8px 14px; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa);
+    cursor: pointer; white-space: nowrap; transition: all 0.15s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .recipe-chip.active { background: var(--butter); border-color: var(--cocoa); }
+
+  /* ---- Utensils ---- */
+  .utensil-row { display: flex; gap: 10px; justify-content: center; margin: 4px 0 18px; }
+  .utensil-btn {
+    width: 52px; height: 52px; border-radius: 14px; background: #E6F1F7; border: 2.5px solid var(--sky);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .utensil-btn svg { width: 30px; height: 30px; }
+  .utensil-btn:active { transform: scale(0.9) rotate(-8deg); }
+
+  /* ---- Ingredients ---- */
+  .cook-tray { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 4px 0 18px; }
+  .cook-ingredient {
+    width: 56px; height: 56px; border-radius: 14px; background: #FBF3E1; border: 2.5px solid #E9DCC0;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;
+    transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .cook-ingredient svg { width: 32px; height: 32px; }
+  .cook-ingredient:active { transform: scale(0.92); }
+  .cook-ingredient.suggested { border-color: var(--butter); box-shadow: 0 0 0 3px rgba(245, 196, 81, 0.4); }
+  .ing-count {
+    position: absolute; top: -6px; right: -6px; background: var(--tomato); color: white;
+    width: 20px; height: 20px; border-radius: 50%; font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: 11px; display: flex; align-items: center; justify-content: center; border: 2px solid white;
+  }
+
+  .cook-btn, .cook-again-btn {
+    width: 100%; border: 3px solid var(--cocoa); border-radius: 16px; padding: 14px;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; color: white;
+  }
+  .cook-btn { background: var(--tomato); }
+  .cook-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .cook-again-btn { background: var(--sage-deep); margin-top: 10px; }
+  .ready-banner {
+    display: none; text-align: center; background: var(--butter); border: 2.5px solid var(--cocoa);
+    border-radius: 16px; padding: 14px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px;
+    color: var(--cocoa); margin: 14px 0;
+  }
+  .ready-banner.show { display: block; animation: fadeIn 0.3s ease; }
+
+  /* ---- Kitchen Crew (pets) ---- */
+  .pet-tabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+  .pet-tab {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 16px;
+    border-radius: 16px; background: #FBF3E1; border: 2.5px solid #E9DCC0; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent; transition: all 0.15s ease;
+  }
+  .pet-tab.active { background: var(--butter); border-color: var(--cocoa); }
+  .pet-tab .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--cocoa); }
+  .pet-tab span { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+
+  .pet-stage-wrap { position: relative; width: 190px; height: 190px; margin: 6px auto 10px; }
+  .pet-stage-svg { width: 100%; height: 100%; transition: transform 0.1s ease; }
+  .pet-stage-svg.pet-eating { animation: petSquish 0.4s ease; }
+  .pet-stage-svg.pet-happy { animation: petBounce 0.55s ease; }
+  @keyframes petSquish { 0% { transform: scale(1); } 30% { transform: scale(1.1, 0.9); } 60% { transform: scale(0.95, 1.05); } 100% { transform: scale(1); } }
+  @keyframes petBounce { 0%, 100% { transform: translateY(0) rotate(0deg); } 30% { transform: translateY(-14px) rotate(-4deg); } 60% { transform: translateY(0) rotate(4deg); } 80% { transform: translateY(-6px) rotate(0deg); } }
+
+  .pet-blurb { text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; color: var(--cocoa); margin-bottom: 3px; }
+  .pet-favorite { text-align: center; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px; color: var(--sage-deep); margin-bottom: 14px; }
+
+  .pet-play-btn {
+    display: block; margin: 0 auto 18px; background: var(--sky); color: white; border: 3px solid var(--cocoa);
+    border-radius: 100px; padding: 10px 24px; font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: 14px; cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .pet-play-btn:active { transform: scale(0.95); }
+
+  .dance-pet { width: 44px; height: 44px; margin: 8px auto 0; }
+  .dance-pet svg { width: 100%; height: 100%; animation: petBounce 0.6s ease infinite; }
+
+  /* ---- Spanish toggle ---- */
+  .lang-toggle {
+    display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; background: white;
+    border: 2px solid #E9DCC0; border-radius: 100px; padding: 4px 10px 4px 4px; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .lang-toggle .switch { width: 34px; height: 20px; border-radius: 100px; background: #D8C9A8; position: relative; transition: background 0.2s ease; flex-shrink: 0; }
+  .lang-toggle .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; transition: transform 0.2s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  .lang-toggle.on .switch { background: var(--sky); }
+  .lang-toggle.on .switch::after { transform: translateX(14px); }
+  .lang-toggle .label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+
+  /* ---- Day counter & week tally ---- */
+  .day-counter {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--butter); border: 2px solid var(--cocoa);
+    border-radius: 100px; padding: 5px 14px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 13px;
+    color: var(--cocoa); margin-bottom: 14px;
+  }
+  .week-tally { display: flex; gap: 10px; margin-bottom: 14px; }
+  .tally-chip {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; background: #E9F2E7;
+    border: 2px solid var(--sage); border-radius: 14px; padding: 9px; font-family: 'Baloo 2', sans-serif;
+    font-weight: 700; font-size: 13px; color: var(--sage-deep);
+  }
+  .tally-chip.home-tally { background: #E6F1F7; border-color: var(--sky); color: var(--sky-deep); }
+
+  /* ---- Past day styling ---- */
+  .week-row.is-past { opacity: 0.5; }
+  .week-row .day-letter { position: relative; }
+  .week-row.is-past .day-letter::after {
+    content: "✓"; position: absolute; bottom: -3px; right: -3px; width: 15px; height: 15px; border-radius: 50%;
+    background: white; border: 1.5px solid var(--sage-deep); color: var(--sage-deep); font-size: 9px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .carousel-card.is-past { opacity: 0.55; }
+
+  .carousel-wrap { position: relative; margin: 0 -4px; }
+  .carousel {
+    display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding: 4px 4px 10px; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+  .carousel-card {
+    scroll-snap-align: center; flex: 0 0 30%; text-align: center; background: #FBF3E1;
+    border: 2px solid #E9DCC0; border-radius: 16px; padding: 12px 6px; cursor: pointer;
+    transition: transform 0.15s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+  .carousel-card:active { transform: scale(0.96); }
+  .carousel-card .day-icon { width: 32px; height: 32px; margin: 0 auto 4px; }
+  .carousel-card .day-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+  .carousel-card.is-today { background: var(--butter); border-color: var(--cocoa); box-shadow: 0 6px 16px rgba(245, 196, 81, 0.5); }
+  .today-flag {
+    position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--tomato);
+    color: white; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 9px;
+    letter-spacing: 0.5px; padding: 3px 10px; border-radius: 100px; white-space: nowrap;
+  }
+  .swipe-hint { text-align: center; font-size: 11px; font-weight: 700; color: #B3A489; margin-top: 2px; }
+
+  /* ---- Week list ---- */
+  .week-list { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .week-row {
+    display: flex; align-items: center; gap: 12px; background: #FBF6EA; border: 2.5px solid #E9DCC0;
+    border-radius: 16px; padding: 10px 12px; border-left: 8px solid var(--sage); cursor: pointer;
+    transition: transform 0.12s ease, background 0.2s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .week-row:active { transform: scale(0.98); }
+  .week-row.home-day { border-left-color: var(--sky); }
+  .week-row.is-today { background: #FCEFC7; border-color: var(--cocoa); }
+  .day-letter {
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: white;
+    background: var(--sage-deep); width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .home-day .day-letter { background: var(--sky-deep); }
+  .row-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 15px; color: var(--cocoa); flex: 1; }
+  .row-name .es { display: block; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; font-style: italic; color: var(--sky-deep); }
+  .row-tag {
+    display: flex; align-items: center; gap: 6px; font-family: 'Baloo 2', sans-serif; font-weight: 700;
+    font-size: 12px; color: var(--sage-deep); background: #E9F2E7; padding: 5px 10px; border-radius: 100px; flex-shrink: 0;
+  }
+  .home-day .row-tag { color: var(--sky-deep); background: #E6F1F7; }
+  .row-tag svg { width: 16px; height: 16px; }
+
+  /* ---- Home screen stations (all equal size) ---- */
+  .stations-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 4px;
+  }
+  .stations-grid .station:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .station {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+    background: var(--paper); border: 3px solid var(--cocoa); border-radius: 22px; padding: 18px 10px;
+    box-shadow: 0 8px 20px var(--shadow); cursor: pointer; transition: transform 0.12s ease;
+    user-select: none; -webkit-tap-highlight-color: transparent; position: relative;
+  }
+  .station:active { transform: scale(0.96); }
+  .station .icon-wrap {
+    width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .station svg { width: 34px; height: 34px; }
+  .station .station-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: var(--cocoa); line-height: 1.15; }
+  .station .station-sub { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; color: #9C8E7F; }
+  .station.dimmed { opacity: 0.72; }
+  .soon-tag {
+    position: absolute; top: -8px; right: -6px; background: var(--tomato); color: white;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 8px; padding: 3px 6px; border-radius: 100px;
+  }
+  .soon-toast {
+    display: none; text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px;
+    color: var(--cocoa); background: var(--butter); border: 2px solid var(--cocoa); border-radius: 14px;
+    padding: 10px; margin-top: 14px;
+  }
+  .soon-toast.show { display: block; animation: fadeIn 0.2s ease; }
+
+  /* ---- Placeholder note ---- */
+  .placeholder-note {
+    display: flex; align-items: center; gap: 8px; background: #FCEFC7; border: 2px solid var(--butter);
+    border-radius: 14px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; font-weight: 700; color: var(--cocoa);
+  }
+
+  /* ---- Scene cards (Get Ready for School) ---- */
+  .scene-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .scene-card {
+    background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 18px; padding: 14px 8px; text-align: center;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .scene-card:active { transform: scale(0.96); }
+  .scene-card svg { width: 36px; height: 36px; margin-bottom: 6px; }
+  .scene-card .scene-title { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--cocoa); }
+
+  /* ---- Word cards (Kitchen Words) ---- */
+  .word-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .word-card {
+    background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 18px; padding: 14px 8px; text-align: center;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .word-card:active { transform: scale(0.96); }
+  .word-card svg { width: 32px; height: 32px; margin-bottom: 6px; }
+  .word-card .word-en { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13.5px; color: var(--cocoa); }
+  .word-card .word-es { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11.5px; font-style: italic; color: var(--sky-deep); }
+  .word-card.add-card {
+    background: #E9F2E7; border: 2.5px dashed var(--sage); display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .word-card.add-card .plus { font-size: 26px; color: var(--sage-deep); font-weight: 800; line-height: 1; }
+
+  .add-word-form { display: none; margin-top: 14px; background: #FBF6EA; border: 2px solid #E9DCC0; border-radius: 16px; padding: 14px; }
+  .add-word-form.show { display: block; animation: fadeIn 0.2s ease; }
+  .add-word-form label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12px; color: var(--sage-deep); display: block; margin-bottom: 4px; margin-top: 8px; }
+  .add-word-form input {
+    width: 100%; border: 2px solid #E9DCC0; border-radius: 10px; padding: 8px 10px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 14px; color: var(--cocoa); background: white;
+  }
+  .add-word-form .save-btn {
+    margin-top: 12px; width: 100%; background: var(--sage-deep); color: white; border: none; border-radius: 12px;
+    padding: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+
+  /* ---- Practice games ---- */
+  .game-card { margin-bottom: 16px; }
+
+  .card-title-row-game { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; }
+  .card-title-row-game .card-title { margin-top: 0; }
+  .speak-btn {
+    flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--sky);
+    border: 2px solid var(--cocoa); color: white; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: transform 0.12s ease;
+  }
+  .speak-btn:active { transform: scale(0.9); }
+
+  /* ---- School Day or Home Day game ---- */
+  .sh-day { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 6px 0 18px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .sh-day .sh-icon-box { width: 72px; height: 72px; border-radius: 20px; background: #FBF3E1; border: 2.5px solid #E9DCC0; display: flex; align-items: center; justify-content: center; }
+  .sh-day .sh-icon-box svg { width: 44px; height: 44px; }
+  .sh-day .sh-label { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 17px; color: var(--cocoa); }
+  .sh-choices { display: flex; gap: 12px; justify-content: center; }
+  .sh-choice {
+    flex: 1; max-width: 150px; text-align: center; padding: 14px 8px; border-radius: 16px; background: white;
+    border: 3px solid var(--cocoa); font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .sh-choice:active { transform: scale(0.95); }
+  .sh-choice.correct { background: #E9F2E7; border-color: var(--sage-deep); }
+  .sh-choice.wrong { background: #FCEFEA; border-color: var(--tomato); }
+
+  /* ---- Before & After game ---- */
+  .ba-ref { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 6px 0 16px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .ba-icon-box { width: 58px; height: 58px; border-radius: 16px; background: var(--butter); border: 2.5px solid var(--cocoa); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ba-icon-box svg { width: 34px; height: 34px; }
+  .ba-icon-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); text-align: center; }
+  .ba-choices { display: flex; gap: 12px; justify-content: center; }
+  .ba-choice {
+    flex: 1; max-width: 150px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: #FBF6EA; border: 2.5px solid #E9DCC0; border-radius: 16px; padding: 12px 8px;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .ba-choice:active { transform: scale(0.96); }
+  .ba-choice.correct { background: #E9F2E7; border-color: var(--sage-deep); }
+  .ba-choice.wrong { background: #FCEFEA; border-color: var(--tomato); }
+
+  .order-tray { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .order-chip {
+    background: #FBF3E1; border: 2.5px solid #E9DCC0; border-radius: 14px; padding: 8px 10px; display: flex;
+    align-items: center; gap: 6px; cursor: pointer; transition: all 0.15s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .order-chip svg { width: 26px; height: 26px; }
+  .order-chip span { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+  .order-chip.placed { opacity: 0.35; pointer-events: none; }
+  .order-slots { display: flex; gap: 6px; margin-bottom: 8px; }
+  .order-slot {
+    flex: 1; aspect-ratio: 1; background: #FBF6EA; border: 2.5px dashed #D8C9A8; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .order-slot .num { position: absolute; top: 2px; left: 5px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 10px; color: #B3A489; }
+  .order-slot svg { width: 26px; height: 26px; }
+  .order-slot.filled { border-style: solid; border-color: var(--sage); background: #E9F2E7; }
+  .game-feedback { text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--sage-deep); min-height: 18px; }
+
+  .pattern-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin-bottom: 16px; }
+  .pattern-chip { width: 52px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .pattern-chip .chip-box { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #FBF3E1; border: 2.5px solid #E9DCC0; }
+  .pattern-chip .chip-box svg { width: 28px; height: 28px; }
+  .pattern-chip .chip-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 11px; color: var(--cocoa); }
+  .pattern-chip.blank .chip-box { border: 2.5px dashed var(--tomato); background: #FCEFEA; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 20px; color: var(--tomato); }
+  .pattern-chip.blank .chip-label { color: var(--tomato); }
+  .pattern-choices { display: flex; gap: 12px; justify-content: center; }
+  .pattern-choice {
+    width: 60px; height: 60px; border-radius: 16px; background: white; border: 3px solid var(--cocoa);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.12s ease;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .pattern-choice:active { transform: scale(0.93); }
+  .pattern-choice svg { width: 34px; height: 34px; }
+  .pattern-choice.correct { background: #E9F2E7; border-color: var(--sage-deep); }
+  .pattern-choice.wrong { background: #FCEFEA; border-color: var(--tomato); }
+
+  /* ---- Parent panel ---- */
+  .parent-list { display: flex; flex-direction: column; gap: 10px; }
+  .parent-row {
+    display: flex; align-items: center; justify-content: space-between; background: var(--paper);
+    border: 2.5px solid #E9DCC0; border-radius: 16px; padding: 14px 16px; cursor: pointer;
+    transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .parent-row:active { transform: scale(0.98); }
+  .parent-row .p-title { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 15px; color: var(--cocoa); }
+  .parent-row .p-sub { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11.5px; color: #9C8E7F; }
+  .parent-row .chevron { color: #B3A489; font-size: 18px; }
+
+  .edit-row {
+    display: flex; align-items: center; gap: 8px; background: #FBF6EA; border: 2px solid #E9DCC0;
+    border-radius: 14px; padding: 10px; margin-bottom: 8px;
+  }
+  .edit-row input {
+    flex: 1; border: 1.5px solid #E9DCC0; border-radius: 8px; padding: 6px 8px; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 13px; color: var(--cocoa); background: white; min-width: 0;
+  }
+  .edit-row .remove-btn {
+    background: #FCEFEA; color: var(--tomato); border: none; border-radius: 8px; width: 28px; height: 28px;
+    font-weight: 800; cursor: pointer; flex-shrink: 0;
+  }
+  .add-row-btn {
+    width: 100%; background: #E9F2E7; color: var(--sage-deep); border: 2px dashed var(--sage); border-radius: 12px;
+    padding: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 4px;
+  }
+  .day-toggle-row {
+    display: flex; align-items: center; justify-content: space-between; background: #FBF6EA; border: 2px solid #E9DCC0;
+    border-radius: 14px; padding: 10px 14px; margin-bottom: 8px;
+  }
+  .day-toggle-row .dt-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; color: var(--cocoa); }
+  .type-pill-group { display: flex; gap: 6px; }
+  .type-pill {
+    font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 11px; padding: 6px 12px; border-radius: 100px;
+    border: 2px solid #E9DCC0; background: white; color: #9C8E7F; cursor: pointer;
+  }
+  .type-pill.active-school { background: var(--sage); border-color: var(--sage-deep); color: white; }
+  .type-pill.active-home { background: var(--sky); border-color: var(--sky-deep); color: white; }
+  .saved-toast {
+    display: none; text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px;
+    color: white; background: var(--sage-deep); border-radius: 14px; padding: 10px; margin-top: 12px;
+  }
+  .saved-toast.show { display: block; animation: fadeIn 0.2s ease; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ HOME VIEW ============ -->
+  <div class="view active" id="view-home">
+    <div class="header">
+      <svg class="badge-icon" id="sunIcon" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="15" fill="#F5C451" stroke="#4A3428" stroke-width="3"/>
+        <g stroke="#4A3428" stroke-width="3" stroke-linecap="round">
+          <line x1="32" y1="4" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="60"/>
+          <line x1="4" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="60" y2="32"/>
+          <line x1="12" y1="12" x2="17.5" y2="17.5"/><line x1="46.5" y1="46.5" x2="52" y2="52"/>
+          <line x1="12" y1="52" x2="17.5" y2="46.5"/><line x1="46.5" y1="17.5" x2="52" y2="12"/>
+        </g>
+      </svg>
+      <div>
+        <div class="greeting" id="homeGreeting">Good morning, Noah!</div>
+        <div class="day-badge" id="dayBadge">🏫 SCHOOL DAY — TUESDAY</div>
+      </div>
+    </div>
+
+    <div class="stations-grid">
+      <div class="station" data-goto="view-day">
+        <div class="icon-wrap" id="dayStationIconWrap" style="background:#FCEFC7">
+          <svg id="dayStationIcon" viewBox="0 0 40 40" fill="none"><path d="M8 20 a12 12 0 0 1 24 0 v6 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="27" width="28" height="4" rx="2" fill="#4A3428"/><line x1="20" y1="6" x2="20" y2="2" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title" id="dayStationTitle">My Day</div>
+        <div class="station-sub" id="dayStationSub">What's cooking today</div>
+      </div>
+      <div class="station" data-goto="view-week">
+        <div class="icon-wrap" style="background:#E6F1F7">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="26" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="8" y="8" width="24" height="7" rx="3" fill="#4A3428"/><line x1="13" y1="21" x2="27" y2="21" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="27" x2="27" y2="27" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title">This Week</div>
+        <div class="station-sub">See the week</div>
+      </div>
+      <div class="station" data-goto="view-school">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/></svg>
+        </div>
+        <div class="station-title">Get Ready<br>for School</div>
+        <div class="station-sub">Before we go</div>
+      </div>
+      <div class="station" data-goto="view-words">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M20 7 A13 13 0 0 1 20 33" stroke="#4A3428" stroke-width="2" fill="none"/></svg>
+        </div>
+        <div class="station-title">Kitchen Words</div>
+        <div class="station-sub">Spanish words</div>
+      </div>
+      <div class="station" data-goto="view-practice">
+        <div class="icon-wrap" style="background:#FCEFEA">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="12" height="12" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="22" y="6" width="12" height="12" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/><rect x="6" y="22" width="12" height="12" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="22" y="22" width="12" height="12" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>
+        </div>
+        <div class="station-title">Practice</div>
+        <div class="station-sub">Play and learn</div>
+      </div>
+      <div class="station" data-goto="view-extra">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M20 12 L22 18 L28 18 L23 22 L25 28 L20 24 L15 28 L17 22 L12 18 L18 18 Z" fill="#E8654A" stroke="#4A3428" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="station-title">Extra Practice</div>
+        <div class="station-sub">Sounds &amp; more, any day</div>
+      </div>
+      <div class="station" data-goto="view-let-cook">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="4" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="31" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/></svg>
+        </div>
+        <div class="station-title">Let's Cook!</div>
+        <div class="station-sub">Make a pretend dish</div>
+      </div>
+      <div class="station" data-goto="view-baking">
+        <div class="icon-wrap" style="background:#FCEFEA">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="28" height="28" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="11" y="11" width="18" height="14" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="28" cy="29" r="1.5" fill="#4A3428"/></svg>
+        </div>
+        <div class="station-title">Let's Bake!</div>
+        <div class="station-sub">Sweet treats</div>
+      </div>
+      <div class="station" data-goto="view-pets">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="14" ry="12" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="7" width="12" height="4" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><ellipse cx="20" cy="6" rx="7" ry="5" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="15" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="25" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="15" cy="23" r="1.3" fill="#4A3428"/><circle cx="25" cy="23" r="1.3" fill="#4A3428"/></svg>
+        </div>
+        <div class="station-title">Kitchen Crew</div>
+        <div class="station-sub">Feed &amp; play</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MY DAY VIEW ============ -->
+  <div class="view" id="view-day">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleDay">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title-row">
+        <div>
+          <div class="card-title" id="dayCardTitle">Noah's Morning Recipe</div>
+          <div class="card-sub" id="dayCardSub">Makes: 1 ready-for-school kid</div>
+        </div>
+        <div class="progress-badge"><div class="num" id="progressNum">0/5</div><div class="label">steps done</div></div>
+      </div>
+
+      <div id="ingredientsSection">
+        <div class="section-label">You'll need</div>
+        <div class="ingredients" id="ingredientsList"></div>
+      </div>
+
+      <div class="section-label" id="stepsSectionLabel">Steps</div>
+      <div class="steps" id="stepsList"></div>
+
+      <div class="all-done" id="allDone"><span id="allDoneText">🎉 You made it! Ready for school! 🎉</span><div class="dance-pet" id="allDoneDancePet"></div></div>
+
+      <div class="then-footer" id="dayThenFooter">
+        <svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="white" fill-opacity="0.25" stroke="white" stroke-width="2.5"/><rect x="17" y="24" width="6" height="10" fill="white"/></svg>
+        <div class="then-text" id="dayThenText">THEN...<br><b>You come back home after school! 🏠</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EXTRA PRACTICE VIEW ============ -->
+  <div class="view" id="view-extra">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleExtra">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title-row">
+        <div>
+          <div class="card-title">Extra Practice</div>
+          <div class="card-sub">Sounds, letters, numbers, shapes &amp; colors — any day!</div>
+        </div>
+        <div class="progress-badge"><div class="num" id="extraProgressNum">0/7</div><div class="label">steps done</div></div>
+      </div>
+
+      <div class="steps" id="extraStepsList"></div>
+
+      <div class="all-done" id="extraAllDone">🎉 Great practicing! 🎉</div>
+    </div>
+  </div>
+
+  <!-- ============ LET'S COOK VIEW ============ -->
+  <div class="view" id="view-let-cook">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleCook">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Let's Cook!</div>
+      <div class="card-sub" id="cookSubtitle">Tap ingredients to add them to the pot</div>
+
+      <div class="section-label">Pick a Recipe (optional)</div>
+      <div class="chip-scroll-row" id="recipeRow"></div>
+
+      <div class="cook-pot-wrap">
+        <svg class="cook-pot-svg" viewBox="0 0 200 140" fill="none">
+          <ellipse cx="100" cy="42" rx="82" ry="12" fill="#4A3428"/>
+          <rect x="18" y="42" width="164" height="80" rx="12" fill="#6FA8C9" stroke="#4A3428" stroke-width="4"/>
+          <rect x="-2" y="52" width="26" height="18" rx="9" fill="#6FA8C9" stroke="#4A3428" stroke-width="4"/>
+          <rect x="176" y="52" width="26" height="18" rx="9" fill="#6FA8C9" stroke="#4A3428" stroke-width="4"/>
+        </svg>
+        <div class="pot-contents" id="potContents"></div>
+      </div>
+
+      <div class="ready-banner" id="cookReadyBanner">🎉 Noah's Special Dish is ready! 🎉</div>
+
+      <div class="section-label">Utensils</div>
+      <div class="utensil-row" id="utensilRow"></div>
+
+      <div class="section-label">Ingredients</div>
+      <div class="cook-tray" id="cookTray"></div>
+
+      <button class="cook-btn" id="cookBtn" disabled>🔥 Cook it!</button>
+      <button class="cook-again-btn" id="cookAgainBtn" style="display:none;">🔄 Cook Again</button>
+    </div>
+  </div>
+
+  <!-- ============ LET'S BAKE VIEW ============ -->
+  <div class="view" id="view-baking">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleBake">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Let's Bake!</div>
+      <div class="card-sub" id="bakeSubtitle">Tap ingredients to add them to the bowl</div>
+
+      <div class="section-label">Pick a Recipe (optional)</div>
+      <div class="chip-scroll-row" id="bakeRecipeRow"></div>
+
+      <div class="cook-pot-wrap" id="bakeOvenWrap">
+        <svg class="cook-pot-svg" id="bakeOvenSvg" viewBox="0 0 200 160" fill="none">
+          <rect x="10" y="10" width="180" height="140" rx="14" fill="#E8654A" stroke="#4A3428" stroke-width="5"/>
+          <rect x="30" y="30" width="140" height="90" rx="8" fill="#FBF3E1" stroke="#4A3428" stroke-width="4"/>
+          <circle cx="170" cy="135" r="6" fill="#4A3428"/>
+        </svg>
+        <div class="pot-contents" id="bakeContents" style="top:22%; left:16%; width:68%; height:52%;"></div>
+      </div>
+
+      <div class="ready-banner" id="bakeReadyBanner">🎉 Noah's Yummy Bake is ready! 🎉</div>
+
+      <div class="section-label">Utensils</div>
+      <div class="utensil-row" id="bakeUtensilRow"></div>
+
+      <div class="section-label">Ingredients</div>
+      <div class="cook-tray" id="bakeTray"></div>
+
+      <button class="cook-btn" id="bakeBtn" disabled>🔥 Bake it!</button>
+      <button class="cook-again-btn" id="bakeAgainBtn" style="display:none;">🔄 Bake Again</button>
+    </div>
+  </div>
+
+  <!-- ============ KITCHEN CREW (PETS) VIEW ============ -->
+  <div class="view" id="view-pets">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langTogglePets">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Kitchen Crew</div>
+      <div class="card-sub">Feed them and give them some love!</div>
+
+      <div class="pet-tabs" id="petTabs"></div>
+
+      <div class="pet-stage-wrap">
+        <div id="petStageInner"></div>
+      </div>
+
+      <div class="pet-blurb" id="petBlurb"></div>
+      <div class="pet-favorite" id="petFavorite"></div>
+
+      <button class="pet-play-btn" id="petPlayBtn">🖐️ Pet Me!</button>
+
+      <div class="section-label">Feed</div>
+      <div class="cook-tray" id="petTray"></div>
+    </div>
+  </div>
+
+  <!-- ============ MY WEEK VIEW ============ -->
+  <div class="view" id="view-week">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langToggleWeek">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Yesterday, Today &amp; Tomorrow</div>
+      <div class="card-sub">Swipe or tap a day to hear it</div>
+      <div class="day-counter" id="dayCounter"></div>
+      <div class="carousel-wrap">
+        <div class="carousel" id="carousel"></div>
+      </div>
+      <div class="swipe-hint">← swipe →</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">The Full Week</div>
+      <div class="card-sub">Monday through Sunday</div>
+      <div class="week-tally" id="weekTally"></div>
+      <div class="week-list" id="weekList"></div>
+    </div>
+  </div>
+
+  <!-- ============ GET READY FOR SCHOOL ============ -->
+  <div class="view" id="view-school">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Here's What's Cooking at School</div>
+      <div class="card-sub">Some things that happen at school</div>
+      <div class="placeholder-note">📝 Placeholder — update this after talking with Noah's teacher</div>
+      <div class="scene-grid" id="sceneGrid"></div>
+      <div class="then-footer">
+        <svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="white" fill-opacity="0.25" stroke="white" stroke-width="2.5"/><rect x="17" y="24" width="6" height="10" fill="white"/></svg>
+        <div class="then-text">THEN...<br><b>You come back home after school! 🏠</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ KITCHEN WORDS ============ -->
+  <div class="view" id="view-words">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Kitchen Words</div>
+      <div class="card-sub">6 new words today — tap to hear them in English &amp; Spanish. New ones rotate in daily!</div>
+      <div class="word-grid" id="wordGrid"></div>
+    </div>
+  </div>
+
+  <!-- ============ PRACTICE ============ -->
+  <div class="view" id="view-practice">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="card game-card">
+      <div class="card-title-row-game">
+        <div class="card-title">Recipe Order</div>
+        <button class="speak-btn" data-instructions="recipeOrder" aria-label="Hear instructions">🔊</button>
+      </div>
+      <div class="card-sub">Tap the morning steps in the right order</div>
+      <div class="order-slots" id="orderSlots"></div>
+      <div class="order-tray" id="orderTray"></div>
+      <div class="game-feedback" id="orderFeedback"></div>
+    </div>
+
+    <div class="card game-card">
+      <div class="card-title-row-game">
+        <div class="card-title">School Day or Home Day?</div>
+        <button class="speak-btn" data-instructions="schoolHome" aria-label="Hear instructions">🔊</button>
+      </div>
+      <div class="card-sub">Tap the day to hear it, then choose School or Home</div>
+      <div class="sh-day" id="shDay"></div>
+      <div class="sh-choices" id="shChoices"></div>
+      <div class="game-feedback" id="shFeedback"></div>
+    </div>
+
+    <div class="card game-card">
+      <div class="card-title-row-game">
+        <div class="card-title">Before &amp; After</div>
+        <button class="speak-btn" data-instructions="beforeAfter" aria-label="Hear instructions">🔊</button>
+      </div>
+      <div class="card-sub" id="baPrompt">What happens next?</div>
+      <div class="ba-ref" id="baRef"></div>
+      <div class="ba-choices" id="baChoices"></div>
+      <div class="game-feedback" id="baFeedback"></div>
+    </div>
+  </div>
+
+  <!-- ============ PARENT PANEL: MENU ============ -->
+  <div class="view" id="view-parent">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Parent Panel</div>
+      <div class="card-sub">Edit what Noah sees</div>
+      <div class="parent-list">
+        <div class="parent-row" data-goto="view-parent-day">
+          <div><div class="p-title">Edit My Day steps</div><div class="p-sub">Rename, add, or remove morning steps</div></div>
+          <div class="chevron">›</div>
+        </div>
+        <div class="parent-row" data-goto="view-parent-week">
+          <div><div class="p-title">Edit Week Pattern</div><div class="p-sub">Set which days are school or home</div></div>
+          <div class="chevron">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PARENT PANEL: EDIT MY DAY ============ -->
+  <div class="view" id="view-parent-day">
+    <div class="back-btn" data-goto="view-parent">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </div>
+    <div class="card">
+      <div class="card-title">Edit My Day Steps</div>
+      <div class="card-sub">Changes show up in Noah's My Day right away</div>
+      <div id="parentDayEditRows"></div>
+      <button class="add-row-btn" id="addStepBtn">+ Add a step</button>
+      <div class="saved-toast" id="daySavedToast">Saved ✓</div>
+    </div>
+  </div>
+
+  <!-- ============ PARENT PANEL: EDIT WEEK ============ -->
+  <div class="view" id="view-parent-week">
+    <div class="back-btn" data-goto="view-parent">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </div>
+    <div class="card">
+      <div class="card-title">Edit Week Pattern</div>
+      <div class="card-sub">Set each day as a School Day or Home Day</div>
+      <div id="parentWeekEditRows"></div>
+      <div class="saved-toast show" style="margin-top:14px;">Changes apply instantly ✓</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* ---------- Navigation ---------- */
+  function goto(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    window.speechSynthesis.cancel();
+  }
+  document.querySelectorAll('[data-goto]').forEach(el => {
+    el.addEventListener('click', () => goto(el.getAttribute('data-goto')));
+  });
+
+  /* ---------- Shared speech ---------- */
+  let voicesCache = [];
+  function loadVoices() { voicesCache = window.speechSynthesis.getVoices(); }
+  if ('speechSynthesis' in window) {
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  function pickVoice(lang) {
+    if (!voicesCache.length) return null;
+    const prefix = lang.split('-')[0].toLowerCase();
+    const candidates = voicesCache.filter(v => v.lang && v.lang.toLowerCase().startsWith(prefix));
+    if (!candidates.length) return null;
+    const preferredNames = prefix === 'es'
+      ? ['google español', 'google espanol', 'paulina', 'mónica', 'monica', 'female', 'natural']
+      : ['samantha', 'google us english', 'karen', 'moira', 'fiona', 'zira', 'female', 'natural'];
+    for (const name of preferredNames) {
+      const match = candidates.find(v => v.name.toLowerCase().includes(name));
+      if (match) return match;
+    }
+    return candidates[0];
+  }
+
+  function speak(text, lang) {
+    if (!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.88;
+    u.pitch = 1.12;
+    if (lang) {
+      u.lang = lang;
+      const v = pickVoice(lang);
+      if (v) u.voice = v;
+    }
+    window.speechSynthesis.speak(u);
+  }
+
+  /* ---------- MY DAY ---------- */
+  const daySteps = [
+    { text: "Get dressed", es: "Vestirse", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { text: "Brush teeth", es: "Cepillarse los dientes", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="17" y="6" width="6" height="20" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" transform="rotate(20 20 16)"/><path d="M10 30 Q20 24 30 30" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>` },
+    { text: "Eat breakfast", es: "Desayunar", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="14" ry="6" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M6 24 C6 30 12 34 20 34 C28 34 34 30 34 24" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="6" width="3" height="10" rx="1.5" fill="#4A3428"/><rect x="21" y="6" width="3" height="10" rx="1.5" fill="#4A3428"/></svg>` },
+    { text: "Go potty", es: "Ir al baño", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="12" y="6" width="16" height="10" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M10 20 h20 a2 2 0 0 1 2 2 v2 a10 8 0 0 1 -12 8 a10 8 0 0 1 -12 -8 v-2 a2 2 0 0 1 2 -2 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { text: "Grab backpack, water bottle & lunch", es: "Agarra la mochila, el agua y el almuerzo", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="14" width="20" height="20" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M11 14 V11 a5 5 0 0 1 10 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="13" y="21" width="7" height="7" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/><path d="M29 16 Q26 20 26 24 a3 3 0 0 0 6 0 Q32 20 29 16 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2" transform="rotate(15 29 24)"/></svg>` },
+    { text: "Go to school", es: "Ir a la escuela", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+  ];
+
+  const nightSteps = [
+    { text: "Shower", es: "Ducharse", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 14 a10 6 0 0 1 20 0" stroke="#4A3428" stroke-width="2.5" fill="#6FA8C9"/><line x1="14" y1="20" x2="12" y2="26" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="20" x2="19" y2="28" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="20" x2="28" y2="26" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>` },
+    { text: "Pajamas", es: "Ponerse la pijama", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="17" cy="22" r="1.5" fill="#F5C451"/><circle cx="23" cy="26" r="1.5" fill="#F5C451"/><circle cx="20" cy="18" r="1.5" fill="#F5C451"/></svg>` },
+    { text: "Brush teeth", es: "Cepillarse los dientes", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="17" y="6" width="6" height="20" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" transform="rotate(20 20 16)"/><path d="M10 30 Q20 24 30 30" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>` },
+    { text: "Sleepy sloth drink", es: "Leche tibia", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 16 h16 v12 a8 6 0 0 1 -16 0 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><path d="M26 18 h4 a4 4 0 0 1 0 8 h-4" stroke="#4A3428" stroke-width="2" fill="none"/><path d="M14 10 q2 -4 0 -8" stroke="#4A3428" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/><path d="M20 10 q2 -4 0 -8" stroke="#4A3428" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/></svg>` },
+    { text: "Story", es: "Cuento", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 12 C16 8 10 8 6 10 V30 C10 28 16 28 20 32 C24 28 30 28 34 30 V10 C30 8 24 8 20 12 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="20" y1="12" x2="20" y2="32" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { text: "Bed", es: "Dormir", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="20" width="28" height="10" rx="2" fill="#9B7EDE" stroke="#4A3428" stroke-width="2.5"/><rect x="8" y="15" width="8" height="7" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><line x1="6" y1="30" x2="6" y2="34" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/><line x1="34" y1="30" x2="34" y2="34" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+  ];
+
+  const schoolIngredients = [
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/><rect x="16" y="19" width="8" height="8" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Backpack", es: "Mochila" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="14" y="12" width="12" height="20" rx="5" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="16" y="7" width="8" height="6" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Water Bottle", es: "Botella de Agua" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="4" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M14 14 Q16 8 20 8 Q24 8 26 14" fill="none" stroke="#4A3428" stroke-width="2.5"/><path d="M14 22 Q17 19 20 22 Q23 25 26 22" fill="none" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Dino Lunchbox", es: "Lonchera de Dinosaurio" },
+  ];
+  const nightIngredients = [
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 L8 14 L12 18 L14 16 V32 H26 V16 L28 18 L32 14 L26 8 H23 A3 3 0 0 1 17 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="20" cy="20" r="1.5" fill="#F5C451"/></svg>`, label: "Pajamas", es: "Pijama" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 16 h16 v12 a8 6 0 0 1 -16 0 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><path d="M26 18 h4 a4 4 0 0 1 0 8 h-4" stroke="#4A3428" stroke-width="2" fill="none"/></svg>`, label: "Sloth Cup", es: "Taza de Perezoso" },
+    { icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 12 C16 8 10 8 6 10 V30 C10 28 16 28 20 32 C24 28 30 28 34 30 V10 C30 8 24 8 20 12 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="20" y1="12" x2="20" y2="32" stroke="#4A3428" stroke-width="2"/></svg>`, label: "Book", es: "Libro" },
+  ];
+  function renderIngredients(list) {
+    const el = document.getElementById('ingredientsList');
+    if (!el) return;
+    el.innerHTML = list.map(item => `<div class="ingredient">${item.icon}<span>${item.label}</span></div>`).join('');
+    el.querySelectorAll('.ingredient').forEach((div, i) => {
+      div.style.cursor = 'pointer';
+      div.addEventListener('click', () => {
+        window.speechSynthesis.cancel();
+        speak(list[i].label, "en-US");
+        if (spanishOnDay) speak(list[i].es, "es-MX");
+      });
+    });
+  }
+
+  /* ---------- HOME DAY: syllables, letters, numbers ---------- */
+  function makeTextIcon(text, bg, fontSize) {
+    return `<div style="width:100%;height:100%;border-radius:10px;background:${bg};display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;font-weight:800;color:white;font-size:${fontSize || 16}px;text-align:center;line-height:1.1;">${text}</div>`;
+  }
+
+  const syllablePool = [
+    { syllable: "ma", cue: "manzana" }, { syllable: "me", cue: "medusa" }, { syllable: "mi", cue: "mitón" }, { syllable: "mo", cue: "moño" }, { syllable: "mu", cue: "murciélago" },
+    { syllable: "pa", cue: "pato" }, { syllable: "pe", cue: "pez" }, { syllable: "pi", cue: "pies" }, { syllable: "po", cue: "pollito" }, { syllable: "pu", cue: "pulpo" },
+    { syllable: "sa", cue: "sandía" }, { syllable: "se", cue: "seis" }, { syllable: "si", cue: "sirena" }, { syllable: "so", cue: "sombrilla" }, { syllable: "su", cue: "subir" },
+    { syllable: "la", cue: "lámpara" }, { syllable: "le", cue: "león" }, { syllable: "li", cue: "limón" }, { syllable: "lo", cue: "lobo" }, { syllable: "lu", cue: "luna" },
+    { syllable: "ta", cue: "taco" }, { syllable: "te", cue: "tenedor" }, { syllable: "ti", cue: "tigre" }, { syllable: "to", cue: "tortuga" }, { syllable: "tu", cue: "tucán" },
+    { syllable: "da", cue: "dados" }, { syllable: "de", cue: "detective" }, { syllable: "di", cue: "dinosaurio" }, { syllable: "do", cue: "domir" }, { syllable: "du", cue: "dulce" },
+    { syllable: "na", cue: "naranja" }, { syllable: "ne", cue: "nevera" }, { syllable: "ni", cue: "nido" }, { syllable: "no", cue: "nopal" }, { syllable: "nu", cue: "nuez" },
+    { syllable: "ba", cue: "bandera" }, { syllable: "be", cue: "bellota" }, { syllable: "bi", cue: "bigote" }, { syllable: "bo", cue: "botón" }, { syllable: "bu", cue: "búho" },
+    { syllable: "fa", cue: "faro" }, { syllable: "fe", cue: "feliz" }, { syllable: "fi", cue: "fideo" }, { syllable: "fo", cue: "foca" }, { syllable: "fu", cue: "fuego" },
+    { syllable: "ra", cue: "ratón" }, { syllable: "re", cue: "regalo" }, { syllable: "ri", cue: "rinoceronte" }, { syllable: "ro", cue: "rosa" }, { syllable: "ru", cue: "rueda" },
+    { syllable: "va", cue: "vaso" }, { syllable: "ve", cue: "vela" }, { syllable: "vi", cue: "víbora" }, { syllable: "vo", cue: "volante" }, { syllable: "vu", cue: "vuelo" },
+    { syllable: "ja", cue: "jarra" }, { syllable: "je", cue: "jengibre" }, { syllable: "ji", cue: "jirafa" }, { syllable: "jo", cue: "joya" }, { syllable: "ju", cue: "jugo" },
+  ];
+  const letterPool = [
+    { letter: "Aa", cue: "avión" }, { letter: "Ee", cue: "estrella" }, { letter: "Ii", cue: "imán" }, { letter: "Oo", cue: "oso" }, { letter: "Uu", cue: "uvas" },
+    { letter: "Bb", cue: "bandera" }, { letter: "Mm", cue: "mano" }, { letter: "Ss", cue: "sombrero" }, { letter: "Tt", cue: "tortuga" }, { letter: "Ll", cue: "luna" },
+  ];
+  const numberPool = [
+    { numeral: "1", word: "uno" }, { numeral: "2", word: "dos" }, { numeral: "3", word: "tres" }, { numeral: "4", word: "cuatro" }, { numeral: "5", word: "cinco" },
+    { numeral: "6", word: "seis" }, { numeral: "7", word: "siete" }, { numeral: "8", word: "ocho" }, { numeral: "9", word: "nueve" }, { numeral: "10", word: "diez" },
+  ];
+  const shapePool = [
+    { es: "círculo", en: "circle", icon: `<div style="width:100%;height:100%;border-radius:50%;background:#E8654A;border:3px solid #4A3428;"></div>` },
+    { es: "cuadrado", en: "square", icon: `<div style="width:70%;height:70%;margin:15%;background:#F5C451;border:3px solid #4A3428;"></div>` },
+    { es: "triángulo", en: "triangle", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,6 34,32 6,32" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { es: "estrella", en: "star", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15" fill="#9B7EDE" stroke="#4A3428" stroke-width="2" stroke-linejoin="round"/></svg>` },
+    { es: "corazón", en: "heart", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 33 C6 23 4 14 11 9 C15 6 19 8 20 13 C21 8 25 6 29 9 C36 14 34 23 20 33 Z" fill="#E88FB0" stroke="#4A3428" stroke-width="2" stroke-linejoin="round"/></svg>` },
+    { es: "óvalo", en: "oval", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="16" ry="10" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { es: "rectángulo", en: "rectangle", icon: `<div style="width:80%;height:55%;margin:22.5% 10%;background:#6FA8C9;border:3px solid #4A3428;"></div>` },
+    { es: "rombo", en: "diamond", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,4 34,20 20,36 6,20" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { es: "trapecio", en: "trapezoid", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="14,10 26,10 34,30 6,30" fill="#F0973D" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { es: "medialuna", en: "crescent", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M25 6 A16 16 0 1 0 25 34 A12 12 0 1 1 25 6 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+  ];
+  const colorPool = [
+    { es: "rojo", en: "red", hex: "#E8654A" }, { es: "anaranjado", en: "orange", hex: "#F0973D" }, { es: "amarillo", en: "yellow", hex: "#F5C451" },
+    { es: "verde", en: "green", hex: "#7FA684" }, { es: "azul", en: "blue", hex: "#6FA8C9" }, { es: "morado", en: "purple", hex: "#9B7EDE" },
+    { es: "rosado", en: "pink", hex: "#E88FB0" }, { es: "café", en: "brown", hex: "#8B5E3C" }, { es: "negro", en: "black", hex: "#3A3A3A" }, { es: "blanco", en: "white", hex: "#FFFFFF" },
+  ];
+
+  function getHomeRotation(pool, n, variant) {
+    const dayIndex = Math.floor(Date.now() / 86400000);
+    const variantShift = variant ? Math.floor(pool.length / 2) : 0;
+    const start = (dayIndex * n + variantShift) % pool.length;
+    const result = [];
+    for (let i = 0; i < n; i++) result.push(pool[(start + i) % pool.length]);
+    return result;
+  }
+
+  function getHomePracticeSteps(variant) {
+    const syl = getHomeRotation(syllablePool, 3, variant).map(s => ({
+      text: s.syllable, es: s.cue, icon: makeTextIcon(s.syllable, '#E8654A', 18), spanishOnly: true
+    }));
+    const letterItems = getHomeRotation(letterPool, 1, variant).map(l => ({
+      text: l.letter, es: l.cue, icon: makeTextIcon(l.letter, '#6FA8C9', 18), spanishOnly: true
+    }));
+    const numberItems = getHomeRotation(numberPool, 1, variant).map(n => ({
+      text: n.numeral, es: n.word, icon: makeTextIcon(n.numeral, '#7FA684', 20)
+    }));
+    const shapeItems = getHomeRotation(shapePool, 1, variant).map(s => ({
+      text: s.en, es: s.es, icon: s.icon
+    }));
+    const colorItems = getHomeRotation(colorPool, 1, variant).map(c => ({
+      text: c.en, es: c.es, icon: `<div style="width:100%;height:100%;border-radius:50%;background:${c.hex};border:3px solid #4A3428;"></div>`
+    }));
+    return [...syl, ...letterItems, ...numberItems, ...shapeItems, ...colorItems];
+  }
+
+  const stepsList = document.getElementById('stepsList');
+  const progressNum = document.getElementById('progressNum');
+  const allDone = document.getElementById('allDone');
+  const langToggleDay = document.getElementById('langToggleDay');
+  const doneSteps = new Set();
+  let spanishOnDay = true;
+  let activeSteps = daySteps;
+
+  langToggleDay.addEventListener('click', () => {
+    spanishOnDay = !spanishOnDay;
+    langToggleDay.classList.toggle('on', spanishOnDay);
+  });
+
+  function speakStepWord(step) {
+    window.speechSynthesis.cancel();
+    if (step.spanishOnly) {
+      speak(step.text, "es-MX");
+      if (spanishOnDay) speak(step.es, "es-MX");
+    } else {
+      speak(step.text, "en-US");
+      if (spanishOnDay) speak(step.es, "es-MX");
+    }
+  }
+
+  const wispColors = ["#E8654A", "#F5C451", "#7FA684", "#6FA8C9"];
+  function triggerCookEffect(iconEl) {
+    for (let i = 0; i < 5; i++) {
+      const wisp = document.createElement('div');
+      wisp.className = 'steam-wisp';
+      wisp.style.background = wispColors[i % wispColors.length];
+      wisp.style.left = (35 + Math.random() * 30) + '%';
+      wisp.style.animationDelay = (Math.random() * 0.15) + 's';
+      iconEl.appendChild(wisp);
+      setTimeout(() => wisp.remove(), 1000);
+    }
+  }
+
+  function renderDay(justDoneIndex) {
+    stepsList.innerHTML = '';
+    activeSteps.forEach((step, i) => {
+      const el = document.createElement('div');
+      const isDone = doneSteps.has(i);
+      el.className = 'step' + (isDone ? ' done' : '') + (i === justDoneIndex ? ' just-done' : '');
+      el.innerHTML = `
+        <div class="step-num">${i + 1}</div>
+        <div class="step-icon">${step.icon}</div>
+        <div class="step-text">${step.text}<span class="es">${step.es}</span></div>
+        <div class="step-check"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12 L9 18 L20 6" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      `;
+      el.addEventListener('click', () => {
+        if (doneSteps.has(i)) {
+          doneSteps.delete(i);
+          renderDay();
+        } else {
+          doneSteps.add(i);
+          speakStepWord(step);
+          renderDay(i);
+          const newIconEl = stepsList.children[i]?.querySelector('.step-icon');
+          if (newIconEl) triggerCookEffect(newIconEl);
+        }
+      });
+      stepsList.appendChild(el);
+    });
+    progressNum.textContent = `${doneSteps.size}/${activeSteps.length}`;
+    const isNowComplete = doneSteps.size === activeSteps.length;
+    allDone.classList.toggle('show', isNowComplete);
+    if (isNowComplete && typeof showDancePet === 'function') showDancePet();
+  }
+
+  function getDayMode() {
+    const hour = new Date().getHours();
+    if (hour >= 19) return 'night';
+    return week[TODAY_INDEX].type; // 'school' or 'home'
+  }
+
+  const moonIconSvg = `<svg viewBox="0 0 40 40" fill="none"><path d="M25 6 A16 16 0 1 0 25 34 A12 12 0 1 1 25 6 Z" fill="#9B7EDE" stroke="#4A3428" stroke-width="2.5"/></svg>`;
+  const sunIconSvg = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 20 a12 12 0 0 1 24 0 v6 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="27" width="28" height="4" rx="2" fill="#4A3428"/><line x1="20" y1="6" x2="20" y2="2" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+
+  function updateDayStationButton(mode) {
+    const title = document.getElementById('dayStationTitle');
+    const sub = document.getElementById('dayStationSub');
+    const iconWrap = document.getElementById('dayStationIconWrap');
+    const icon = document.getElementById('dayStationIcon');
+    if (!title) return;
+    if (mode === 'night') {
+      title.textContent = 'My Night';
+      sub.textContent = 'Time to wind down';
+      iconWrap.style.background = '#EDE4F9';
+      icon.outerHTML = moonIconSvg.replace('<svg ', '<svg id="dayStationIcon" ');
+    } else {
+      title.textContent = 'My Day';
+      sub.textContent = "What's cooking today";
+      iconWrap.style.background = '#FCEFC7';
+      icon.outerHTML = sunIconSvg.replace('<svg ', '<svg id="dayStationIcon" ');
+    }
+  }
+
+  function updateGreeting() {
+    const el = document.getElementById('homeGreeting');
+    if (!el) return;
+    const hour = new Date().getHours();
+    let text;
+    if (hour < 12) text = "Good morning, Noah!";
+    else if (hour < 19) text = "Good afternoon, Noah!";
+    else text = "Good evening, Noah!";
+    el.textContent = text;
+  }
+
+  let lastMode = null;
+  function setupDayView() {
+    const mode = getDayMode();
+    lastMode = mode;
+    doneSteps.clear();
+    updateDayStationButton(mode);
+    updateHomeBadge();
+    updateGreeting();
+
+    if (mode === 'school') {
+      document.getElementById('ingredientsSection').style.display = '';
+      document.getElementById('stepsSectionLabel').textContent = 'Steps';
+      renderIngredients(schoolIngredients);
+      activeSteps = daySteps;
+      document.getElementById('dayCardTitle').textContent = "Noah's Morning Recipe";
+      document.getElementById('dayCardSub').textContent = "Makes: 1 ready-for-school kid";
+      document.getElementById("allDoneText").textContent = "🎉 You made it! Ready for school! 🎉";
+      document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>You come back home after school! 🏠</b>';
+    } else if (mode === 'home') {
+      document.getElementById('ingredientsSection').style.display = 'none';
+      document.getElementById('stepsSectionLabel').textContent = 'Practice';
+      activeSteps = getHomePracticeSteps(0);
+      document.getElementById('dayCardTitle').textContent = "Noah's Practice Recipe";
+      document.getElementById('dayCardSub').textContent = "Sounds, letters & numbers to practice today";
+      document.getElementById("allDoneText").textContent = "🎉 Great practicing today! 🎉";
+      document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>Play time! 🧸</b>';
+    } else {
+      document.getElementById('ingredientsSection').style.display = '';
+      document.getElementById('stepsSectionLabel').textContent = 'Steps';
+      renderIngredients(nightIngredients);
+      activeSteps = nightSteps;
+      document.getElementById('dayCardTitle').textContent = "Noah's Bedtime Recipe";
+      document.getElementById('dayCardSub').textContent = "Makes: 1 sleepy, cozy kid";
+      document.getElementById("allDoneText").textContent = "🌙 All done! Sweet dreams! 🌙";
+      document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>Sleep tight! See you in the morning! 🌙</b>';
+    }
+    renderDay();
+  }
+
+  // Check every minute in case the app is left open across the 7pm switch
+  setInterval(() => {
+    if (getDayMode() !== lastMode) setupDayView();
+  }, 60000);
+
+  /* ---------- EXTRA PRACTICE (available any day) ---------- */
+  const extraStepsList = document.getElementById('extraStepsList');
+  const extraProgressNum = document.getElementById('extraProgressNum');
+  const extraAllDone = document.getElementById('extraAllDone');
+  const langToggleExtra = document.getElementById('langToggleExtra');
+  const extraDoneSteps = new Set();
+  let spanishOnExtra = true;
+  let extraSteps = [];
+
+  langToggleExtra.addEventListener('click', () => {
+    spanishOnExtra = !spanishOnExtra;
+    langToggleExtra.classList.toggle('on', spanishOnExtra);
+  });
+
+  function renderExtraPractice(justDoneIndex) {
+    extraStepsList.innerHTML = '';
+    extraSteps.forEach((step, i) => {
+      const el = document.createElement('div');
+      const isDone = extraDoneSteps.has(i);
+      el.className = 'step' + (isDone ? ' done' : '') + (i === justDoneIndex ? ' just-done' : '');
+      el.innerHTML = `
+        <div class="step-num">${i + 1}</div>
+        <div class="step-icon">${step.icon}</div>
+        <div class="step-text">${step.text}<span class="es">${step.es}</span></div>
+        <div class="step-check"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12 L9 18 L20 6" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      `;
+      el.addEventListener('click', () => {
+        if (extraDoneSteps.has(i)) {
+          extraDoneSteps.delete(i);
+          renderExtraPractice();
+        } else {
+          extraDoneSteps.add(i);
+          window.speechSynthesis.cancel();
+          if (step.spanishOnly) {
+            speak(step.text, "es-MX");
+            if (spanishOnExtra) speak(step.es, "es-MX");
+          } else {
+            speak(step.text, "en-US");
+            if (spanishOnExtra) speak(step.es, "es-MX");
+          }
+          renderExtraPractice(i);
+          const newIconEl = extraStepsList.children[i]?.querySelector('.step-icon');
+          if (newIconEl) triggerCookEffect(newIconEl);
+        }
+      });
+      extraStepsList.appendChild(el);
+    });
+    extraProgressNum.textContent = `${extraDoneSteps.size}/${extraSteps.length}`;
+    extraAllDone.classList.toggle('show', extraDoneSteps.size === extraSteps.length);
+  }
+
+  function setupExtraPractice() {
+    extraDoneSteps.clear();
+    extraSteps = getHomePracticeSteps(1);
+    renderExtraPractice();
+  }
+  setupExtraPractice();
+
+  /* ---------- LET'S COOK ---------- */
+  const cookIngredients = [
+    { en: "Water", es: "Agua", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 6 C20 6 10 20 10 27 a10 10 0 0 0 20 0 C30 20 20 6 20 6 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Milk", es: "Leche", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 h12 v6 l4 4 v16 a2 2 0 0 1 -2 2 H12 a2 2 0 0 1 -2 -2 V18 l4 -4 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Egg", es: "Huevo", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="10" ry="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="24" r="5" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Bread", es: "Pan", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 22 a12 10 0 0 1 24 0 v6 a3 3 0 0 1 -3 3 H11 a3 3 0 0 1 -3 -3 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M13 20 q3 -4 6 0 q3 -4 6 0 q3 -4 6 0" stroke="#4A3428" stroke-width="1.5" fill="none"/></svg>` },
+    { en: "Apple", es: "Manzana", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 14 c6 -6 14 -2 12 6 c-2 8 -8 14 -12 14 c-4 0 -10 -6 -12 -14 c-2 -8 6 -12 12 -6 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 14 v-5" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><path d="M20 9 q4 -3 6 0" stroke="#7FA684" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Banana", es: "Plátano", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M12 8 C10 16 10 26 16 32 C22 36 30 32 30 26 C24 30 16 26 14 18 C13 13 13 9 16 6 C14 6 13 7 12 8 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Cheese", es: "Queso", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M6 28 L20 10 L34 28 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="20" cy="24" r="2" fill="#4A3428"/><circle cx="15" cy="20" r="1.5" fill="#4A3428"/><circle cx="25" cy="20" r="1.5" fill="#4A3428"/></svg>` },
+    { en: "Tomato", es: "Tomate", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="23" r="13" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 Q20 6 26 12" stroke="#7FA684" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Carrot", es: "Zanahoria", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 14 L28 34 L12 34 Z" fill="#F0973D" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 14 L18 6 M20 14 L22 6 M20 14 L20 5" stroke="#7FA684" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Orange", es: "Naranja", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="21" r="13" fill="#F0973D" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="8" r="2" fill="#7FA684"/></svg>` },
+    { en: "Salt", es: "Sal", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 14 h12 l2 18 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="15" y="8" width="10" height="6" rx="2" fill="#4A3428"/></svg>` },
+    { en: "Rice", es: "Arroz", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><ellipse cx="16" cy="23" rx="2" ry="1" fill="#4A3428"/><ellipse cx="22" cy="25" rx="2" ry="1" fill="#4A3428"/><ellipse cx="19" cy="21" rx="2" ry="1" fill="#4A3428"/></svg>` },
+    { en: "Butter", es: "Mantequilla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="14" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><line x1="8" y1="20" x2="32" y2="20" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Chicken", es: "Pollo", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="16" cy="16" r="10" fill="#F0973D" stroke="#4A3428" stroke-width="2.5"/><path d="M22 22 L30 30" stroke="#FBF3E1" stroke-width="6" stroke-linecap="round"/><path d="M22 22 L30 30" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>` },
+    { en: "Strawberry", es: "Fresa", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 34 C10 24 8 16 14 12 C17 10 20 12 20 15 C20 12 23 10 26 12 C32 16 30 24 20 34 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 10 Q20 6 26 10" stroke="#7FA684" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="20" r="1" fill="#FBF3E1"/><circle cx="22" cy="22" r="1" fill="#FBF3E1"/><circle cx="18" cy="27" r="1" fill="#FBF3E1"/></svg>` },
+    { en: "Fish", es: "Pescado", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="18" cy="20" rx="12" ry="8" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><path d="M28 20 L36 12 L36 28 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="12" cy="18" r="1.5" fill="#4A3428"/></svg>` },
+    { en: "Onion", es: "Cebolla", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="12" ry="13" fill="#E88FB0" stroke="#4A3428" stroke-width="2.5"/><path d="M20 9 Q18 4 20 2 Q22 4 20 9" stroke="#7FA684" stroke-width="2" fill="none"/></svg>` },
+    { en: "Potato", es: "Papa", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="21" rx="13" ry="10" fill="#C89666" stroke="#4A3428" stroke-width="2.5"/><circle cx="15" cy="18" r="1" fill="#4A3428"/><circle cx="24" cy="24" r="1" fill="#4A3428"/><circle cx="22" cy="16" r="1" fill="#4A3428"/></svg>` },
+  ];
+
+  const cookUtensils = [
+    { en: "Stirring!", es: "¡Revolviendo!", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="13" rx="7" ry="9" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><line x1="20" y1="21" x2="20" y2="33" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Whisking it up!", es: "¡Batiendo!", icon: `<svg viewBox="0 0 40 40" fill="none"><line x1="20" y1="4" x2="20" y2="16" stroke="#4A3428" stroke-width="3" stroke-linecap="round"/><path d="M14 16 Q20 28 26 16 M12 16 Q20 32 28 16 M16 16 Q20 24 24 16" stroke="#4A3428" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Flipping!", es: "¡Volteando!", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="12" y="6" width="16" height="14" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><line x1="20" y1="20" x2="20" y2="34" stroke="#4A3428" stroke-width="3" stroke-linecap="round"/></svg>` },
+    { en: "Rolling it out!", es: "¡Estirando!", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="8" rx="4" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><rect x="2" y="18" width="6" height="4" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/><rect x="32" y="18" width="6" height="4" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/></svg>` },
+  ];
+
+  const cookRecipes = [
+    { name: "Fruit Salad", es: "Ensalada de Frutas", items: [4, 5, 9, 14] },
+    { name: "Pancakes", es: "Panqueques", items: [1, 2, 12, 10] },
+    { name: "Sandwich", es: "Sándwich", items: [3, 6, 7] },
+    { name: "Soup", es: "Sopa", items: [0, 8, 7, 13] },
+    { name: "Smoothie", es: "Batido", items: [1, 5, 14] },
+    { name: "Fish Dinner", es: "Cena de Pescado", items: [15, 17, 8] },
+    { name: "Rice Bowl", es: "Plato de Arroz", items: [11, 13, 8] },
+    { name: "Cheese Toast", es: "Pan con Queso", items: [3, 6, 12] },
+    { name: "Garden Salad", es: "Ensalada", items: [7, 8, 6] },
+    { name: "Veggie Stew", es: "Guiso de Verduras", items: [0, 8, 17, 16, 7] },
+  ];
+
+  let potItems = []; // ingredient indices, in order added, duplicates allowed
+  let selectedRecipe = null;
+  let cookLangOn = true;
+  const cookLangToggle = document.getElementById('langToggleCook');
+  const cookTray = document.getElementById('cookTray');
+  const potContents = document.getElementById('potContents');
+  const cookBtn = document.getElementById('cookBtn');
+  const cookAgainBtn = document.getElementById('cookAgainBtn');
+  const cookReadyBanner = document.getElementById('cookReadyBanner');
+  const cookPotSvg = document.querySelector('.cook-pot-svg');
+  const recipeRow = document.getElementById('recipeRow');
+  const utensilRow = document.getElementById('utensilRow');
+  const cookSubtitle = document.getElementById('cookSubtitle');
+
+  cookLangToggle.addEventListener('click', () => {
+    cookLangOn = !cookLangOn;
+    cookLangToggle.classList.toggle('on', cookLangOn);
+  });
+
+  function renderRecipeRow() {
+    recipeRow.innerHTML = cookRecipes.map((r, i) => `
+      <div class="recipe-chip ${selectedRecipe === i ? 'active' : ''}" data-i="${i}">${r.name}</div>
+    `).join('');
+    recipeRow.querySelectorAll('.recipe-chip').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        selectedRecipe = selectedRecipe === i ? null : i;
+        if (selectedRecipe !== null) {
+          const r = cookRecipes[i];
+          cookSubtitle.textContent = `Making: ${r.name} 🍽️`;
+          window.speechSynthesis.cancel();
+          speak(r.name, "en-US");
+          if (cookLangOn) speak(r.es, "es-MX");
+        } else {
+          cookSubtitle.textContent = "Tap ingredients to add them to the pot";
+        }
+        renderRecipeRow();
+        renderCookTray();
+      });
+    });
+  }
+
+  function renderCookTray() {
+    const suggested = selectedRecipe !== null ? cookRecipes[selectedRecipe].items : [];
+    cookTray.innerHTML = cookIngredients.map((ing, i) => {
+      const count = potItems.filter(x => x === i).length;
+      return `<div class="cook-ingredient ${suggested.includes(i) ? 'suggested' : ''}" data-i="${i}">${ing.icon}${count > 0 ? `<span class="ing-count">${count}</span>` : ''}</div>`;
+    }).join('');
+    cookTray.querySelectorAll('.cook-ingredient').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        potItems.push(i);
+        const ing = cookIngredients[i];
+        window.speechSynthesis.cancel();
+        speak(ing.en, "en-US");
+        if (cookLangOn) speak(ing.es, "es-MX");
+        renderPot();
+        renderCookTray();
+        cookBtn.disabled = potItems.length === 0;
+      });
+    });
+  }
+
+  function renderPot() {
+    potContents.innerHTML = potItems.map((ingIndex, idx) => `
+      <div class="pot-chip" data-idx="${idx}">${cookIngredients[ingIndex].icon}</div>
+    `).join('');
+    potContents.querySelectorAll('.pot-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const idx = parseInt(chip.getAttribute('data-idx'));
+        potItems.splice(idx, 1);
+        renderPot();
+        renderCookTray();
+        cookBtn.disabled = potItems.length === 0;
+      });
+    });
+  }
+
+  function renderUtensils() {
+    utensilRow.innerHTML = cookUtensils.map((u, i) => `<div class="utensil-btn" data-i="${i}">${u.icon}</div>`).join('');
+    utensilRow.querySelectorAll('.utensil-btn').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        const u = cookUtensils[i];
+        cookPotSvg.classList.add('pot-stirring');
+        window.speechSynthesis.cancel();
+        speak(u.en, "en-US");
+        if (cookLangOn) speak(u.es, "es-MX");
+        triggerCookEffect(document.querySelector('.cook-pot-wrap'));
+        setTimeout(() => cookPotSvg.classList.remove('pot-stirring'), 600);
+      });
+    });
+  }
+
+  cookBtn.addEventListener('click', () => {
+    cookPotSvg.classList.add('pot-stirring');
+    window.speechSynthesis.cancel();
+    speak("Mixing it all together!", "en-US");
+    setTimeout(() => {
+      cookPotSvg.classList.remove('pot-stirring');
+      cookReadyBanner.classList.add('show');
+      cookBtn.style.display = 'none';
+      cookAgainBtn.style.display = '';
+      window.speechSynthesis.cancel();
+      speak("Yum! Your dish is ready!", "en-US");
+      if (cookLangOn) speak("¡Qué rico! Tu plato está listo!", "es-MX");
+      triggerCookEffect(document.querySelector('.cook-pot-wrap'));
+    }, 1400);
+  });
+
+  cookAgainBtn.addEventListener('click', setupCookGame);
+
+  function setupCookGame() {
+    potItems = [];
+    selectedRecipe = null;
+    cookSubtitle.textContent = "Tap ingredients to add them to the pot";
+    potContents.innerHTML = '';
+    cookReadyBanner.classList.remove('show');
+    cookAgainBtn.style.display = 'none';
+    cookBtn.style.display = '';
+    cookBtn.disabled = true;
+    renderRecipeRow();
+    renderUtensils();
+    renderCookTray();
+  }
+  setupCookGame();
+
+  /* ---------- LET'S BAKE ---------- */
+  const bakeIngredients = [
+    { en: "Flour", es: "Harina", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M12 10 h16 l4 8 v14 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 V18 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 10 V6 h12 v4" stroke="#4A3428" stroke-width="2" fill="none"/></svg>` },
+    { en: "Sugar", es: "Azúcar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 14 h20 l-3 18 h-14 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><circle cx="16" cy="20" r="1" fill="#4A3428"/><circle cx="22" cy="22" r="1" fill="#4A3428"/><circle cx="19" cy="26" r="1" fill="#4A3428"/></svg>` },
+    { en: "Egg", es: "Huevo", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="10" ry="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="24" r="5" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Milk", es: "Leche", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 h12 v6 l4 4 v16 a2 2 0 0 1 -2 2 H12 a2 2 0 0 1 -2 -2 V18 l4 -4 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Butter", es: "Mantequilla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="14" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><line x1="8" y1="20" x2="32" y2="20" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Banana", es: "Plátano", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M12 8 C10 16 10 26 16 32 C22 36 30 32 30 26 C24 30 16 26 14 18 C13 13 13 9 16 6 C14 6 13 7 12 8 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Chocolate Chips", es: "Chispas de Chocolate", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="13" cy="13" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="24" cy="11" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="18" cy="21" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="28" cy="24" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/><circle cx="10" cy="26" r="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Vanilla", es: "Vainilla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="15" y="6" width="10" height="6" rx="2" fill="#4A3428"/><path d="M13 12 h14 l2 4 v16 a2 2 0 0 1 -2 2 H13 a2 2 0 0 1 -2 -2 V16 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Baking Powder", es: "Polvo de Hornear", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="12" y="10" width="16" height="22" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="6" width="12" height="6" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Cinnamon", es: "Canela", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="8" rx="4" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/><circle cx="10" cy="20" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="30" cy="20" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Frosting", es: "Glaseado", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 30 Q10 30 10 24 Q10 18 16 18 Q14 12 20 12 Q26 12 24 18 Q30 18 30 24 Q30 30 26 30 Z" fill="#E88FB0" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Sprinkles", es: "Chispitas", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="24" width="24" height="8" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><line x1="12" y1="16" x2="14" y2="10" stroke="#E8654A" stroke-width="2.5" stroke-linecap="round"/><line x1="19" y1="16" x2="19" y2="9" stroke="#6FA8C9" stroke-width="2.5" stroke-linecap="round"/><line x1="26" y1="16" x2="24" y2="10" stroke="#7FA684" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Honey", es: "Miel", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M12 14 h16 v14 a8 6 0 0 1 -16 0 Z" fill="#F0973D" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="8" width="12" height="6" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Cocoa", es: "Cacao", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#8B5E3C" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Nuts", es: "Nueces", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="9" ry="14" fill="#C89666" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Strawberry", es: "Fresa", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 34 C10 24 8 16 14 12 C17 10 20 12 20 15 C20 12 23 10 26 12 C32 16 30 24 20 34 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M14 10 Q20 6 26 10" stroke="#7FA684" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="20" r="1" fill="#FBF3E1"/><circle cx="22" cy="22" r="1" fill="#FBF3E1"/><circle cx="18" cy="27" r="1" fill="#FBF3E1"/></svg>` },
+    { en: "Whipped Cream", es: "Crema Batida", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 30 Q10 30 10 24 Q10 18 16 18 Q14 12 20 12 Q26 12 24 18 Q30 18 30 24 Q30 30 26 30 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>` },
+    { en: "Raisins", es: "Pasas", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="14" cy="16" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="24" cy="13" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="18" cy="23" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="27" cy="24" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/><ellipse cx="10" cy="26" rx="4" ry="5" fill="#4A3428" stroke="#4A3428" stroke-width="1"/></svg>` },
+  ];
+
+  const bakeUtensils = [
+    { en: "Whisking it up!", es: "¡Batiendo!", icon: `<svg viewBox="0 0 40 40" fill="none"><line x1="20" y1="4" x2="20" y2="16" stroke="#4A3428" stroke-width="3" stroke-linecap="round"/><path d="M14 16 Q20 28 26 16 M12 16 Q20 32 28 16 M16 16 Q20 24 24 16" stroke="#4A3428" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Rolling it out!", es: "¡Estirando!", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="8" rx="4" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><rect x="2" y="18" width="6" height="4" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/><rect x="32" y="18" width="6" height="4" rx="2" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Cutting shapes!", es: "¡Cortando formas!", icon: `<svg viewBox="0 0 40 40" fill="none"><polygon points="20,4 24,15 36,15 26,22 30,34 20,27 10,34 14,22 4,15 16,15" fill="none" stroke="#4A3428" stroke-width="3" stroke-linejoin="round"/></svg>` },
+    { en: "Into the oven!", es: "¡Al horno!", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 34 V20 a6 6 0 0 1 12 0 v14 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="12" y="6" width="16" height="14" rx="6" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+  ];
+
+  const bakeRecipes = [
+    { name: "Chocolate Chip Cookies", es: "Galletas con Chispas", items: [0, 1, 4, 2, 6] },
+    { name: "Birthday Cake", es: "Pastel de Cumpleaños", items: [0, 1, 4, 2, 3, 10, 11] },
+    { name: "Muffins", es: "Panquecitos", items: [0, 1, 2, 3, 8] },
+    { name: "Banana Bread", es: "Pan de Plátano", items: [0, 1, 2, 4, 5] },
+    { name: "Cinnamon Rolls", es: "Rollos de Canela", items: [0, 1, 4, 9] },
+    { name: "Brownies", es: "Brownies", items: [0, 1, 2, 4, 13] },
+    { name: "Cupcakes", es: "Cupcakes", items: [0, 1, 2, 3, 10] },
+    { name: "Honey Cake", es: "Pastel de Miel", items: [0, 1, 2, 12] },
+    { name: "Vanilla Cake", es: "Pastel de Vainilla", items: [0, 1, 2, 3, 7] },
+    { name: "Nutty Cookies", es: "Galletas con Nueces", items: [0, 1, 4, 14] },
+  ];
+
+  let bakeItems = [];
+  let selectedBakeRecipe = null;
+  let bakeLangOn = true;
+  const bakeLangToggle = document.getElementById('langToggleBake');
+  const bakeTray = document.getElementById('bakeTray');
+  const bakeContents = document.getElementById('bakeContents');
+  const bakeBtn = document.getElementById('bakeBtn');
+  const bakeAgainBtn = document.getElementById('bakeAgainBtn');
+  const bakeReadyBanner = document.getElementById('bakeReadyBanner');
+  const bakeOvenSvg = document.getElementById('bakeOvenSvg');
+  const bakeRecipeRow = document.getElementById('bakeRecipeRow');
+  const bakeUtensilRow = document.getElementById('bakeUtensilRow');
+  const bakeSubtitle = document.getElementById('bakeSubtitle');
+
+  bakeLangToggle.addEventListener('click', () => {
+    bakeLangOn = !bakeLangOn;
+    bakeLangToggle.classList.toggle('on', bakeLangOn);
+  });
+
+  function renderBakeRecipeRow() {
+    bakeRecipeRow.innerHTML = bakeRecipes.map((r, i) => `
+      <div class="recipe-chip ${selectedBakeRecipe === i ? 'active' : ''}" data-i="${i}">${r.name}</div>
+    `).join('');
+    bakeRecipeRow.querySelectorAll('.recipe-chip').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        selectedBakeRecipe = selectedBakeRecipe === i ? null : i;
+        if (selectedBakeRecipe !== null) {
+          const r = bakeRecipes[i];
+          bakeSubtitle.textContent = `Baking: ${r.name} 🍰`;
+          window.speechSynthesis.cancel();
+          speak(r.name, "en-US");
+          if (bakeLangOn) speak(r.es, "es-MX");
+        } else {
+          bakeSubtitle.textContent = "Tap ingredients to add them to the bowl";
+        }
+        renderBakeRecipeRow();
+        renderBakeTray();
+      });
+    });
+  }
+
+  function renderBakeTray() {
+    const suggested = selectedBakeRecipe !== null ? bakeRecipes[selectedBakeRecipe].items : [];
+    bakeTray.innerHTML = bakeIngredients.map((ing, i) => {
+      const count = bakeItems.filter(x => x === i).length;
+      return `<div class="cook-ingredient ${suggested.includes(i) ? 'suggested' : ''}" data-i="${i}">${ing.icon}${count > 0 ? `<span class="ing-count">${count}</span>` : ''}</div>`;
+    }).join('');
+    bakeTray.querySelectorAll('.cook-ingredient').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        bakeItems.push(i);
+        const ing = bakeIngredients[i];
+        window.speechSynthesis.cancel();
+        speak(ing.en, "en-US");
+        if (bakeLangOn) speak(ing.es, "es-MX");
+        renderBakeBowl();
+        renderBakeTray();
+        bakeBtn.disabled = bakeItems.length === 0;
+      });
+    });
+  }
+
+  function renderBakeBowl() {
+    bakeContents.innerHTML = bakeItems.map((ingIndex, idx) => `
+      <div class="pot-chip" data-idx="${idx}">${bakeIngredients[ingIndex].icon}</div>
+    `).join('');
+    bakeContents.querySelectorAll('.pot-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const idx = parseInt(chip.getAttribute('data-idx'));
+        bakeItems.splice(idx, 1);
+        renderBakeBowl();
+        renderBakeTray();
+        bakeBtn.disabled = bakeItems.length === 0;
+      });
+    });
+  }
+
+  function renderBakeUtensils() {
+    bakeUtensilRow.innerHTML = bakeUtensils.map((u, i) => `<div class="utensil-btn" data-i="${i}">${u.icon}</div>`).join('');
+    bakeUtensilRow.querySelectorAll('.utensil-btn').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        const u = bakeUtensils[i];
+        bakeOvenSvg.classList.add('pot-stirring');
+        window.speechSynthesis.cancel();
+        speak(u.en, "en-US");
+        if (bakeLangOn) speak(u.es, "es-MX");
+        triggerCookEffect(document.getElementById('bakeOvenWrap'));
+        setTimeout(() => bakeOvenSvg.classList.remove('pot-stirring'), 600);
+      });
+    });
+  }
+
+  bakeBtn.addEventListener('click', () => {
+    bakeOvenSvg.classList.add('pot-stirring');
+    window.speechSynthesis.cancel();
+    speak("Baking it up!", "en-US");
+    setTimeout(() => {
+      bakeOvenSvg.classList.remove('pot-stirring');
+      bakeReadyBanner.classList.add('show');
+      bakeBtn.style.display = 'none';
+      bakeAgainBtn.style.display = '';
+      window.speechSynthesis.cancel();
+      speak("Yum! Your bake is ready!", "en-US");
+      if (bakeLangOn) speak("¡Delicioso! Tu postre está listo!", "es-MX");
+      triggerCookEffect(document.getElementById('bakeOvenWrap'));
+    }, 1400);
+  });
+
+  bakeAgainBtn.addEventListener('click', setupBakeGame);
+
+  function setupBakeGame() {
+    bakeItems = [];
+    selectedBakeRecipe = null;
+    bakeSubtitle.textContent = "Tap ingredients to add them to the bowl";
+    bakeContents.innerHTML = '';
+    bakeReadyBanner.classList.remove('show');
+    bakeAgainBtn.style.display = 'none';
+    bakeBtn.style.display = '';
+    bakeBtn.disabled = true;
+    renderBakeRecipeRow();
+    renderBakeUtensils();
+    renderBakeTray();
+  }
+  setupBakeGame();
+
+  /* ---------- KITCHEN CREW (PETS) ---------- */
+  const pets = [
+    {
+      id: 'dino', name: 'Rex', color: '#7FA684',
+      blurb: "Rex loves big, hearty meals!", blurbEs: "¡A Rex le encantan las comidas grandes!",
+      favorite: 'Chicken', favoriteEs: 'Pollo',
+      svg: `<svg viewBox="0 0 160 160" fill="none">
+        <ellipse cx="80" cy="95" rx="55" ry="50" fill="#7FA684" stroke="#4A3428" stroke-width="4"/>
+        <polygon points="55,50 62,35 70,50" fill="#5E8564" stroke="#4A3428" stroke-width="3"/>
+        <polygon points="75,45 82,28 89,45" fill="#5E8564" stroke="#4A3428" stroke-width="3"/>
+        <polygon points="95,50 102,35 109,50" fill="#5E8564" stroke="#4A3428" stroke-width="3"/>
+        <rect x="58" y="26" width="44" height="12" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="80" cy="18" rx="26" ry="16" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="62" cy="85" r="12" fill="white" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="98" cy="85" r="12" fill="white" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="64" cy="87" r="5" fill="#4A3428"/>
+        <circle cx="100" cy="87" r="5" fill="#4A3428"/>
+        <path d="M65 108 Q80 118 95 108" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="35" cy="105" rx="8" ry="14" fill="#7FA684" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="125" cy="105" rx="8" ry="14" fill="#7FA684" stroke="#4A3428" stroke-width="3"/>
+      </svg>`
+    },
+    {
+      id: 'sloth', name: 'Milo', color: '#C89666',
+      blurb: "Milo loves cozy snacks and naps!", blurbEs: "¡A Milo le encantan las meriendas y las siestas!",
+      favorite: 'Milk', favoriteEs: 'Leche',
+      svg: `<svg viewBox="0 0 160 160" fill="none">
+        <ellipse cx="80" cy="95" rx="55" ry="50" fill="#C89666" stroke="#4A3428" stroke-width="4"/>
+        <rect x="58" y="26" width="44" height="12" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="80" cy="18" rx="26" ry="16" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="62" cy="85" rx="14" ry="18" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/>
+        <ellipse cx="98" cy="85" rx="14" ry="18" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/>
+        <path d="M56 85 Q62 80 68 85" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M92 85 Q98 80 104 85" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="80" cy="100" rx="6" ry="4" fill="#4A3428"/>
+        <path d="M70 108 Q80 114 90 108" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      id: 'rat', name: 'Pierre', color: '#B3A489',
+      blurb: "Pierre loves fancy, fancy food!", blurbEs: "¡A Pierre le encanta la comida elegante!",
+      favorite: 'Cheese', favoriteEs: 'Queso',
+      svg: `<svg viewBox="0 0 160 160" fill="none">
+        <path d="M128 120 Q150 130 145 150" stroke="#D9CBB0" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <circle cx="45" cy="45" r="18" fill="#B3A489" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="115" cy="45" r="18" fill="#B3A489" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="45" cy="45" r="9" fill="#E88FB0"/>
+        <circle cx="115" cy="45" r="9" fill="#E88FB0"/>
+        <ellipse cx="80" cy="95" rx="50" ry="48" fill="#D9CBB0" stroke="#4A3428" stroke-width="4"/>
+        <rect x="58" y="26" width="44" height="12" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="80" cy="18" rx="26" ry="16" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="65" cy="90" r="7" fill="#4A3428"/>
+        <circle cx="95" cy="90" r="7" fill="#4A3428"/>
+        <circle cx="80" cy="102" r="5" fill="#E88FB0" stroke="#4A3428" stroke-width="2"/>
+        <line x1="55" y1="100" x2="35" y2="96" stroke="#4A3428" stroke-width="1.5"/>
+        <line x1="55" y1="106" x2="35" y2="108" stroke="#4A3428" stroke-width="1.5"/>
+        <line x1="105" y1="100" x2="125" y2="96" stroke="#4A3428" stroke-width="1.5"/>
+        <line x1="105" y1="106" x2="125" y2="108" stroke="#4A3428" stroke-width="1.5"/>
+        <path d="M70 108 Q80 114 90 108" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>`
+    },
+  ];
+
+  let currentPet = 0;
+  let petsLangOn = true;
+  const petTabs = document.getElementById('petTabs');
+  const petStageInner = document.getElementById('petStageInner');
+  const petBlurb = document.getElementById('petBlurb');
+  const petFavorite = document.getElementById('petFavorite');
+  const petPlayBtn = document.getElementById('petPlayBtn');
+  const petTray = document.getElementById('petTray');
+  const langTogglePets = document.getElementById('langTogglePets');
+
+  langTogglePets.addEventListener('click', () => {
+    petsLangOn = !petsLangOn;
+    langTogglePets.classList.toggle('on', petsLangOn);
+  });
+
+  function renderPetTabs() {
+    petTabs.innerHTML = pets.map((p, i) => `
+      <div class="pet-tab ${i === currentPet ? 'active' : ''}" data-i="${i}">
+        <div class="dot" style="background:${p.color}"></div>
+        <span>${p.name}</span>
+      </div>
+    `).join('');
+    petTabs.querySelectorAll('.pet-tab').forEach(el => {
+      el.addEventListener('click', () => {
+        currentPet = parseInt(el.getAttribute('data-i'));
+        renderPetStage();
+      });
+    });
+  }
+
+  function renderPetStage() {
+    const p = pets[currentPet];
+    petStageInner.innerHTML = p.svg;
+    petStageInner.querySelector('svg').classList.add('pet-stage-svg');
+    petBlurb.textContent = p.blurb;
+    petFavorite.textContent = `⭐ Favorite food: ${p.favorite}`;
+    renderPetTabs();
+    renderPetTray();
+  }
+
+  function renderPetTray() {
+    petTray.innerHTML = cookIngredients.map((ing, i) => `
+      <div class="cook-ingredient" data-i="${i}">${ing.icon}</div>
+    `).join('');
+    petTray.querySelectorAll('.cook-ingredient').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        feedPet(cookIngredients[i]);
+      });
+    });
+  }
+
+  function feedPet(ing) {
+    const p = pets[currentPet];
+    const svgEl = petStageInner.querySelector('svg');
+    window.speechSynthesis.cancel();
+    speak(ing.en, "en-US");
+    if (petsLangOn) speak(ing.es, "es-MX");
+    const isFavorite = ing.en === p.favorite;
+    svgEl.classList.remove('pet-eating', 'pet-happy');
+    void svgEl.offsetWidth; // restart animation
+    svgEl.classList.add(isFavorite ? 'pet-happy' : 'pet-eating');
+    setTimeout(() => {
+      window.speechSynthesis.cancel();
+      if (isFavorite) {
+        speak(`Yum! ${p.name}'s favorite!`, "en-US");
+        if (petsLangOn) speak("¡Mi favorito!", "es-MX");
+        triggerCookEffect(document.querySelector('.pet-stage-wrap'));
+      } else {
+        speak("Yum yum!", "en-US");
+        if (petsLangOn) speak("¡Ñam ñam!", "es-MX");
+      }
+    }, 500);
+  }
+
+  petPlayBtn.addEventListener('click', () => {
+    const p = pets[currentPet];
+    const svgEl = petStageInner.querySelector('svg');
+    svgEl.classList.remove('pet-eating', 'pet-happy');
+    void svgEl.offsetWidth;
+    svgEl.classList.add('pet-happy');
+    window.speechSynthesis.cancel();
+    speak(`${p.name} loves that!`, "en-US");
+    if (petsLangOn) speak("¡Le encanta!", "es-MX");
+    triggerCookEffect(document.querySelector('.pet-stage-wrap'));
+  });
+
+  renderPetStage();
+
+  /* Dance-pet celebration on the routine's "all done" banner */
+  function showDancePet() {
+    const el = document.getElementById('allDoneDancePet');
+    if (!el) return;
+    const p = pets[Math.floor(Math.random() * pets.length)];
+    el.innerHTML = p.svg;
+  }
+
+  /* ---------- MY WEEK ---------- */
+  const schoolIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
+  const homeIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
+
+  const week = [
+    { abbr: "M", full: "Monday",    es: "Lunes",     type: "school" },
+    { abbr: "T", full: "Tuesday",   es: "Martes",    type: "school" },
+    { abbr: "W", full: "Wednesday", es: "Miércoles", type: "school" },
+    { abbr: "T", full: "Thursday",  es: "Jueves",    type: "school" },
+    { abbr: "F", full: "Friday",    es: "Viernes",   type: "school" },
+    { abbr: "S", full: "Saturday",  es: "Sábado",    type: "home" },
+    { abbr: "S", full: "Sunday",    es: "Domingo",   type: "home" },
+  ];
+  const TODAY_INDEX = (new Date().getDay() + 6) % 7; // Mon=0 ... Sun=6, based on the real date
+
+  function updateHomeBadge() {
+    const badge = document.getElementById('dayBadge');
+    if (!badge) return;
+    const d = week[TODAY_INDEX];
+    const mode = getDayMode();
+    if (mode === 'night') {
+      badge.textContent = `🌙 BEDTIME — ${d.full.toUpperCase()}`;
+      return;
+    }
+    const emoji = d.type === 'school' ? '🏫' : '🏠';
+    const label = d.type === 'school' ? 'SCHOOL DAY' : 'HOME DAY';
+    badge.textContent = `${emoji} ${label} — ${d.full.toUpperCase()}`;
+  }
+  updateHomeBadge();
+
+  const carousel = document.getElementById('carousel');
+  const weekList = document.getElementById('weekList');
+  const langToggleWeek = document.getElementById('langToggleWeek');
+  let spanishOnWeek = true;
+
+  langToggleWeek.addEventListener('click', () => {
+    spanishOnWeek = !spanishOnWeek;
+    langToggleWeek.classList.toggle('on', spanishOnWeek);
+  });
+
+  function speakDay(day) {
+    window.speechSynthesis.cancel();
+    speak(day.full, "en-US");
+    if (spanishOnWeek) speak(day.es, "es-MX");
+  }
+
+  function icon(type) { return type === "school" ? schoolIcon : homeIcon; }
+
+  function renderCarousel() {
+    const yIdx = (TODAY_INDEX + 6) % 7;
+    const tIdx = (TODAY_INDEX + 1) % 7;
+    carousel.innerHTML = week.map((d, i) => {
+      let flag = '';
+      if (i === TODAY_INDEX) flag = '<div class="today-flag">TODAY</div>';
+      else if (i === yIdx) flag = '<div class="today-flag" style="background:#B3A489">YESTERDAY</div>';
+      else if (i === tIdx) flag = '<div class="today-flag" style="background:#B3A489">TOMORROW</div>';
+      return `
+      <div class="carousel-card ${i === TODAY_INDEX ? 'is-today' : ''} ${i < TODAY_INDEX ? 'is-past' : ''}" data-i="${i}">
+        ${flag}
+        <div class="day-icon">${icon(d.type)}</div>
+        <div class="day-name">${d.full}</div>
+      </div>
+    `;
+    }).join('');
+    carousel.querySelectorAll('.carousel-card').forEach((el, i) => {
+      el.addEventListener('click', () => speakDay(week[i]));
+    });
+  }
+
+  function renderWeekList() {
+    weekList.innerHTML = week.map((d, i) => `
+      <div class="week-row ${d.type === 'home' ? 'home-day' : ''} ${i === TODAY_INDEX ? 'is-today' : ''} ${i < TODAY_INDEX ? 'is-past' : ''}">
+        <div class="day-letter">${d.abbr}</div>
+        <div class="row-name">${d.full}<span class="es">${d.es}</span></div>
+        <div class="row-tag">${icon(d.type)} ${d.type === 'school' ? 'School Day' : 'Home Day'}</div>
+      </div>
+    `).join('');
+    weekList.querySelectorAll('.week-row').forEach((el, i) => {
+      el.addEventListener('click', () => speakDay(week[i]));
+    });
+  }
+
+  function renderDayCounter() {
+    const el = document.getElementById('dayCounter');
+    if (el) el.textContent = `📅 Day ${TODAY_INDEX + 1} of 7 this week!`;
+  }
+
+  function renderWeekTally() {
+    const el = document.getElementById('weekTally');
+    if (!el) return;
+    const schoolCount = week.filter(d => d.type === 'school').length;
+    const homeCount = week.filter(d => d.type === 'home').length;
+    el.innerHTML = `
+      <div class="tally-chip">🏫 ${schoolCount} School Day${schoolCount === 1 ? '' : 's'}</div>
+      <div class="tally-chip home-tally">🏠 ${homeCount} Home Day${homeCount === 1 ? '' : 's'}</div>
+    `;
+  }
+
+  renderCarousel();
+  renderWeekList();
+  renderDayCounter();
+  renderWeekTally();
+  setupDayView();
+
+  // center carousel on today after layout
+  window.addEventListener('load', () => {
+    const todayCard = carousel.querySelector('.is-today');
+    if (todayCard) {
+      const offset = todayCard.offsetLeft - (carousel.clientWidth - todayCard.clientWidth) / 2;
+      carousel.scrollLeft = offset;
+    }
+  });
+
+  /* ---------- Long-press sun icon → parent panel ---------- */
+  const sunIcon = document.getElementById('sunIcon');
+  let pressTimer;
+  sunIcon.addEventListener('pointerdown', () => {
+    pressTimer = setTimeout(() => goto('view-parent'), 650);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(evt => {
+    sunIcon.addEventListener(evt, () => clearTimeout(pressTimer));
+  });
+
+  /* ---------- GET READY FOR SCHOOL ---------- */
+  const scenes = [
+    { text: "Circle Time", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="none" stroke="#4A3428" stroke-width="2.5" stroke-dasharray="4 4"/><circle cx="20" cy="9" r="3" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/><circle cx="29" cy="18" r="3" fill="#F5C451" stroke="#4A3428" stroke-width="1.5"/><circle cx="25" cy="29" r="3" fill="#7FA684" stroke="#4A3428" stroke-width="1.5"/><circle cx="14" cy="29" r="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="1.5"/><circle cx="10" cy="18" r="3" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { text: "P.E.", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="12" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M12 20 Q20 12 28 20 Q20 28 12 20 Z" fill="none" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { text: "Recess", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 L14 12 L20 34" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linejoin="round"/><path d="M14 12 L28 18 L14 20 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { text: "Snack Time", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="12" ry="5" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M8 24 C8 29 13 32 20 32 C27 32 32 29 32 24" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { text: "Learning Time", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="10" width="24" height="20" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><line x1="20" y1="10" x2="20" y2="30" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { text: "Lunch", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="10" y="14" width="20" height="16" rx="3" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M15 14 V10 h10 v4" fill="none" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+  ];
+  const sceneGrid = document.getElementById('sceneGrid');
+  if (sceneGrid) {
+    sceneGrid.innerHTML = scenes.map(s => `
+      <div class="scene-card" data-text="${s.text}">${s.icon}<div class="scene-title">${s.text}</div></div>
+    `).join('');
+    sceneGrid.querySelectorAll('.scene-card').forEach((el, i) => {
+      el.addEventListener('click', () => { window.speechSynthesis.cancel(); speak(scenes[i].text, "en-US"); });
+    });
+  }
+
+  /* ---------- KITCHEN WORDS ---------- */
+  const kitchenWordsPool = [
+    { en: "Water", es: "Agua", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 6 C20 6 10 20 10 27 a10 10 0 0 0 20 0 C30 20 20 6 20 6 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Kitchen", es: "Cocina", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="14" width="24" height="18" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><circle cx="14" cy="20" r="2" fill="#4A3428"/><circle cx="20" cy="20" r="2" fill="#4A3428"/><circle cx="26" cy="20" r="2" fill="#4A3428"/></svg>` },
+    { en: "Mix", es: "Mezclar", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="13" ry="8" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><line x1="22" y1="10" x2="20" y2="24" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Cook", es: "Cocinar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 22 a10 10 0 0 1 20 0 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="8" y="22" width="24" height="4" rx="2" fill="#4A3428"/></svg>` },
+    { en: "Plate", es: "Plato", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="20" r="7" fill="none" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Spoon", es: "Cuchara", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="13" rx="7" ry="9" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><line x1="20" y1="21" x2="20" y2="33" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Fork", es: "Tenedor", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="17" y="18" width="6" height="15" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="14" y="6" width="2.5" height="13" rx="1" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/><rect x="18.7" y="6" width="2.5" height="13" rx="1" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/><rect x="23.5" y="6" width="2.5" height="13" rx="1" fill="#E8654A" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Bowl", es: "Tazón", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><ellipse cx="20" cy="18" rx="12" ry="3" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Egg", es: "Huevo", icon: `<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="22" rx="10" ry="13" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="20" cy="24" r="5" fill="#F5C451" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Milk", es: "Leche", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M14 8 h12 v6 l4 4 v16 a2 2 0 0 1 -2 2 H12 a2 2 0 0 1 -2 -2 V18 l4 -4 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Bread", es: "Pan", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M8 22 a12 10 0 0 1 24 0 v6 a3 3 0 0 1 -3 3 H11 a3 3 0 0 1 -3 -3 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M13 20 q3 -4 6 0 q3 -4 6 0 q3 -4 6 0" stroke="#4A3428" stroke-width="1.5" fill="none"/></svg>` },
+    { en: "Apple", es: "Manzana", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 14 c6 -6 14 -2 12 6 c-2 8 -8 14 -12 14 c-4 0 -10 -6 -12 -14 c-2 -8 6 -12 12 -6 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 14 v-5" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><path d="M20 9 q4 -3 6 0" stroke="#7FA684" stroke-width="2" fill="none" stroke-linecap="round"/></svg>` },
+    { en: "Hot", es: "Caliente", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 6 C14 14 10 18 10 24 a10 10 0 0 0 20 0 c0 -4 -2 -7 -4 -9 c0 3 -2 5 -4 5 c1 -6 -2 -9 -2 -14 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/></svg>` },
+    { en: "Cold", es: "Frío", icon: `<svg viewBox="0 0 40 40" fill="none"><g stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="6" x2="20" y2="34"/><line x1="8" y1="20" x2="32" y2="20"/><line x1="11" y1="11" x2="29" y2="29"/><line x1="29" y1="11" x2="11" y2="29"/></g><circle cx="20" cy="20" r="4" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Pot", es: "Olla", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="16" width="24" height="14" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="3" y="19" width="6" height="4" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="31" y="19" width="6" height="4" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="10" y="12" width="20" height="4" rx="2" fill="#4A3428"/></svg>` },
+    { en: "Oven", es: "Horno", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="24" rx="3" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="12" y="16" width="16" height="12" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="28" cy="12" r="1.5" fill="#4A3428"/></svg>` },
+    { en: "Stove", es: "Estufa", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="10" width="28" height="20" rx="3" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><circle cx="14" cy="18" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="26" cy="18" r="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/></svg>` },
+    { en: "Table", es: "Mesa", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="12" width="28" height="5" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><line x1="10" y1="17" x2="10" y2="32" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="17" x2="30" y2="32" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Cut", es: "Cortar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M10 30 L28 12 a3 3 0 0 1 4 4 L14 34 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><line x1="8" y1="32" x2="12" y2="28" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>` },
+    { en: "Wash", es: "Lavar", icon: `<svg viewBox="0 0 40 40" fill="none"><path d="M20 8 C20 8 12 20 12 26 a8 8 0 0 0 16 0 C28 20 20 8 20 8 Z" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><circle cx="29" cy="14" r="2" fill="#F5C451" stroke="#4A3428" stroke-width="1.5"/></svg>` },
+    { en: "Bake", es: "Hornear", icon: `<svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="24" rx="3" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M14 26 q6 -8 12 0" stroke="#4A3428" stroke-width="2" fill="none"/></svg>` },
+    { en: "Sweet", es: "Dulce", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="12" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><path d="M20 12 v16 M12 20 h16" stroke="#FBF3E1" stroke-width="2" stroke-linecap="round"/></svg>` },
+    { en: "Finished", es: "Terminado", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M13 20 L18 25 L28 14" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+  ];
+  const WORDS_PER_DAY = 6;
+
+  function getDailySubset(pool, n) {
+    const dayIndex = Math.floor(Date.now() / 86400000); // whole days since epoch
+    const start = (dayIndex * n) % pool.length;
+    const result = [];
+    for (let i = 0; i < n; i++) result.push(pool[(start + i) % pool.length]);
+    return result;
+  }
+
+  const wordGrid = document.getElementById('wordGrid');
+
+  function renderWords() {
+    const todaysWords = getDailySubset(kitchenWordsPool, WORDS_PER_DAY);
+    wordGrid.innerHTML = todaysWords.map(w => `
+      <div class="word-card" data-en="${w.en}" data-es="${w.es}">${w.icon}<div class="word-en">${w.en}</div><div class="word-es">${w.es}</div></div>
+    `).join('');
+
+    wordGrid.querySelectorAll('.word-card').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        window.speechSynthesis.cancel();
+        speak(todaysWords[i].en, "en-US");
+        speak(todaysWords[i].es, "es-MX");
+      });
+    });
+  }
+  if (wordGrid) renderWords();
+
+  /* ---------- PRACTICE: Recipe Order game ---------- */
+  const orderSlots = document.getElementById('orderSlots');
+  const orderTray = document.getElementById('orderTray');
+  const orderFeedback = document.getElementById('orderFeedback');
+  let orderShuffled = [], orderPlacedCount = 0;
+
+  function shuffle(arr) { return arr.map(v => [Math.random(), v]).sort((a,b) => a[0]-b[0]).map(v => v[1]); }
+
+  function setupOrderGame() {
+    orderPlacedCount = 0;
+    orderFeedback.textContent = '';
+    const indices = daySteps.map((_, i) => i);
+    orderShuffled = shuffle(indices);
+    orderSlots.innerHTML = daySteps.map((_, i) => `<div class="order-slot" data-slot="${i}"><span class="num">${i+1}</span></div>`).join('');
+    orderTray.innerHTML = orderShuffled.map(i => `<div class="order-chip" data-step="${i}">${daySteps[i].icon}<span>${daySteps[i].text}</span></div>`).join('');
+    orderTray.querySelectorAll('.order-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const stepIndex = parseInt(chip.getAttribute('data-step'));
+        if (stepIndex === orderPlacedCount) {
+          const slot = orderSlots.querySelector(`[data-slot="${orderPlacedCount}"]`);
+          slot.classList.add('filled');
+          slot.innerHTML = `<span class="num">${orderPlacedCount+1}</span>${daySteps[stepIndex].icon}`;
+          chip.classList.add('placed');
+          window.speechSynthesis.cancel();
+          speak(daySteps[stepIndex].text, "en-US");
+          orderPlacedCount++;
+          if (orderPlacedCount === daySteps.length) {
+            orderFeedback.textContent = "🎉 You got the order right!";
+          } else {
+            orderFeedback.textContent = "Great! What's next?";
+          }
+        } else {
+          chip.style.transform = 'translateX(4px)';
+          setTimeout(() => chip.style.transform = '', 150);
+        }
+      });
+    });
+  }
+  if (orderSlots) setupOrderGame();
+
+  /* ---------- PRACTICE: School Day or Home Day? ---------- */
+  const shDay = document.getElementById('shDay');
+  const shChoices = document.getElementById('shChoices');
+  const shFeedback = document.getElementById('shFeedback');
+  let shCurrent;
+
+  function setupSchoolHomeGame() {
+    shCurrent = week[Math.floor(Math.random() * week.length)];
+    shDay.innerHTML = `<div class="sh-icon-box">${icon(shCurrent.type)}</div><div class="sh-label">${shCurrent.full}</div>`;
+    shDay.onclick = () => { window.speechSynthesis.cancel(); speak(shCurrent.full, "en-US"); };
+    shFeedback.textContent = '';
+    shChoices.innerHTML = `
+      <div class="sh-choice" data-type="school">🏫 School</div>
+      <div class="sh-choice" data-type="home">🏠 Home</div>
+    `;
+    shChoices.querySelectorAll('.sh-choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = btn.getAttribute('data-type');
+        shChoices.querySelectorAll('.sh-choice').forEach(c => c.classList.remove('correct', 'wrong'));
+        if (chosen === shCurrent.type) {
+          btn.classList.add('correct');
+          shFeedback.textContent = "🎉 That's right!";
+          window.speechSynthesis.cancel();
+          speak(`${shCurrent.full} is a ${shCurrent.type === 'school' ? 'school' : 'home'} day!`, "en-US");
+          setTimeout(setupSchoolHomeGame, 1400);
+        } else {
+          btn.classList.add('wrong');
+          shFeedback.textContent = "Try again!";
+        }
+      });
+    });
+  }
+  if (shDay) setupSchoolHomeGame();
+
+  /* ---------- PRACTICE: Before & After ---------- */
+  const baRef = document.getElementById('baRef');
+  const baChoices = document.getElementById('baChoices');
+  const baFeedback = document.getElementById('baFeedback');
+  const baPrompt = document.getElementById('baPrompt');
+  let baAnswerIndex, baRefStep;
+
+  function setupBeforeAfterGame() {
+    baFeedback.textContent = '';
+    const refIndex = 1 + Math.floor(Math.random() * (daySteps.length - 2)); // keeps both a before and an after in range
+    const mode = Math.random() < 0.5 ? 'before' : 'after';
+    baAnswerIndex = mode === 'before' ? refIndex - 1 : refIndex + 1;
+    baRefStep = daySteps[refIndex];
+    baPrompt.textContent = mode === 'before' ? "What happens BEFORE this?" : "What happens AFTER this?";
+    baRef.innerHTML = `<div class="ba-icon-box">${baRefStep.icon}</div><div class="ba-icon-label">${baRefStep.text}</div>`;
+    baRef.onclick = () => { window.speechSynthesis.cancel(); speak(baRefStep.text, "en-US"); };
+
+    const distractorPool = daySteps.map((_, i) => i).filter(i => i !== baAnswerIndex && i !== refIndex);
+    const distractor = distractorPool[Math.floor(Math.random() * distractorPool.length)];
+    const options = shuffle([baAnswerIndex, distractor]);
+
+    baChoices.innerHTML = options.map(i => `
+      <div class="ba-choice" data-i="${i}">${daySteps[i].icon}<div class="ba-icon-label">${daySteps[i].text}</div></div>
+    `).join('');
+    baChoices.querySelectorAll('.ba-choice').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        baChoices.querySelectorAll('.ba-choice').forEach(c => c.classList.remove('correct', 'wrong'));
+        if (i === baAnswerIndex) {
+          el.classList.add('correct');
+          baFeedback.textContent = "🎉 That's right!";
+          window.speechSynthesis.cancel();
+          speak(daySteps[i].text, "en-US");
+          setTimeout(setupBeforeAfterGame, 1400);
+        } else {
+          el.classList.add('wrong');
+          baFeedback.textContent = "Try again!";
+        }
+      });
+    });
+  }
+  if (baRef) setupBeforeAfterGame();
+
+  /* ---------- Spoken instructions for each game ---------- */
+  const gameInstructions = {
+    recipeOrder: "Tap the steps in the order you do them every morning.",
+    schoolHome: "Look at the day. Tap School if it's a school day, or Home if it's a home day.",
+    beforeAfter: "Look at the step. Tap what happens before it, or after it."
+  };
+  document.querySelectorAll('.speak-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.speechSynthesis.cancel();
+      speak(gameInstructions[btn.getAttribute('data-instructions')], "en-US");
+    });
+  });
+
+  /* ---------- PARENT PANEL: Edit My Day steps ---------- */
+  const parentDayEditRows = document.getElementById('parentDayEditRows');
+  function renderParentDayEdit() {
+    if (!parentDayEditRows) return;
+    parentDayEditRows.innerHTML = daySteps.map((s, i) => `
+      <div class="edit-row">
+        <input type="text" data-field="text" data-i="${i}" value="${s.text}">
+        <input type="text" data-field="es" data-i="${i}" value="${s.es}">
+        <button class="remove-btn" data-remove="${i}">×</button>
+      </div>
+    `).join('');
+    parentDayEditRows.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const i = parseInt(inp.getAttribute('data-i'));
+        const field = inp.getAttribute('data-field');
+        daySteps[i][field] = inp.value;
+        renderDay();
+        showSaved('daySavedToast');
+      });
+    });
+    parentDayEditRows.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        daySteps.splice(parseInt(btn.getAttribute('data-remove')), 1);
+        renderParentDayEdit();
+        renderDay();
+        showSaved('daySavedToast');
+      });
+    });
+  }
+  function showSaved(id) {
+    const t = document.getElementById(id);
+    if (!t) return;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 1200);
+  }
+  const addStepBtn = document.getElementById('addStepBtn');
+  if (addStepBtn) {
+    addStepBtn.addEventListener('click', () => {
+      daySteps.push({ text: "New step", es: "Nuevo paso", icon: `<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/></svg>` });
+      renderParentDayEdit();
+      renderDay();
+      setupOrderGame();
+    });
+  }
+  if (parentDayEditRows) renderParentDayEdit();
+
+  /* ---------- PARENT PANEL: Edit Week pattern ---------- */
+  const parentWeekEditRows = document.getElementById('parentWeekEditRows');
+  function renderParentWeekEdit() {
+    if (!parentWeekEditRows) return;
+    parentWeekEditRows.innerHTML = week.map((d, i) => `
+      <div class="day-toggle-row">
+        <div class="dt-name">${d.full}${i === TODAY_INDEX ? ' (Today)' : ''}</div>
+        <div class="type-pill-group">
+          <div class="type-pill ${d.type === 'school' ? 'active-school' : ''}" data-i="${i}" data-type="school">School</div>
+          <div class="type-pill ${d.type === 'home' ? 'active-home' : ''}" data-i="${i}" data-type="home">Home</div>
+        </div>
+      </div>
+    `).join('');
+    parentWeekEditRows.querySelectorAll('.type-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const i = parseInt(pill.getAttribute('data-i'));
+        week[i].type = pill.getAttribute('data-type');
+        renderParentWeekEdit();
+        renderCarousel();
+        renderWeekList();
+        renderWeekTally();
+        updateHomeBadge();
+        if (i === TODAY_INDEX) setupDayView();
+      });
+    });
+  }
+  if (parentWeekEditRows) renderParentWeekEdit();
+</script>
+</body>
+</html>
