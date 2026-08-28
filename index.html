@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Noah's Kitchen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +22,7 @@
     --shadow: rgba(74, 52, 40, 0.18);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
 
   html, body { height: 100%; }
 
@@ -223,6 +225,37 @@
     color: var(--cocoa); margin: 14px 0;
   }
   .ready-banner.show { display: block; animation: fadeIn 0.3s ease; }
+
+  /* ---- Kitchen Crew (pets) ---- */
+  .pet-tabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+  .pet-tab {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 16px;
+    border-radius: 16px; background: #FBF3E1; border: 2.5px solid #E9DCC0; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent; transition: all 0.15s ease;
+  }
+  .pet-tab.active { background: var(--butter); border-color: var(--cocoa); }
+  .pet-tab .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--cocoa); }
+  .pet-tab span { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12.5px; color: var(--cocoa); }
+
+  .pet-stage-wrap { position: relative; width: 190px; height: 190px; margin: 6px auto 10px; }
+  .pet-stage-svg { width: 100%; height: 100%; transition: transform 0.1s ease; }
+  .pet-stage-svg.pet-eating { animation: petSquish 0.4s ease; }
+  .pet-stage-svg.pet-happy { animation: petBounce 0.55s ease; }
+  @keyframes petSquish { 0% { transform: scale(1); } 30% { transform: scale(1.1, 0.9); } 60% { transform: scale(0.95, 1.05); } 100% { transform: scale(1); } }
+  @keyframes petBounce { 0%, 100% { transform: translateY(0) rotate(0deg); } 30% { transform: translateY(-14px) rotate(-4deg); } 60% { transform: translateY(0) rotate(4deg); } 80% { transform: translateY(-6px) rotate(0deg); } }
+
+  .pet-blurb { text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; color: var(--cocoa); margin-bottom: 3px; }
+  .pet-favorite { text-align: center; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px; color: var(--sage-deep); margin-bottom: 14px; }
+
+  .pet-play-btn {
+    display: block; margin: 0 auto 18px; background: var(--sky); color: white; border: 3px solid var(--cocoa);
+    border-radius: 100px; padding: 10px 24px; font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: 14px; cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .pet-play-btn:active { transform: scale(0.95); }
+
+  .dance-pet { width: 44px; height: 44px; margin: 8px auto 0; }
+  .dance-pet svg { width: 100%; height: 100%; animation: petBounce 0.6s ease infinite; }
 
   /* ---- Spanish toggle ---- */
   .lang-toggle {
@@ -587,6 +620,13 @@
         <div class="station-title">Let's Bake!</div>
         <div class="station-sub">Sweet treats</div>
       </div>
+      <div class="station" data-goto="view-pets">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="14" ry="12" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="7" width="12" height="4" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><ellipse cx="20" cy="6" rx="7" ry="5" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="15" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="25" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="15" cy="23" r="1.3" fill="#4A3428"/><circle cx="25" cy="23" r="1.3" fill="#4A3428"/></svg>
+        </div>
+        <div class="station-title">Kitchen Crew</div>
+        <div class="station-sub">Feed &amp; play</div>
+      </div>
     </div>
   </div>
 
@@ -619,7 +659,7 @@
       <div class="section-label" id="stepsSectionLabel">Steps</div>
       <div class="steps" id="stepsList"></div>
 
-      <div class="all-done" id="allDone">🎉 You made it! Ready for school! 🎉</div>
+      <div class="all-done" id="allDone"><span id="allDoneText">🎉 You made it! Ready for school! 🎉</span><div class="dance-pet" id="allDoneDancePet"></div></div>
 
       <div class="then-footer" id="dayThenFooter">
         <svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="white" fill-opacity="0.25" stroke="white" stroke-width="2.5"/><rect x="17" y="24" width="6" height="10" fill="white"/></svg>
@@ -735,6 +775,38 @@
 
       <button class="cook-btn" id="bakeBtn" disabled>🔥 Bake it!</button>
       <button class="cook-again-btn" id="bakeAgainBtn" style="display:none;">🔄 Bake Again</button>
+    </div>
+  </div>
+
+  <!-- ============ KITCHEN CREW (PETS) VIEW ============ -->
+  <div class="view" id="view-pets">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="lang-toggle on" id="langTogglePets">
+      <div class="switch"></div>
+      <div class="label">🌎 Say it in Spanish too</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Kitchen Crew</div>
+      <div class="card-sub">Feed them and give them some love!</div>
+
+      <div class="pet-tabs" id="petTabs"></div>
+
+      <div class="pet-stage-wrap">
+        <div id="petStageInner"></div>
+      </div>
+
+      <div class="pet-blurb" id="petBlurb"></div>
+      <div class="pet-favorite" id="petFavorite"></div>
+
+      <button class="pet-play-btn" id="petPlayBtn">🖐️ Pet Me!</button>
+
+      <div class="section-label">Feed</div>
+      <div class="cook-tray" id="petTray"></div>
     </div>
   </div>
 
@@ -1121,7 +1193,9 @@
       stepsList.appendChild(el);
     });
     progressNum.textContent = `${doneSteps.size}/${activeSteps.length}`;
-    allDone.classList.toggle('show', doneSteps.size === activeSteps.length);
+    const isNowComplete = doneSteps.size === activeSteps.length;
+    allDone.classList.toggle('show', isNowComplete);
+    if (isNowComplete && typeof showDancePet === 'function') showDancePet();
   }
 
   function getDayMode() {
@@ -1179,7 +1253,7 @@
       activeSteps = daySteps;
       document.getElementById('dayCardTitle').textContent = "Noah's Morning Recipe";
       document.getElementById('dayCardSub').textContent = "Makes: 1 ready-for-school kid";
-      allDone.textContent = "🎉 You made it! Ready for school! 🎉";
+      document.getElementById("allDoneText").textContent = "🎉 You made it! Ready for school! 🎉";
       document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>You come back home after school! 🏠</b>';
     } else if (mode === 'home') {
       document.getElementById('ingredientsSection').style.display = 'none';
@@ -1187,7 +1261,7 @@
       activeSteps = getHomePracticeSteps(0);
       document.getElementById('dayCardTitle').textContent = "Noah's Practice Recipe";
       document.getElementById('dayCardSub').textContent = "Sounds, letters & numbers to practice today";
-      allDone.textContent = "🎉 Great practicing today! 🎉";
+      document.getElementById("allDoneText").textContent = "🎉 Great practicing today! 🎉";
       document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>Play time! 🧸</b>';
     } else {
       document.getElementById('ingredientsSection').style.display = '';
@@ -1196,7 +1270,7 @@
       activeSteps = nightSteps;
       document.getElementById('dayCardTitle').textContent = "Noah's Bedtime Recipe";
       document.getElementById('dayCardSub').textContent = "Makes: 1 sleepy, cozy kid";
-      allDone.textContent = "🌙 All done! Sweet dreams! 🌙";
+      document.getElementById("allDoneText").textContent = "🌙 All done! Sweet dreams! 🌙";
       document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>Sleep tight! See you in the morning! 🌙</b>';
     }
     renderDay();
@@ -1602,6 +1676,166 @@
     renderBakeTray();
   }
   setupBakeGame();
+
+  /* ---------- KITCHEN CREW (PETS) ---------- */
+  const pets = [
+    {
+      id: 'dino', name: 'Rex', color: '#7FA684',
+      blurb: "Rex loves big, hearty meals!", blurbEs: "¡A Rex le encantan las comidas grandes!",
+      favorite: 'Chicken', favoriteEs: 'Pollo',
+      svg: `<svg viewBox="0 0 160 160" fill="none">
+        <ellipse cx="80" cy="95" rx="55" ry="50" fill="#7FA684" stroke="#4A3428" stroke-width="4"/>
+        <polygon points="55,50 62,35 70,50" fill="#5E8564" stroke="#4A3428" stroke-width="3"/>
+        <polygon points="75,45 82,28 89,45" fill="#5E8564" stroke="#4A3428" stroke-width="3"/>
+        <polygon points="95,50 102,35 109,50" fill="#5E8564" stroke="#4A3428" stroke-width="3"/>
+        <rect x="58" y="26" width="44" height="12" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="80" cy="18" rx="26" ry="16" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="62" cy="85" r="12" fill="white" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="98" cy="85" r="12" fill="white" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="64" cy="87" r="5" fill="#4A3428"/>
+        <circle cx="100" cy="87" r="5" fill="#4A3428"/>
+        <path d="M65 108 Q80 118 95 108" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="35" cy="105" rx="8" ry="14" fill="#7FA684" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="125" cy="105" rx="8" ry="14" fill="#7FA684" stroke="#4A3428" stroke-width="3"/>
+      </svg>`
+    },
+    {
+      id: 'sloth', name: 'Milo', color: '#C89666',
+      blurb: "Milo loves cozy snacks and naps!", blurbEs: "¡A Milo le encantan las meriendas y las siestas!",
+      favorite: 'Milk', favoriteEs: 'Leche',
+      svg: `<svg viewBox="0 0 160 160" fill="none">
+        <ellipse cx="80" cy="95" rx="55" ry="50" fill="#C89666" stroke="#4A3428" stroke-width="4"/>
+        <rect x="58" y="26" width="44" height="12" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="80" cy="18" rx="26" ry="16" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="62" cy="85" rx="14" ry="18" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/>
+        <ellipse cx="98" cy="85" rx="14" ry="18" fill="#8B5E3C" stroke="#4A3428" stroke-width="2"/>
+        <path d="M56 85 Q62 80 68 85" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M92 85 Q98 80 104 85" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="80" cy="100" rx="6" ry="4" fill="#4A3428"/>
+        <path d="M70 108 Q80 114 90 108" stroke="#4A3428" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>`
+    },
+    {
+      id: 'rat', name: 'Pierre', color: '#B3A489',
+      blurb: "Pierre loves fancy, fancy food!", blurbEs: "¡A Pierre le encanta la comida elegante!",
+      favorite: 'Cheese', favoriteEs: 'Queso',
+      svg: `<svg viewBox="0 0 160 160" fill="none">
+        <path d="M128 120 Q150 130 145 150" stroke="#D9CBB0" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <circle cx="45" cy="45" r="18" fill="#B3A489" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="115" cy="45" r="18" fill="#B3A489" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="45" cy="45" r="9" fill="#E88FB0"/>
+        <circle cx="115" cy="45" r="9" fill="#E88FB0"/>
+        <ellipse cx="80" cy="95" rx="50" ry="48" fill="#D9CBB0" stroke="#4A3428" stroke-width="4"/>
+        <rect x="58" y="26" width="44" height="12" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <ellipse cx="80" cy="18" rx="26" ry="16" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
+        <circle cx="65" cy="90" r="7" fill="#4A3428"/>
+        <circle cx="95" cy="90" r="7" fill="#4A3428"/>
+        <circle cx="80" cy="102" r="5" fill="#E88FB0" stroke="#4A3428" stroke-width="2"/>
+        <line x1="55" y1="100" x2="35" y2="96" stroke="#4A3428" stroke-width="1.5"/>
+        <line x1="55" y1="106" x2="35" y2="108" stroke="#4A3428" stroke-width="1.5"/>
+        <line x1="105" y1="100" x2="125" y2="96" stroke="#4A3428" stroke-width="1.5"/>
+        <line x1="105" y1="106" x2="125" y2="108" stroke="#4A3428" stroke-width="1.5"/>
+        <path d="M70 108 Q80 114 90 108" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>`
+    },
+  ];
+
+  let currentPet = 0;
+  let petsLangOn = true;
+  const petTabs = document.getElementById('petTabs');
+  const petStageInner = document.getElementById('petStageInner');
+  const petBlurb = document.getElementById('petBlurb');
+  const petFavorite = document.getElementById('petFavorite');
+  const petPlayBtn = document.getElementById('petPlayBtn');
+  const petTray = document.getElementById('petTray');
+  const langTogglePets = document.getElementById('langTogglePets');
+
+  langTogglePets.addEventListener('click', () => {
+    petsLangOn = !petsLangOn;
+    langTogglePets.classList.toggle('on', petsLangOn);
+  });
+
+  function renderPetTabs() {
+    petTabs.innerHTML = pets.map((p, i) => `
+      <div class="pet-tab ${i === currentPet ? 'active' : ''}" data-i="${i}">
+        <div class="dot" style="background:${p.color}"></div>
+        <span>${p.name}</span>
+      </div>
+    `).join('');
+    petTabs.querySelectorAll('.pet-tab').forEach(el => {
+      el.addEventListener('click', () => {
+        currentPet = parseInt(el.getAttribute('data-i'));
+        renderPetStage();
+      });
+    });
+  }
+
+  function renderPetStage() {
+    const p = pets[currentPet];
+    petStageInner.innerHTML = p.svg;
+    petStageInner.querySelector('svg').classList.add('pet-stage-svg');
+    petBlurb.textContent = p.blurb;
+    petFavorite.textContent = `⭐ Favorite food: ${p.favorite}`;
+    renderPetTabs();
+    renderPetTray();
+  }
+
+  function renderPetTray() {
+    petTray.innerHTML = cookIngredients.map((ing, i) => `
+      <div class="cook-ingredient" data-i="${i}">${ing.icon}</div>
+    `).join('');
+    petTray.querySelectorAll('.cook-ingredient').forEach(el => {
+      el.addEventListener('click', () => {
+        const i = parseInt(el.getAttribute('data-i'));
+        feedPet(cookIngredients[i]);
+      });
+    });
+  }
+
+  function feedPet(ing) {
+    const p = pets[currentPet];
+    const svgEl = petStageInner.querySelector('svg');
+    window.speechSynthesis.cancel();
+    speak(ing.en, "en-US");
+    if (petsLangOn) speak(ing.es, "es-MX");
+    const isFavorite = ing.en === p.favorite;
+    svgEl.classList.remove('pet-eating', 'pet-happy');
+    void svgEl.offsetWidth; // restart animation
+    svgEl.classList.add(isFavorite ? 'pet-happy' : 'pet-eating');
+    setTimeout(() => {
+      window.speechSynthesis.cancel();
+      if (isFavorite) {
+        speak(`Yum! ${p.name}'s favorite!`, "en-US");
+        if (petsLangOn) speak("¡Mi favorito!", "es-MX");
+        triggerCookEffect(document.querySelector('.pet-stage-wrap'));
+      } else {
+        speak("Yum yum!", "en-US");
+        if (petsLangOn) speak("¡Ñam ñam!", "es-MX");
+      }
+    }, 500);
+  }
+
+  petPlayBtn.addEventListener('click', () => {
+    const p = pets[currentPet];
+    const svgEl = petStageInner.querySelector('svg');
+    svgEl.classList.remove('pet-eating', 'pet-happy');
+    void svgEl.offsetWidth;
+    svgEl.classList.add('pet-happy');
+    window.speechSynthesis.cancel();
+    speak(`${p.name} loves that!`, "en-US");
+    if (petsLangOn) speak("¡Le encanta!", "es-MX");
+    triggerCookEffect(document.querySelector('.pet-stage-wrap'));
+  });
+
+  renderPetStage();
+
+  /* Dance-pet celebration on the routine's "all done" banner */
+  function showDancePet() {
+    const el = document.getElementById('allDoneDancePet');
+    if (!el) return;
+    const p = pets[Math.floor(Math.random() * pets.length)];
+    el.innerHTML = p.svg;
+  }
 
   /* ---------- MY WEEK ---------- */
   const schoolIcon = `<svg viewBox="0 0 40 40" fill="none"><path d="M8 34 V17 L20 7 L32 17 V34 Z" fill="#7FA684" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><rect x="17" y="24" width="6" height="10" fill="#4A3428"/><rect x="12" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/><rect x="24" y="19" width="4" height="4" fill="#FBF6EA" stroke="#4A3428" stroke-width="1.5"/></svg>`;
