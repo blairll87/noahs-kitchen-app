@@ -224,6 +224,33 @@
   }
   .ready-banner.show { display: block; animation: fadeIn 0.3s ease; }
 
+  /* ---- Homework ---- */
+  .hw-due-badge {
+    display: inline-flex; align-items: center; gap: 6px; background: var(--tomato); color: white;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 13px; padding: 6px 14px;
+    border-radius: 100px; margin-bottom: 16px;
+  }
+  .hw-letter-badge {
+    display: flex; align-items: center; justify-content: center; width: 56px; height: 56px;
+    border-radius: 16px; background: var(--butter); border: 3px solid var(--cocoa);
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 26px; color: var(--cocoa);
+    flex-shrink: 0;
+  }
+  .hw-letter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .hw-letter-row .hw-letter-text { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; color: var(--cocoa); }
+  .hw-option {
+    background: #FBF6EA; border: 2.5px solid #E9DCC0; border-radius: 16px; padding: 14px; margin-bottom: 10px;
+  }
+  .hw-option .hw-option-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 14px; color: var(--sage-deep); margin-bottom: 6px; }
+  .hw-option ol { margin: 0; padding-left: 20px; }
+  .hw-option li { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 13px; color: var(--cocoa); line-height: 1.5; margin-bottom: 3px; }
+  .hw-simple-card {
+    background: #FBF6EA; border: 2.5px solid #E9DCC0; border-radius: 16px; padding: 16px; margin-bottom: 4px;
+  }
+  .hw-simple-card p { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; color: var(--cocoa); line-height: 1.5; margin-bottom: 4px; }
+  .hw-simple-card ol { margin: 8px 0 0; padding-left: 20px; }
+  .hw-simple-card li { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 13px; color: var(--cocoa); line-height: 1.6; }
+
   /* ---- Kitchen Crew (pets) ---- */
   .pet-tabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
   .pet-tab {
@@ -427,17 +454,13 @@
   }
   .word-card.add-card .plus { font-size: 26px; color: var(--sage-deep); font-weight: 800; line-height: 1; }
 
-  .add-word-form { display: none; margin-top: 14px; background: #FBF6EA; border: 2px solid #E9DCC0; border-radius: 16px; padding: 14px; }
-  .add-word-form.show { display: block; animation: fadeIn 0.2s ease; }
-  .add-word-form label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12px; color: var(--sage-deep); display: block; margin-bottom: 4px; margin-top: 8px; }
-  .add-word-form input {
+  .edit-form { margin-top: 14px; background: #FBF6EA; border: 2px solid #E9DCC0; border-radius: 16px; padding: 14px; }
+  .edit-form label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 12px; color: var(--sage-deep); display: block; margin-bottom: 4px; margin-top: 8px; }
+  .edit-form input, .edit-form textarea {
     width: 100%; border: 2px solid #E9DCC0; border-radius: 10px; padding: 8px 10px; font-family: 'Nunito', sans-serif;
-    font-weight: 700; font-size: 14px; color: var(--cocoa); background: white;
+    font-weight: 700; font-size: 14px; color: var(--cocoa); background: white; resize: vertical;
   }
-  .add-word-form .save-btn {
-    margin-top: 12px; width: 100%; background: var(--sage-deep); color: white; border: none; border-radius: 12px;
-    padding: 10px; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer;
-  }
+  .edit-form textarea { min-height: 70px; font-weight: 600; }
 
   /* ---- Practice games ---- */
   .game-card { margin-bottom: 16px; }
@@ -651,6 +674,13 @@
         <div class="station-title">Kitchen Crew</div>
         <div class="station-sub">Feed &amp; play</div>
       </div>
+      <div class="station" data-goto="view-homework">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="9" y="8" width="22" height="26" rx="3" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="5" width="12" height="6" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><line x1="13" y1="18" x2="27" y2="18" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="23" x2="27" y2="23" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="28" x2="22" y2="28" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title">Homework</div>
+        <div class="station-sub">This week's assignment</div>
+      </div>
     </div>
   </div>
 
@@ -841,6 +871,50 @@
     </div>
   </div>
 
+  <!-- ============ HOMEWORK VIEW ============ -->
+  <div class="view" id="view-homework">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+
+    <div class="card">
+      <div class="card-title">This Week's Homework</div>
+      <div class="hw-due-badge" id="hwDueBadge">📅 Due: Friday</div>
+
+      <div class="section-label">Language Arts — pick one</div>
+      <div class="hw-letter-row">
+        <div class="hw-letter-badge" id="hwLetterBadge">O</div>
+        <div class="hw-letter-text">This week's letter — find things that start with this in Spanish!</div>
+      </div>
+      <div id="hwOptionsContainer"></div>
+
+      <div class="section-label">Reading</div>
+      <div class="hw-simple-card">
+        <p>📚 Read 2 books together this week</p>
+        <p style="font-weight:600; font-size:12.5px; color:var(--sage-deep);">Bilingual English/Spanish books work great!</p>
+      </div>
+
+      <div class="section-label">Math</div>
+      <div class="hw-simple-card">
+        <p>🧮 Visit <b>play.stmath.com</b></p>
+        <ol>
+          <li>Select Student Login</li>
+          <li>Enter the Picture Password</li>
+          <li>Select the pictures provided with the homework sheet</li>
+        </ol>
+        <p style="margin-top:8px;">Play twice a week for 15 minutes.</p>
+      </div>
+
+      <div id="hwOtherSection" style="display:none;">
+        <div class="section-label" id="hwOtherLabel">Other</div>
+        <div class="hw-simple-card">
+          <p id="hwOtherText"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ MY WEEK VIEW ============ -->
   <div class="view" id="view-week">
     <div class="back-btn" data-goto="view-home">
@@ -961,6 +1035,10 @@
           <div><div class="p-title">Edit Week Pattern</div><div class="p-sub">Set which days are school or home</div></div>
           <div class="chevron">›</div>
         </div>
+        <div class="parent-row" data-goto="view-parent-homework">
+          <div><div class="p-title">Edit Homework</div><div class="p-sub">Set this week's due date and letter</div></div>
+          <div class="chevron">›</div>
+        </div>
       </div>
     </div>
   </div>
@@ -990,6 +1068,32 @@
       <div class="card-title">Edit Week Pattern</div>
       <div class="card-sub">Set each day as a School Day or Home Day</div>
       <div id="parentWeekEditRows"></div>
+      <div class="saved-toast show" style="margin-top:14px;">Changes apply instantly ✓</div>
+    </div>
+  </div>
+
+  <!-- ============ PARENT PANEL: EDIT HOMEWORK ============ -->
+  <div class="view" id="view-parent-homework">
+    <div class="back-btn" data-goto="view-parent">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </div>
+    <div class="card">
+      <div class="card-title">Edit Homework</div>
+      <div class="card-sub">Changes show up in the Homework tab right away</div>
+      <div class="edit-form">
+        <label>Due Date</label>
+        <input type="text" id="hwEditDueDate" placeholder="e.g. Friday, September 12th">
+
+        <label>This Week's Letter</label>
+        <input type="text" id="hwEditLetter" placeholder="e.g. O" maxlength="3">
+
+        <label>Other Assignment — title (leave blank if none this week)</label>
+        <input type="text" id="hwEditOtherTitle" placeholder="e.g. Social-Emotional Learning">
+
+        <label>Other Assignment — details</label>
+        <textarea id="hwEditOtherText" placeholder="e.g. Watch the Bucket Filler video and make a poster..."></textarea>
+      </div>
       <div class="saved-toast show" style="margin-top:14px;">Changes apply instantly ✓</div>
     </div>
   </div>
@@ -1713,6 +1817,106 @@
     renderBakeTray();
   }
   setupBakeGame();
+
+  /* ---------- HOMEWORK ---------- */
+  const HW_STORAGE_KEY = 'noahsKitchenHomework';
+  function loadHomeworkData() {
+    try {
+      const saved = localStorage.getItem(HW_STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch (e) { /* storage unavailable - fall back to defaults */ }
+    return null;
+  }
+  function saveHomeworkData() {
+    try {
+      localStorage.setItem(HW_STORAGE_KEY, JSON.stringify(homeworkData));
+    } catch (e) { /* storage unavailable - edits just won't persist across reloads */ }
+  }
+
+  const homeworkData = Object.assign(
+    { dueDate: 'Friday', letter: 'O', otherTitle: '', otherText: '' },
+    loadHomeworkData() || {}
+  );
+
+  function renderHomework() {
+    const dueBadge = document.getElementById('hwDueBadge');
+    const letterBadge = document.getElementById('hwLetterBadge');
+    const optionsContainer = document.getElementById('hwOptionsContainer');
+    if (!dueBadge || !letterBadge || !optionsContainer) return;
+
+    dueBadge.textContent = `📅 Due: ${homeworkData.dueDate}`;
+    letterBadge.textContent = homeworkData.letter;
+
+    const L = homeworkData.letter;
+    optionsContainer.innerHTML = `
+      <div class="hw-option">
+        <div class="hw-option-title">Option 1: Scavenger Hunt</div>
+        <ol>
+          <li>Look for 5 objects in your environment that begin with the letter ${L} in Spanish.</li>
+          <li>Take a picture of each object.</li>
+          <li>Create a book or poster using the pictures.</li>
+          <li>Write the Spanish name of each object next to its picture.</li>
+          <li>Have fun and be creative!</li>
+        </ol>
+      </div>
+      <div class="hw-option">
+        <div class="hw-option-title">Option 2: Make Artwork</div>
+        <ol>
+          <li>Create your own artwork representing 5 objects that begin with the letter ${L} in Spanish.</li>
+          <li>Use crayons, markers, paint, Play-Doh, or any art materials.</li>
+          <li>Write the Spanish name of each object on your artwork.</li>
+          <li>Take a picture of your artwork or bring it to class.</li>
+        </ol>
+      </div>
+      <div class="hw-option">
+        <div class="hw-option-title">Option 3: Magazine or Internet</div>
+        <ol>
+          <li>Find 5 images of objects that begin with the letter ${L} in Spanish, in a magazine or online.</li>
+          <li>Cut out or print/save the images.</li>
+          <li>Create a book or poster using the five images.</li>
+          <li>Write the Spanish name of each object next to its image.</li>
+        </ol>
+      </div>
+    `;
+
+    const otherSection = document.getElementById('hwOtherSection');
+    const otherLabel = document.getElementById('hwOtherLabel');
+    const otherText = document.getElementById('hwOtherText');
+    if (otherSection && homeworkData.otherTitle && homeworkData.otherTitle.trim()) {
+      otherSection.style.display = '';
+      otherLabel.textContent = homeworkData.otherTitle;
+      otherText.textContent = homeworkData.otherText || '';
+    } else if (otherSection) {
+      otherSection.style.display = 'none';
+    }
+  }
+  renderHomework();
+
+  function setupHomeworkEditForm() {
+    const dueInput = document.getElementById('hwEditDueDate');
+    const letterInput = document.getElementById('hwEditLetter');
+    const otherTitleInput = document.getElementById('hwEditOtherTitle');
+    const otherTextInput = document.getElementById('hwEditOtherText');
+    if (!dueInput) return;
+
+    dueInput.value = homeworkData.dueDate;
+    letterInput.value = homeworkData.letter;
+    otherTitleInput.value = homeworkData.otherTitle;
+    otherTextInput.value = homeworkData.otherText;
+
+    function onChange() {
+      homeworkData.dueDate = dueInput.value.trim() || 'Friday';
+      homeworkData.letter = (letterInput.value.trim() || 'O').toUpperCase();
+      homeworkData.otherTitle = otherTitleInput.value;
+      homeworkData.otherText = otherTextInput.value;
+      saveHomeworkData();
+      renderHomework();
+    }
+    [dueInput, letterInput, otherTitleInput, otherTextInput].forEach(el => {
+      el.addEventListener('input', onChange);
+    });
+  }
+  setupHomeworkEditForm();
 
   /* ---------- KITCHEN CREW (PETS) ---------- */
   const pets = [
