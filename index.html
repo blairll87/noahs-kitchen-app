@@ -1828,7 +1828,12 @@
   }
 
   function updatePetsForTimeOfDay() {
-    const isNight = typeof getDayMode === 'function' && getDayMode() === 'night';
+    let isNight = false;
+    try {
+      isNight = typeof getDayMode === 'function' && getDayMode() === 'night';
+    } catch (e) {
+      // week/TODAY_INDEX not ready yet - just skip the night styling this time
+    }
     const badge = document.getElementById('petNightBadge');
     if (badge) badge.classList.toggle('show', isNight);
     const svgEl = petStageInner.querySelector('svg');
@@ -1952,8 +1957,6 @@
     speak(`Goodnight, ${p.name}! Sweet dreams!`, "en-US");
     if (petsLangOn) speak("¡Buenas noches! Dulces sueños!", "es-MX");
   });
-
-  renderPetStage();
 
   /* Dance-pet celebration - reused wherever a "ready" moment happens */
   function showDancePet(elementId) {
@@ -2126,6 +2129,7 @@
   renderDayCounter();
   renderWeekTally();
   setupDayView();
+  renderPetStage();
 
   // center carousel on today after layout
   window.addEventListener('load', () => {
