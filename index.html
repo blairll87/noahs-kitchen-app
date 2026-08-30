@@ -245,12 +245,38 @@
   .pet-blurb { text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 14px; color: var(--cocoa); margin-bottom: 3px; }
   .pet-favorite { text-align: center; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 12px; color: var(--sage-deep); margin-bottom: 14px; }
 
-  .pet-play-btn {
-    display: block; margin: 0 auto 18px; background: var(--sky); color: white; border: 3px solid var(--cocoa);
-    border-radius: 100px; padding: 10px 24px; font-family: 'Baloo 2', sans-serif; font-weight: 800;
-    font-size: 14px; cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+  .pet-actions { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; }
+  .pet-action-btn {
+    flex: 1; max-width: 130px; color: white; border: 3px solid var(--cocoa); border-radius: 100px;
+    padding: 10px 6px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 12.5px;
+    cursor: pointer; transition: transform 0.12s ease; user-select: none; -webkit-tap-highlight-color: transparent;
   }
-  .pet-play-btn:active { transform: scale(0.95); }
+  .pet-action-btn:active { transform: scale(0.95); }
+  .pet-action-btn.pet-action-play { background: var(--sky); }
+  .pet-action-btn.pet-action-wash { background: #6FA8C9; }
+  .pet-action-btn.pet-action-bed { background: #9B7EDE; }
+
+  .pet-zzz {
+    position: absolute; top: -6px; right: 6px; font-family: 'Baloo 2', sans-serif; font-weight: 800;
+    font-size: 24px; color: #9B7EDE; opacity: 0; pointer-events: none;
+  }
+  .pet-zzz.show { animation: zzzFloat 2s ease; }
+  @keyframes zzzFloat {
+    0% { opacity: 0; transform: translateY(0); }
+    20% { opacity: 1; }
+    80% { opacity: 1; transform: translateY(-22px); }
+    100% { opacity: 0; transform: translateY(-32px); }
+  }
+  @keyframes petSway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(4deg); } }
+  .pet-stage-svg.pet-night-idle { animation: petSway 3s ease-in-out infinite; }
+  .pet-night-badge {
+    display: none; text-align: center; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 12px;
+    color: #9B7EDE; background: #EDE4F9; border: 2px solid var(--cocoa); border-radius: 100px;
+    padding: 5px 14px; margin: 0 auto 14px; width: fit-content;
+  }
+  .pet-night-badge.show { display: block; }
+  .pet-stage-svg.pet-sleepy { animation: petSway 1.2s ease-in-out; }
+  .pet-stage-svg.pet-washing { animation: petSquish 0.5s ease-in-out 2; }
 
   .dance-pet { width: 44px; height: 44px; margin: 8px auto 0; }
   .dance-pet svg { width: 100%; height: 100%; animation: petBounce 0.6s ease infinite; }
@@ -722,7 +748,7 @@
         <div class="pot-contents" id="potContents"></div>
       </div>
 
-      <div class="ready-banner" id="cookReadyBanner">🎉 Noah's Special Dish is ready! 🎉</div>
+      <div class="ready-banner" id="cookReadyBanner">🎉 Noah's Special Dish is ready! 🎉<div class="dance-pet" id="cookDancePet"></div></div>
 
       <div class="section-label">Utensils</div>
       <div class="utensil-row" id="utensilRow"></div>
@@ -763,7 +789,7 @@
         <div class="pot-contents" id="bakeContents" style="top:22%; left:16%; width:68%; height:52%;"></div>
       </div>
 
-      <div class="ready-banner" id="bakeReadyBanner">🎉 Noah's Yummy Bake is ready! 🎉</div>
+      <div class="ready-banner" id="bakeReadyBanner">🎉 Noah's Yummy Bake is ready! 🎉<div class="dance-pet" id="bakeDancePet"></div></div>
 
       <div class="section-label">Utensils</div>
       <div class="utensil-row" id="bakeUtensilRow"></div>
@@ -792,16 +818,23 @@
       <div class="card-title">Kitchen Crew</div>
       <div class="card-sub">Feed them and give them some love!</div>
 
+      <div class="pet-night-badge" id="petNightBadge">🌙 It's bedtime — everyone's getting sleepy!</div>
+
       <div class="pet-tabs" id="petTabs"></div>
 
       <div class="pet-stage-wrap">
         <div id="petStageInner"></div>
+        <div class="pet-zzz" id="petZzz">💤</div>
       </div>
 
       <div class="pet-blurb" id="petBlurb"></div>
       <div class="pet-favorite" id="petFavorite"></div>
 
-      <button class="pet-play-btn" id="petPlayBtn">🖐️ Pet Me!</button>
+      <div class="pet-actions">
+        <button class="pet-action-btn pet-action-play" id="petPlayBtn">🖐️ Pet</button>
+        <button class="pet-action-btn pet-action-wash" id="petWashBtn">🛁 Wash</button>
+        <button class="pet-action-btn pet-action-bed" id="petBedBtn">🌙 Bedtime</button>
+      </div>
 
       <div class="section-label">Feed</div>
       <div class="cook-tray" id="petTray"></div>
@@ -1277,6 +1310,7 @@
   // Check every minute in case the app is left open across the 7pm switch
   setInterval(() => {
     if (getDayMode() !== lastMode) setupDayView();
+    if (typeof updatePetsForTimeOfDay === 'function') updatePetsForTimeOfDay();
   }, 60000);
 
   /* ---------- EXTRA PRACTICE (available any day) ---------- */
@@ -1482,10 +1516,12 @@
       cookReadyBanner.classList.add('show');
       cookBtn.style.display = 'none';
       cookAgainBtn.style.display = '';
-      window.speechSynthesis.cancel();
-      speak("Yum! Your dish is ready!", "en-US");
-      if (cookLangOn) speak("¡Qué rico! Tu plato está listo!", "es-MX");
       triggerCookEffect(document.querySelector('.cook-pot-wrap'));
+      if (typeof runTasteTest === 'function') {
+        runTasteTest('cookDancePet', potItems, cookIngredients, cookLangOn);
+      } else if (typeof showDancePet === 'function') {
+        showDancePet('cookDancePet');
+      }
     }, 1400);
   });
 
@@ -1651,10 +1687,12 @@
       bakeReadyBanner.classList.add('show');
       bakeBtn.style.display = 'none';
       bakeAgainBtn.style.display = '';
-      window.speechSynthesis.cancel();
-      speak("Yum! Your bake is ready!", "en-US");
-      if (bakeLangOn) speak("¡Delicioso! Tu postre está listo!", "es-MX");
       triggerCookEffect(document.getElementById('bakeOvenWrap'));
+      if (typeof runTasteTest === 'function') {
+        runTasteTest('bakeDancePet', bakeItems, bakeIngredients, bakeLangOn);
+      } else if (typeof showDancePet === 'function') {
+        showDancePet('bakeDancePet');
+      }
     }, 1400);
   });
 
@@ -1681,6 +1719,13 @@
       id: 'dino', name: 'Rex', color: '#7FA684',
       blurb: "Rex loves big, hearty meals!", blurbEs: "¡A Rex le encantan las comidas grandes!",
       favorite: 'Chicken', favoriteEs: 'Pollo',
+      specialReactions: {
+        'Water': { en: "Rex takes one big gulp!", es: "¡Rex toma un gran trago!" },
+        'Rice': { en: "Rex gobbles it all in one bite!", es: "¡Rex se lo come todo de un bocado!" },
+        'Salt': { en: "Whoa, too salty! Rex makes a silly face!", es: "¡Muy salado! Rex hace una cara graciosa!" },
+        'Sugar': { en: "Rex adds extra sugar - the more the better!", es: "¡Rex le pone más azúcar - mientras más, mejor!" },
+        'Nuts': { en: "Crunch! Rex loves the crunchy nuts!", es: "¡Crac! ¡A Rex le encantan las nueces crujientes!" },
+      },
       svg: `<svg viewBox="0 0 160 160" fill="none">
         <ellipse cx="80" cy="95" rx="55" ry="50" fill="#7FA684" stroke="#4A3428" stroke-width="4"/>
         <polygon points="55,50 62,35 70,50" fill="#5E8564" stroke="#4A3428" stroke-width="3"/>
@@ -1701,6 +1746,13 @@
       id: 'sloth', name: 'Milo', color: '#C89666',
       blurb: "Milo loves cozy snacks and naps!", blurbEs: "¡A Milo le encantan las meriendas y las siestas!",
       favorite: 'Milk', favoriteEs: 'Leche',
+      specialReactions: {
+        'Potato': { en: "Milo takes a big slow bite... and starts to doze off!", es: "¡Milo se queda dormido masticando!" },
+        'Onion': { en: "Whoa! That woke Milo right up!", es: "¡Eso despertó a Milo de repente!" },
+        'Banana': { en: "Milo peels it very... slowly...", es: "Milo lo pela muy... lentamente..." },
+        'Cinnamon': { en: "Mmm, cinnamon makes Milo extra cozy!", es: "¡La canela hace que Milo se sienta muy acogedor!" },
+        'Honey': { en: "Milo drizzles honey slooowly...", es: "Milo le pone miel muy despaaacio..." },
+      },
       svg: `<svg viewBox="0 0 160 160" fill="none">
         <ellipse cx="80" cy="95" rx="55" ry="50" fill="#C89666" stroke="#4A3428" stroke-width="4"/>
         <rect x="58" y="26" width="44" height="12" rx="4" fill="#FBF3E1" stroke="#4A3428" stroke-width="3"/>
@@ -1717,6 +1769,13 @@
       id: 'rat', name: 'Pierre', color: '#B3A489',
       blurb: "Pierre loves fancy, fancy food!", blurbEs: "¡A Pierre le encanta la comida elegante!",
       favorite: 'Cheese', favoriteEs: 'Queso',
+      specialReactions: {
+        'Fish': { en: "Ooh là là, magnifique!", es: "¡Ay, qué elegante!" },
+        'Onion': { en: "Pierre's eyes water - so fancy, so many onions!", es: "¡A Pierre se le llenan los ojos!" },
+        'Bread': { en: "Pierre nibbles it like a true gourmet chef!", es: "¡Pierre lo prueba como un verdadero chef!" },
+        'Frosting': { en: "Pierre adds a fancy swirl of frosting!", es: "¡Pierre le pone un elegante remolino de glaseado!" },
+        'Vanilla': { en: "Ahh, vanilla - très chic!", es: "¡Ah, vainilla - muy chic!" },
+      },
       svg: `<svg viewBox="0 0 160 160" fill="none">
         <path d="M128 120 Q150 130 145 150" stroke="#D9CBB0" stroke-width="8" fill="none" stroke-linecap="round"/>
         <circle cx="45" cy="45" r="18" fill="#B3A489" stroke="#4A3428" stroke-width="3"/>
@@ -1768,12 +1827,21 @@
     });
   }
 
+  function updatePetsForTimeOfDay() {
+    const isNight = typeof getDayMode === 'function' && getDayMode() === 'night';
+    const badge = document.getElementById('petNightBadge');
+    if (badge) badge.classList.toggle('show', isNight);
+    const svgEl = petStageInner.querySelector('svg');
+    if (svgEl) svgEl.classList.toggle('pet-night-idle', isNight);
+  }
+
   function renderPetStage() {
     const p = pets[currentPet];
     petStageInner.innerHTML = p.svg;
     petStageInner.querySelector('svg').classList.add('pet-stage-svg');
     petBlurb.textContent = p.blurb;
     petFavorite.textContent = `⭐ Favorite food: ${p.favorite}`;
+    updatePetsForTimeOfDay();
     renderPetTabs();
     renderPetTray();
   }
@@ -1790,6 +1858,14 @@
     });
   }
 
+  const genericReactions = [
+    { en: "Yum yum!", es: "¡Ñam ñam!" },
+    { en: "Mmm, delicious!", es: "¡Mmm, delicioso!" },
+    { en: "Crunch crunch!", es: "¡Crick crack!" },
+    { en: "So good!", es: "¡Qué rico!" },
+    { en: "Nom nom nom!", es: "¡Ñam ñam ñam!" },
+  ];
+
   function feedPet(ing) {
     const p = pets[currentPet];
     const svgEl = petStageInner.querySelector('svg');
@@ -1797,7 +1873,8 @@
     speak(ing.en, "en-US");
     if (petsLangOn) speak(ing.es, "es-MX");
     const isFavorite = ing.en === p.favorite;
-    svgEl.classList.remove('pet-eating', 'pet-happy');
+    const special = p.specialReactions && p.specialReactions[ing.en];
+    svgEl.classList.remove('pet-eating', 'pet-happy', 'pet-washing', 'pet-sleepy');
     void svgEl.offsetWidth; // restart animation
     svgEl.classList.add(isFavorite ? 'pet-happy' : 'pet-eating');
     setTimeout(() => {
@@ -1806,9 +1883,14 @@
         speak(`Yum! ${p.name}'s favorite!`, "en-US");
         if (petsLangOn) speak("¡Mi favorito!", "es-MX");
         triggerCookEffect(document.querySelector('.pet-stage-wrap'));
+      } else if (special) {
+        speak(special.en, "en-US");
+        if (petsLangOn) speak(special.es, "es-MX");
+        triggerCookEffect(document.querySelector('.pet-stage-wrap'));
       } else {
-        speak("Yum yum!", "en-US");
-        if (petsLangOn) speak("¡Ñam ñam!", "es-MX");
+        const r = genericReactions[Math.floor(Math.random() * genericReactions.length)];
+        speak(r.en, "en-US");
+        if (petsLangOn) speak(r.es, "es-MX");
       }
     }, 500);
   }
@@ -1816,7 +1898,7 @@
   petPlayBtn.addEventListener('click', () => {
     const p = pets[currentPet];
     const svgEl = petStageInner.querySelector('svg');
-    svgEl.classList.remove('pet-eating', 'pet-happy');
+    svgEl.classList.remove('pet-eating', 'pet-happy', 'pet-washing', 'pet-sleepy');
     void svgEl.offsetWidth;
     svgEl.classList.add('pet-happy');
     window.speechSynthesis.cancel();
@@ -1825,14 +1907,120 @@
     triggerCookEffect(document.querySelector('.pet-stage-wrap'));
   });
 
+  const bubbleColors = ["#6FA8C9", "#FBF3E1", "#7FA684", "#F5C451"];
+  function triggerBubbleEffect(el) {
+    if (!el) return;
+    for (let i = 0; i < 6; i++) {
+      const wisp = document.createElement('div');
+      wisp.className = 'steam-wisp';
+      wisp.style.background = bubbleColors[i % bubbleColors.length];
+      wisp.style.left = (30 + Math.random() * 40) + '%';
+      wisp.style.animationDelay = (Math.random() * 0.2) + 's';
+      el.appendChild(wisp);
+      setTimeout(() => wisp.remove(), 1000);
+    }
+  }
+
+  document.getElementById('petWashBtn').addEventListener('click', () => {
+    const p = pets[currentPet];
+    const svgEl = petStageInner.querySelector('svg');
+    svgEl.classList.remove('pet-eating', 'pet-happy', 'pet-washing', 'pet-sleepy');
+    void svgEl.offsetWidth;
+    svgEl.classList.add('pet-washing');
+    window.speechSynthesis.cancel();
+    speak("Bath time!", "en-US");
+    if (petsLangOn) speak("¡Hora del baño!", "es-MX");
+    triggerBubbleEffect(document.querySelector('.pet-stage-wrap'));
+    setTimeout(() => {
+      window.speechSynthesis.cancel();
+      speak(`${p.name} is so clean now!`, "en-US");
+      if (petsLangOn) speak("¡Qué limpio!", "es-MX");
+    }, 900);
+  });
+
+  document.getElementById('petBedBtn').addEventListener('click', () => {
+    const p = pets[currentPet];
+    const svgEl = petStageInner.querySelector('svg');
+    const zzz = document.getElementById('petZzz');
+    svgEl.classList.remove('pet-eating', 'pet-happy', 'pet-washing', 'pet-sleepy');
+    void svgEl.offsetWidth;
+    svgEl.classList.add('pet-sleepy');
+    zzz.classList.remove('show');
+    void zzz.offsetWidth;
+    zzz.classList.add('show');
+    window.speechSynthesis.cancel();
+    speak(`Goodnight, ${p.name}! Sweet dreams!`, "en-US");
+    if (petsLangOn) speak("¡Buenas noches! Dulces sueños!", "es-MX");
+  });
+
   renderPetStage();
 
-  /* Dance-pet celebration on the routine's "all done" banner */
-  function showDancePet() {
-    const el = document.getElementById('allDoneDancePet');
+  /* Dance-pet celebration - reused wherever a "ready" moment happens */
+  function showDancePet(elementId) {
+    const el = document.getElementById(elementId || 'allDoneDancePet');
     if (!el) return;
     const p = pets[Math.floor(Math.random() * pets.length)];
     el.innerHTML = p.svg;
+  }
+
+  /* Taste-test: a Kitchen Crew member tries the finished dish and reacts to what's in it */
+  function pickTasterAndReaction(itemIndices, ingredientPool) {
+    const dishNames = itemIndices.map(i => ingredientPool[i].en);
+    const favMatches = pets.filter(p => dishNames.includes(p.favorite));
+    if (favMatches.length) {
+      return { pet: favMatches[Math.floor(Math.random() * favMatches.length)], tier: 'favorite' };
+    }
+    const specialMatches = [];
+    pets.forEach(p => {
+      if (!p.specialReactions) return;
+      dishNames.forEach(name => {
+        if (p.specialReactions[name]) specialMatches.push({ pet: p, food: name });
+      });
+    });
+    if (specialMatches.length) {
+      const m = specialMatches[Math.floor(Math.random() * specialMatches.length)];
+      return { pet: m.pet, tier: 'special', food: m.food };
+    }
+    return { pet: pets[Math.floor(Math.random() * pets.length)], tier: 'generic' };
+  }
+
+  function runTasteTest(elementId, itemIndices, ingredientPool, langOn) {
+    const el = document.getElementById(elementId);
+    if (!el || !itemIndices.length) { showDancePet(elementId); return; }
+    const { pet, tier, food } = pickTasterAndReaction(itemIndices, ingredientPool);
+    el.innerHTML = pet.svg;
+    const svgEl = el.querySelector('svg');
+    svgEl.classList.add('pet-stage-svg');
+
+    setTimeout(() => {
+      window.speechSynthesis.cancel();
+      speak(`${pet.name} wants to try it!`, "en-US");
+      if (langOn) speak(`¡${pet.name} quiere probarlo!`, "es-MX");
+      svgEl.classList.add('pet-eating');
+    }, 300);
+
+    setTimeout(() => {
+      svgEl.classList.remove('pet-eating');
+      void svgEl.offsetWidth;
+      window.speechSynthesis.cancel();
+      if (tier === 'favorite') {
+        svgEl.classList.add('pet-happy');
+        speak(`Yum! ${pet.name}'s favorite!`, "en-US");
+        if (langOn) speak("¡Mi favorito!", "es-MX");
+        triggerCookEffect(el);
+      } else if (tier === 'special') {
+        svgEl.classList.add('pet-eating');
+        const r = pet.specialReactions[food];
+        speak(r.en, "en-US");
+        if (langOn) speak(r.es, "es-MX");
+        triggerCookEffect(el);
+      } else {
+        svgEl.classList.add('pet-eating');
+        const r = genericReactions[Math.floor(Math.random() * genericReactions.length)];
+        speak(r.en, "en-US");
+        if (langOn) speak(r.es, "es-MX");
+      }
+    }, 1300);
   }
 
   /* ---------- MY WEEK ---------- */
