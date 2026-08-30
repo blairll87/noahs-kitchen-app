@@ -1031,8 +1031,8 @@
     return candidates[0];
   }
 
-  function speak(text, lang) {
-    if (!('speechSynthesis' in window)) return;
+  function speak(text, lang, onEnd) {
+    if (!('speechSynthesis' in window)) { if (onEnd) onEnd(); return; }
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 0.88;
     u.pitch = 1.12;
@@ -1041,6 +1041,7 @@
       const v = pickVoice(lang);
       if (v) u.voice = v;
     }
+    if (onEnd) u.onend = onEnd;
     window.speechSynthesis.speak(u);
   }
 
@@ -1875,29 +1876,38 @@
     const p = pets[currentPet];
     const svgEl = petStageInner.querySelector('svg');
     window.speechSynthesis.cancel();
-    speak(ing.en, "en-US");
-    if (petsLangOn) speak(ing.es, "es-MX");
     const isFavorite = ing.en === p.favorite;
     const special = p.specialReactions && p.specialReactions[ing.en];
     svgEl.classList.remove('pet-eating', 'pet-happy', 'pet-washing', 'pet-sleepy');
     void svgEl.offsetWidth; // restart animation
     svgEl.classList.add(isFavorite ? 'pet-happy' : 'pet-eating');
-    setTimeout(() => {
-      window.speechSynthesis.cancel();
+
+    function playReaction() {
       if (isFavorite) {
-        speak(`Yum! ${p.name}'s favorite!`, "en-US");
-        if (petsLangOn) speak("¡Mi favorito!", "es-MX");
+        speak(`Yum! ${p.name}'s favorite!`, "en-US", () => {
+          if (petsLangOn) speak("¡Mi favorito!", "es-MX");
+        });
         triggerCookEffect(document.querySelector('.pet-stage-wrap'));
       } else if (special) {
-        speak(special.en, "en-US");
-        if (petsLangOn) speak(special.es, "es-MX");
+        speak(special.en, "en-US", () => {
+          if (petsLangOn) speak(special.es, "es-MX");
+        });
         triggerCookEffect(document.querySelector('.pet-stage-wrap'));
       } else {
         const r = genericReactions[Math.floor(Math.random() * genericReactions.length)];
-        speak(r.en, "en-US");
-        if (petsLangOn) speak(r.es, "es-MX");
+        speak(r.en, "en-US", () => {
+          if (petsLangOn) speak(r.es, "es-MX");
+        });
       }
-    }, 2400);
+    }
+
+    speak(ing.en, "en-US", () => {
+      if (petsLangOn) {
+        speak(ing.es, "es-MX", () => setTimeout(playReaction, 300));
+      } else {
+        setTimeout(playReaction, 300);
+      }
+    });
   }
 
   petPlayBtn.addEventListener('click', () => {
@@ -1933,14 +1943,22 @@
     void svgEl.offsetWidth;
     svgEl.classList.add('pet-washing');
     window.speechSynthesis.cancel();
-    speak("Bath time!", "en-US");
-    if (petsLangOn) speak("¡Hora del baño!", "es-MX");
     triggerBubbleEffect(document.querySelector('.pet-stage-wrap'));
-    setTimeout(() => {
-      window.speechSynthesis.cancel();
-      speak(`${p.name} is so clean now!`, "en-US");
-      if (petsLangOn) speak("¡Qué limpio!", "es-MX");
-    }, 900);
+    speak("Bath time!", "en-US", () => {
+      if (petsLangOn) {
+        speak("¡Hora del baño!", "es-MX", () => setTimeout(() => {
+          speak(`${p.name} is so clean now!`, "en-US", () => {
+            if (petsLangOn) speak("¡Qué limpio!", "es-MX");
+          });
+        }, 300));
+      } else {
+        setTimeout(() => {
+          speak(`${p.name} is so clean now!`, "en-US", () => {
+            if (petsLangOn) speak("¡Qué limpio!", "es-MX");
+          });
+        }, 300);
+      }
+    });
   });
 
   document.getElementById('petBedBtn').addEventListener('click', () => {
@@ -1995,35 +2013,42 @@
     const svgEl = el.querySelector('svg');
     svgEl.classList.add('pet-stage-svg');
 
-    setTimeout(() => {
-      window.speechSynthesis.cancel();
-      speak(`${pet.name} wants to try it!`, "en-US");
-      if (langOn) speak(`¡${pet.name} quiere probarlo!`, "es-MX");
-      svgEl.classList.add('pet-eating');
-    }, 300);
-
-    setTimeout(() => {
+    function playReaction() {
       svgEl.classList.remove('pet-eating');
       void svgEl.offsetWidth;
-      window.speechSynthesis.cancel();
       if (tier === 'favorite') {
         svgEl.classList.add('pet-happy');
-        speak(`Yum! ${pet.name}'s favorite!`, "en-US");
-        if (langOn) speak("¡Mi favorito!", "es-MX");
+        speak(`Yum! ${pet.name}'s favorite!`, "en-US", () => {
+          if (langOn) speak("¡Mi favorito!", "es-MX");
+        });
         triggerCookEffect(el);
       } else if (tier === 'special') {
         svgEl.classList.add('pet-eating');
         const r = pet.specialReactions[food];
-        speak(r.en, "en-US");
-        if (langOn) speak(r.es, "es-MX");
+        speak(r.en, "en-US", () => {
+          if (langOn) speak(r.es, "es-MX");
+        });
         triggerCookEffect(el);
       } else {
         svgEl.classList.add('pet-eating');
         const r = genericReactions[Math.floor(Math.random() * genericReactions.length)];
-        speak(r.en, "en-US");
-        if (langOn) speak(r.es, "es-MX");
+        speak(r.en, "en-US", () => {
+          if (langOn) speak(r.es, "es-MX");
+        });
       }
-    }, 3000);
+    }
+
+    setTimeout(() => {
+      window.speechSynthesis.cancel();
+      svgEl.classList.add('pet-eating');
+      speak(`${pet.name} wants to try it!`, "en-US", () => {
+        if (langOn) {
+          speak(`¡${pet.name} quiere probarlo!`, "es-MX", () => setTimeout(playReaction, 300));
+        } else {
+          setTimeout(playReaction, 300);
+        }
+      });
+    }, 300);
   }
 
   /* ---------- MY WEEK ---------- */
