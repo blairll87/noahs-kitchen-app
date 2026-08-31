@@ -251,6 +251,73 @@
   .hw-simple-card ol { margin: 8px 0 0; padding-left: 20px; }
   .hw-simple-card li { font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 13px; color: var(--cocoa); line-height: 1.6; }
 
+  .hw-edit-btn {
+    background: var(--sky); color: white; border: 2.5px solid var(--cocoa); border-radius: 100px;
+    padding: 7px 16px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 12.5px;
+    cursor: pointer; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 5px;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .hw-edit-btn:active { transform: scale(0.96); }
+
+  .hw-check-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .hw-check-circle {
+    width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid #D8C9A8; background: white;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+  }
+  .hw-check-row.checked .hw-check-circle { background: var(--sage-deep); border-color: var(--sage-deep); }
+  .hw-check-circle svg { width: 14px; height: 14px; opacity: 0; transform: scale(0.5); transition: all 0.2s ease; }
+  .hw-check-row.checked .hw-check-circle svg { opacity: 1; transform: scale(1); }
+  .hw-check-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--cocoa); }
+
+  .hw-option.chosen { border-color: var(--sage-deep); background: #E9F2E7; }
+
+  .hw-day-checks { display: flex; gap: 5px; justify-content: space-between; margin-top: 12px; }
+  .hw-day-check { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; padding: 6px 0; }
+  .hw-day-check .hw-check-circle { width: 32px; height: 32px; }
+  .hw-day-check .hw-day-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 11px; color: var(--cocoa); }
+
+  .hw-other-empty {
+    background: #E9F2E7; border: 2px dashed var(--sage); border-radius: 16px; padding: 14px; text-align: center;
+    font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--sage-deep); cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ---- Break Timer ---- */
+  .hw-timer-card {
+    background: #FBF6EA; border: 2.5px solid #E9DCC0; border-radius: 20px; padding: 18px; text-align: center;
+  }
+  .hw-timer-display {
+    display: inline-flex; align-items: center; justify-content: center; width: 140px; height: 140px;
+    border-radius: 50%; background: var(--butter); border: 5px solid var(--cocoa);
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 34px; color: var(--cocoa);
+    margin: 4px auto 16px;
+  }
+  .hw-timer-adjust { display: flex; gap: 10px; justify-content: center; margin-bottom: 14px; }
+  .hw-timer-adj-btn {
+    background: white; border: 2.5px solid #E9DCC0; border-radius: 100px; padding: 8px 16px;
+    font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 13px; color: var(--cocoa);
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .hw-timer-adj-btn:active { transform: scale(0.95); }
+  .hw-timer-adj-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .hw-timer-controls { display: flex; gap: 10px; }
+  .hw-timer-btn {
+    flex: 1; border: 3px solid var(--cocoa); border-radius: 16px; padding: 12px; color: white;
+    font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 14px; cursor: pointer;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .hw-timer-btn:active { transform: scale(0.96); }
+  .hw-timer-btn.start { background: var(--tomato); }
+  .hw-timer-btn.reset { background: var(--sage-deep); }
+  .hw-timer-done {
+    display: none; margin-top: 14px; background: var(--butter); border: 2.5px solid var(--cocoa);
+    border-radius: 16px; padding: 12px; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 14px; color: var(--cocoa);
+  }
+  .hw-timer-done.show { display: block; animation: fadeIn 0.3s ease; }
+
   /* ---- Kitchen Crew (pets) ---- */
   .pet-tabs { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
   .pet-tab {
@@ -881,6 +948,23 @@
     <div class="card">
       <div class="card-title">This Week's Homework</div>
       <div class="hw-due-badge" id="hwDueBadge">📅 Due: Friday</div>
+      <div>
+        <button class="hw-edit-btn" id="hwEditBtn">✏️ Edit due date, letter &amp; other</button>
+      </div>
+
+      <div class="section-label">Break Timer</div>
+      <div class="hw-timer-card">
+        <div class="hw-timer-display" id="hwTimerDisplay">05:00</div>
+        <div class="hw-timer-adjust">
+          <button class="hw-timer-adj-btn" id="hwTimerMinus">− 1 min</button>
+          <button class="hw-timer-adj-btn" id="hwTimerPlus">+ 1 min</button>
+        </div>
+        <div class="hw-timer-controls">
+          <button class="hw-timer-btn start" id="hwTimerStart">▶️ Start</button>
+          <button class="hw-timer-btn reset" id="hwTimerReset">🔄 Reset</button>
+        </div>
+        <div class="hw-timer-done" id="hwTimerDone">⏰ Break's over! Time to get back to it!</div>
+      </div>
 
       <div class="section-label">Language Arts — pick one</div>
       <div class="hw-letter-row">
@@ -893,6 +977,7 @@
       <div class="hw-simple-card">
         <p>📚 Read 2 books together this week</p>
         <p style="font-weight:600; font-size:12.5px; color:var(--sage-deep);">Bilingual English/Spanish books work great!</p>
+        <div class="hw-day-checks" id="hwReadingChecks"></div>
       </div>
 
       <div class="section-label">Math</div>
@@ -904,6 +989,7 @@
           <li>Select the pictures provided with the homework sheet</li>
         </ol>
         <p style="margin-top:8px;">Play twice a week for 15 minutes.</p>
+        <div id="hwMathChecks"></div>
       </div>
 
       <div id="hwOtherSection" style="display:none;">
@@ -912,6 +998,7 @@
           <p id="hwOtherText"></p>
         </div>
       </div>
+      <div class="hw-other-empty" id="hwOtherEmpty" data-goto="view-parent-homework">+ Add an extra assignment (like Social-Emotional Learning)</div>
     </div>
   </div>
 
@@ -1095,6 +1182,8 @@
         <textarea id="hwEditOtherText" placeholder="e.g. Watch the Bucket Filler video and make a poster..."></textarea>
       </div>
       <div class="saved-toast show" style="margin-top:14px;">Changes apply instantly ✓</div>
+
+      <button class="add-row-btn" id="hwResetBtn" style="margin-top:16px;">🔄 Reset checkboxes for new week</button>
     </div>
   </div>
 
@@ -1834,9 +1923,16 @@
   }
 
   const homeworkData = Object.assign(
-    { dueDate: 'Friday', letter: 'O', otherTitle: '', otherText: '' },
+    {
+      dueDate: 'Friday', letter: 'O', otherTitle: '', otherText: '',
+      progress: { laChoice: null, math: [false, false], reading: [false, false, false, false, false, false, false] },
+    },
     loadHomeworkData() || {}
   );
+  // guard against older saved data missing the progress shape
+  if (!homeworkData.progress) homeworkData.progress = { laChoice: null, math: [false, false], reading: [false, false, false, false, false, false, false] };
+
+  const checkSvg = `<svg viewBox="0 0 24 24" fill="none"><path d="M4 12 L9 18 L20 6" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
   function renderHomework() {
     const dueBadge = document.getElementById('hwDueBadge');
@@ -1848,49 +1944,122 @@
     letterBadge.textContent = homeworkData.letter;
 
     const L = homeworkData.letter;
-    optionsContainer.innerHTML = `
-      <div class="hw-option">
-        <div class="hw-option-title">Option 1: Scavenger Hunt</div>
-        <ol>
-          <li>Look for 5 objects in your environment that begin with the letter ${L} in Spanish.</li>
-          <li>Take a picture of each object.</li>
-          <li>Create a book or poster using the pictures.</li>
-          <li>Write the Spanish name of each object next to its picture.</li>
-          <li>Have fun and be creative!</li>
-        </ol>
+    const laOptions = [
+      { title: 'Option 1: Scavenger Hunt', items: [
+        `Look for 5 objects in your environment that begin with the letter ${L} in Spanish.`,
+        `Take a picture of each object.`,
+        `Create a book or poster using the pictures.`,
+        `Write the Spanish name of each object next to its picture.`,
+        `Have fun and be creative!`,
+      ]},
+      { title: 'Option 2: Make Artwork', items: [
+        `Create your own artwork representing 5 objects that begin with the letter ${L} in Spanish.`,
+        `Use crayons, markers, paint, Play-Doh, or any art materials.`,
+        `Write the Spanish name of each object on your artwork.`,
+        `Take a picture of your artwork or bring it to class.`,
+      ]},
+      { title: 'Option 3: Magazine or Internet', items: [
+        `Find 5 images of objects that begin with the letter ${L} in Spanish, in a magazine or online.`,
+        `Cut out or print/save the images.`,
+        `Create a book or poster using the five images.`,
+        `Write the Spanish name of each object next to its image.`,
+      ]},
+    ];
+
+    optionsContainer.innerHTML = laOptions.map((opt, i) => `
+      <div class="hw-option ${homeworkData.progress.laChoice === i ? 'chosen' : ''}">
+        <div class="hw-check-row ${homeworkData.progress.laChoice === i ? 'checked' : ''}" data-la="${i}">
+          <div class="hw-check-circle">${checkSvg}</div>
+          <div class="hw-check-label">${opt.title}</div>
+        </div>
+        <ol>${opt.items.map(t => `<li>${t}</li>`).join('')}</ol>
       </div>
-      <div class="hw-option">
-        <div class="hw-option-title">Option 2: Make Artwork</div>
-        <ol>
-          <li>Create your own artwork representing 5 objects that begin with the letter ${L} in Spanish.</li>
-          <li>Use crayons, markers, paint, Play-Doh, or any art materials.</li>
-          <li>Write the Spanish name of each object on your artwork.</li>
-          <li>Take a picture of your artwork or bring it to class.</li>
-        </ol>
-      </div>
-      <div class="hw-option">
-        <div class="hw-option-title">Option 3: Magazine or Internet</div>
-        <ol>
-          <li>Find 5 images of objects that begin with the letter ${L} in Spanish, in a magazine or online.</li>
-          <li>Cut out or print/save the images.</li>
-          <li>Create a book or poster using the five images.</li>
-          <li>Write the Spanish name of each object next to its image.</li>
-        </ol>
-      </div>
-    `;
+    `).join('');
+
+    // Reading day checkboxes
+    const readingChecks = document.getElementById('hwReadingChecks');
+    if (readingChecks) {
+      const dayLetters = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      readingChecks.innerHTML = dayLetters.map((d, i) => `
+        <div class="hw-day-check ${homeworkData.progress.reading[i] ? 'checked' : ''}" data-day="${i}">
+          <div class="hw-check-circle">${checkSvg}</div>
+          <div class="hw-day-label">${d}</div>
+        </div>
+      `).join('');
+    }
+
+    // Math session checkboxes
+    const mathChecks = document.getElementById('hwMathChecks');
+    if (mathChecks) {
+      mathChecks.innerHTML = [0, 1].map(i => `
+        <div class="hw-check-row ${homeworkData.progress.math[i] ? 'checked' : ''}" data-math="${i}" style="margin-top:${i === 0 ? '10' : '0'}px;">
+          <div class="hw-check-circle">${checkSvg}</div>
+          <div class="hw-check-label">Session ${i + 1} done</div>
+        </div>
+      `).join('');
+    }
 
     const otherSection = document.getElementById('hwOtherSection');
     const otherLabel = document.getElementById('hwOtherLabel');
     const otherText = document.getElementById('hwOtherText');
-    if (otherSection && homeworkData.otherTitle && homeworkData.otherTitle.trim()) {
-      otherSection.style.display = '';
+    const otherEmpty = document.getElementById('hwOtherEmpty');
+    const hasOther = homeworkData.otherTitle && homeworkData.otherTitle.trim();
+    if (otherSection) otherSection.style.display = hasOther ? '' : 'none';
+    if (otherEmpty) otherEmpty.style.display = hasOther ? 'none' : '';
+    if (hasOther) {
       otherLabel.textContent = homeworkData.otherTitle;
       otherText.textContent = homeworkData.otherText || '';
-    } else if (otherSection) {
-      otherSection.style.display = 'none';
     }
   }
   renderHomework();
+
+  // Delegated click handlers - attached once, so they keep working no matter how many
+  // times renderHomework() redraws the checkboxes underneath them.
+  const hwOptionsEl = document.getElementById('hwOptionsContainer');
+  if (hwOptionsEl) {
+    hwOptionsEl.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-la]');
+      if (!target) return;
+      const i = parseInt(target.getAttribute('data-la'));
+      homeworkData.progress.laChoice = homeworkData.progress.laChoice === i ? null : i;
+      saveHomeworkData();
+      renderHomework();
+    });
+  }
+  const hwReadingEl = document.getElementById('hwReadingChecks');
+  if (hwReadingEl) {
+    hwReadingEl.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-day]');
+      if (!target) return;
+      const i = parseInt(target.getAttribute('data-day'));
+      homeworkData.progress.reading[i] = !homeworkData.progress.reading[i];
+      saveHomeworkData();
+      renderHomework();
+    });
+  }
+  const hwMathEl = document.getElementById('hwMathChecks');
+  if (hwMathEl) {
+    hwMathEl.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-math]');
+      if (!target) return;
+      const i = parseInt(target.getAttribute('data-math'));
+      homeworkData.progress.math[i] = !homeworkData.progress.math[i];
+      saveHomeworkData();
+      renderHomework();
+    });
+  }
+
+  function syncHomeworkEditFormValues() {
+    const dueInput = document.getElementById('hwEditDueDate');
+    const letterInput = document.getElementById('hwEditLetter');
+    const otherTitleInput = document.getElementById('hwEditOtherTitle');
+    const otherTextInput = document.getElementById('hwEditOtherText');
+    if (!dueInput) return;
+    dueInput.value = homeworkData.dueDate;
+    letterInput.value = homeworkData.letter;
+    otherTitleInput.value = homeworkData.otherTitle;
+    otherTextInput.value = homeworkData.otherText;
+  }
 
   function setupHomeworkEditForm() {
     const dueInput = document.getElementById('hwEditDueDate');
@@ -1899,10 +2068,7 @@
     const otherTextInput = document.getElementById('hwEditOtherText');
     if (!dueInput) return;
 
-    dueInput.value = homeworkData.dueDate;
-    letterInput.value = homeworkData.letter;
-    otherTitleInput.value = homeworkData.otherTitle;
-    otherTextInput.value = homeworkData.otherText;
+    syncHomeworkEditFormValues();
 
     function onChange() {
       homeworkData.dueDate = dueInput.value.trim() || 'Friday';
@@ -1915,8 +2081,104 @@
     [dueInput, letterInput, otherTitleInput, otherTextInput].forEach(el => {
       el.addEventListener('input', onChange);
     });
+
+    const resetBtn = document.getElementById('hwResetBtn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        homeworkData.progress = { laChoice: null, math: [false, false], reading: [false, false, false, false, false, false, false] };
+        saveHomeworkData();
+        renderHomework();
+      });
+    }
   }
   setupHomeworkEditForm();
+
+  const hwEditBtn = document.getElementById('hwEditBtn');
+  if (hwEditBtn) {
+    hwEditBtn.addEventListener('click', () => {
+      syncHomeworkEditFormValues();
+      goto('view-parent-homework');
+    });
+  }
+
+  /* ---------- BREAK TIMER ---------- */
+  (function setupHwTimer() {
+    const displayEl = document.getElementById('hwTimerDisplay');
+    const minusBtn = document.getElementById('hwTimerMinus');
+    const plusBtn = document.getElementById('hwTimerPlus');
+    const startBtn = document.getElementById('hwTimerStart');
+    const resetBtn = document.getElementById('hwTimerReset');
+    const doneEl = document.getElementById('hwTimerDone');
+    if (!displayEl) return;
+
+    const DEFAULT_SECONDS = 300; // 5 minutes
+    let timerSeconds = DEFAULT_SECONDS;
+    let timerInterval = null;
+    let timerRunning = false;
+
+    function updateDisplay() {
+      const m = Math.floor(timerSeconds / 60);
+      const s = timerSeconds % 60;
+      displayEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function setAdjustDisabled(disabled) {
+      minusBtn.disabled = disabled;
+      plusBtn.disabled = disabled;
+    }
+
+    minusBtn.addEventListener('click', () => {
+      timerSeconds = Math.max(60, timerSeconds - 60);
+      updateDisplay();
+    });
+    plusBtn.addEventListener('click', () => {
+      timerSeconds = Math.min(3600, timerSeconds + 60);
+      updateDisplay();
+    });
+
+    function tick() {
+      timerSeconds--;
+      updateDisplay();
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        startBtn.textContent = '▶️ Start';
+        setAdjustDisabled(false);
+        doneEl.classList.add('show');
+        window.speechSynthesis.cancel();
+        speak("Break's over! Time to get back to it!", "en-US");
+        triggerCookEffect(displayEl.parentElement);
+      }
+    }
+
+    startBtn.addEventListener('click', () => {
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        startBtn.textContent = '▶️ Start';
+        setAdjustDisabled(false);
+      } else {
+        if (timerSeconds <= 0) timerSeconds = DEFAULT_SECONDS;
+        doneEl.classList.remove('show');
+        timerRunning = true;
+        startBtn.textContent = '⏸️ Pause';
+        setAdjustDisabled(true);
+        timerInterval = setInterval(tick, 1000);
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerSeconds = DEFAULT_SECONDS;
+      startBtn.textContent = '▶️ Start';
+      setAdjustDisabled(false);
+      doneEl.classList.remove('show');
+      updateDisplay();
+    });
+
+    updateDisplay();
+  })();
 
   /* ---------- KITCHEN CREW (PETS) ---------- */
   const pets = [
