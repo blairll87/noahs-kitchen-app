@@ -278,6 +278,8 @@
   .hw-day-check { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; padding: 6px 0; }
   .hw-day-check .hw-check-circle { width: 32px; height: 32px; }
   .hw-day-check .hw-day-label { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 11px; color: var(--cocoa); }
+  .hw-day-check.checked .hw-check-circle { background: var(--sage-deep); border-color: var(--sage-deep); }
+  .hw-day-check.checked .hw-check-circle svg { opacity: 1; transform: scale(1); }
 
   .hw-other-empty {
     background: #E9F2E7; border: 2px dashed var(--sage); border-radius: 16px; padding: 14px; text-align: center;
