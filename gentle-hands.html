@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gentle Hands Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one recipe card on a kitchen-tile wall; each friendship moment is a step in the recipe */
+:root {
+  --tile: #d9ece7;
+  --grout: #c3ddd6;
+  --card: #fffdf6;
+  --ink: #23343a;
+  --soft: #5b7178;
+  --butter: #ffd65c;
+  --mint: #2f9e86;
+  --tomato: #e0533d;
+  --line: #e4e0d2;
+  --display: "Fredoka", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --tile: #17282a; --grout: #1f3436; --card: #24343a; --ink: #f2efe4; --soft: #b6c7c9;
+  --butter: #f5c842; --mint: #4cc3a6; --tomato: #ff7a63; --line: #3a4d52; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --tile: #17282a; --grout: #1f3436; --card: #24343a; --ink: #f2efe4; --soft: #b6c7c9;
+  --butter: #f5c842; --mint: #4cc3a6; --tomato: #ff7a63; --line: #3a4d52; color-scheme: dark }
+
+html, body { height: 100%; margin: 0; }
+body {
+  background-color: var(--tile);
+  background-image: linear-gradient(var(--grout) 2px, transparent 2px), linear-gradient(90deg, var(--grout) 2px, transparent 2px);
+  background-size: 56px 56px;
+  color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px;
+  box-sizing: border-box;
+}
+.app { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font-family: var(--display); font-weight: 700; font-size: 1.25rem; letter-spacing: .01em; }
+.brand small { display: block; font-family: var(--body); font-weight: 400; font-size: .8rem; color: var(--soft); }
+.toprow { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.iconbtn { text-decoration: none; border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px;
+  padding: 8px 14px; font: 600 .9rem var(--display); cursor: pointer; }
+.card { background: var(--card); border-radius: 22px; padding: 22px 20px 24px; border: 2px solid var(--line);
+  box-shadow: 0 6px 0 var(--grout); display: flex; flex-direction: column; gap: 16px; }
+.step { font: 600 .8rem var(--display); text-transform: uppercase; letter-spacing: .08em; color: var(--mint); }
+h1, h2 { font-family: var(--display); font-weight: 700; margin: 0; text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(1.9rem, 7vw, 2.4rem); }
+h2 { font-size: clamp(1.4rem, 5.5vw, 1.75rem); }
+p { margin: 0; }
+.say { font-size: 1.15rem; }
+.stage { display: flex; justify-content: center; align-items: flex-end; gap: 6px; min-height: 140px; }
+.stage svg { width: 128px; height: 128px; max-width: 42%; }
+.bounce { animation: bounce .7s ease; }
+@keyframes bounce { 0%{transform:translateY(0)} 40%{transform:translateY(-14px)} 100%{transform:translateY(0)} }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choice { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 10px; min-height: 130px;
+  border: 3px solid var(--line); background: var(--card); color: var(--ink); border-radius: 18px; cursor: pointer;
+  font: 600 1.05rem var(--display); text-align: center; justify-content: center; }
+.feels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.choice.feel { min-height: 0; padding: 8px 4px; font-size: .95rem; gap: 2px; }
+.choice.feel svg { width: 100%; max-width: 72px; height: auto; }
+@media (max-width: 420px) { .feels { grid-template-columns: 1fr 1fr; } }
+.choice .pic { font-size: 2.6rem; line-height: 1; }
+.choice:hover { border-color: var(--mint); }
+.btn { border: 0; border-radius: 16px; padding: 16px 20px; font: 700 1.15rem var(--display); cursor: pointer;
+  background: var(--butter); color: #3a2c00; box-shadow: 0 4px 0 #c9a12e; }
+.btn.alt { background: transparent; color: var(--ink); box-shadow: none; border: 2px solid var(--line); }
+.btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c9a12e; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row .btn { flex: 1 1 200px; }
+.bowl { display: flex; align-items: center; gap: 10px; background: var(--card); border: 2px dashed var(--line);
+  border-radius: 999px; padding: 8px 14px; }
+.bowl b { font: 600 .85rem var(--display); color: var(--soft); white-space: nowrap; }
+.slots { display: flex; gap: 6px; flex-wrap: wrap; }
+.slot { width: 38px; height: 38px; border-radius: 50%; background: var(--tile); display: grid; place-items: center; font-size: 1.3rem; }
+.slot.full { background: var(--butter); }
+.breathe { width: 150px; height: 150px; border-radius: 50%; background: var(--mint); margin: 6px auto;
+  opacity: .85; transform: scale(.55); }
+.breathe.go { animation: breathe 6s ease-in-out forwards; }
+@keyframes breathe { 0%{transform:scale(.55)} 45%{transform:scale(1)} 55%{transform:scale(1)} 100%{transform:scale(.55)} }
+.chant { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.chant li { font: 600 1.25rem var(--display); padding: 8px 12px; border-radius: 12px; }
+.chant li.on { background: var(--butter); color: #3a2c00; }
+.cuebox { border-radius: 20px; padding: 24px 18px; display: flex; flex-direction: column; gap: 10px; text-align: center; min-height: 190px; justify-content: center; transition: background .3s; }
+.cuebox[data-mode="wiggle"] { background: var(--butter); color: #3a2c00; }
+.cuebox[data-mode="calm"] { background: var(--tile); color: var(--ink); }
+.cuebox[data-mode="gentle"] { background: var(--mint); color: #ffffff; }
+.cuebox h2 { font-size: clamp(1.6rem, 7vw, 2.1rem); }
+.cuelabel { font: 700 .85rem var(--display); text-transform: uppercase; letter-spacing: .1em; }
+.note { font-size: .85rem; color: var(--soft); }
+button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .bounce, .breathe.go { animation: none; } .breathe.go { transform: scale(.85); } }
+@media (max-width: 380px) { .choices { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="top">
+    <div class="brand">Gentle Hands Kitchen<small>Cooking up kind ways to play</small></div>
+    <div class="toprow"><a class="iconbtn" href="index.html">Back to Noah's Kitchen</a><button class="iconbtn" id="soundBtn" aria-pressed="true">Sound on</button></div>
+  </div>
+  <div class="bowl" aria-label="Mixing bowl">
+    <b>Friendship cake</b><div class="slots" id="slots"></div>
+  </div>
+  <main class="card" id="screen" aria-live="polite"></main>
+</div>
+
+<script>
+const COLORS = { mango:"#ffa63d", berry:"#6f7cf2", toast:"#e3b878", pepper:"#ef5a4a", chef:"#f6c9a4",
+  cookie:"#d9a066", carrot:"#ff8a2b", waffle:"#f2c46d", muffin:"#c98ad6", pickle:"#7fb53f",
+  egg:"#fbf7ee", bagel:"#d39b55", taco:"#f4c542" };
+function face(kind, mood) {
+  const c = COLORS[kind];
+  let body = "";
+  if (kind === "toast") body = `<rect x="18" y="26" width="84" height="80" rx="22" fill="#b97f3e"/><rect x="25" y="33" width="70" height="66" rx="16" fill="${c}"/>`;
+  else if (kind === "mango") body = `<ellipse cx="60" cy="68" rx="40" ry="44" fill="${c}"/><path d="M60 26 q14 -16 28 -8 q-10 14 -28 8z" fill="#3fa34d"/>`;
+  else if (kind === "berry") body = `<circle cx="60" cy="68" r="42" fill="${c}"/><path d="M46 28 l7 8 l7 -10 l7 10 l7 -8 v8 h-28z" fill="#3d4bb8"/>`;
+  else if (kind === "pepper") body = `<path d="M60 30 c30 0 40 20 36 46 c-4 26 -20 36 -36 36 c-16 0 -32 -10 -36 -36 c-4 -26 6 -46 36 -46z" fill="${c}"/><path d="M58 30 q0 -14 12 -18" stroke="#3fa34d" stroke-width="7" fill="none" stroke-linecap="round"/>`;
+  else if (kind === "cookie") body = `<circle cx="60" cy="68" r="42" fill="${c}"/><circle cx="34" cy="50" r="5" fill="#6b3f1d"/><circle cx="88" cy="56" r="4" fill="#6b3f1d"/><circle cx="30" cy="92" r="4" fill="#6b3f1d"/><circle cx="90" cy="92" r="5" fill="#6b3f1d"/><circle cx="62" cy="40" r="4" fill="#6b3f1d"/>`;
+  else if (kind === "carrot") body = `<path d="M24 34 h72 q4 0 2 6 l-32 74 q-6 8 -12 0 l-32 -74 q-2 -6 2 -6z" fill="${c}"/><path d="M50 34 q-10 -20 0 -26 q6 12 10 26 q4 -14 10 -26 q10 6 0 26z" fill="#3fa34d"/>`;
+  else if (kind === "waffle") body = `<rect x="18" y="26" width="84" height="84" rx="16" fill="${c}"/><path d="M39 26 v84 M60 26 v84 M81 26 v84 M18 47 h84 M18 101 h84" stroke="#d9a441" stroke-width="3"/>`;
+  else if (kind === "egg") body = `<path d="M60 18 c26 0 40 40 40 62 c0 22 -18 34 -40 34 c-22 0 -40 -12 -40 -34 c0 -22 14 -62 40 -62z" fill="${c}" stroke="#d8cfb8" stroke-width="3"/>`;
+  else if (kind === "bagel") body = `<circle cx="60" cy="68" r="44" fill="${c}"/><ellipse cx="60" cy="40" rx="10" ry="6" fill="#8a5a2b"/><circle cx="36" cy="58" r="2" fill="#fff8e1"/><circle cx="86" cy="62" r="2" fill="#fff8e1"/><circle cx="40" cy="98" r="2" fill="#fff8e1"/>`;
+  else if (kind === "taco") body = `<path d="M14 100 a46 46 0 0 1 92 0z" fill="${c}"/><path d="M22 70 q8 -10 16 -2 q8 -12 18 -4 q10 -10 18 0 q10 -8 16 2 q8 -2 10 8" stroke="#4caf50" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+  else if (kind === "pickle") body = `<rect x="32" y="16" width="56" height="98" rx="28" fill="${c}"/><circle cx="44" cy="36" r="3" fill="#5a8a2a"/><circle cx="78" cy="100" r="3" fill="#5a8a2a"/><circle cx="40" cy="104" r="3" fill="#5a8a2a"/><circle cx="80" cy="40" r="3" fill="#5a8a2a"/>`;
+  else if (kind === "muffin") body = `<path d="M30 76 h60 l-8 36 h-44z" fill="#e9b0f2"/><path d="M34 80 l4 30 M48 80 l2 30 M60 80 v30 M72 80 l-2 30 M86 80 l-4 30" stroke="#b56cc4" stroke-width="2"/><path d="M20 78 q0 -50 40 -50 q40 0 40 50z" fill="${c}"/>`;
+  else body = `<circle cx="60" cy="72" r="38" fill="${c}"/><path d="M26 44 q-6 -24 16 -24 q4 -14 18 -10 q14 -4 18 10 q22 0 16 24z" fill="#ffffff" stroke="#d8d2c4" stroke-width="2"/>`;
+  const ey = 66;
+  let eyes;
+  if (mood === "sad") eyes = `<path d="M40 ${ey} q6 -5 12 0 M68 ${ey} q6 -5 12 0" stroke="#23343a" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  else if (mood === "scared") eyes = `<circle cx="46" cy="${ey}" r="9" fill="#fff"/><circle cx="74" cy="${ey}" r="9" fill="#fff"/><circle cx="46" cy="${ey}" r="4" fill="#23343a"/><circle cx="74" cy="${ey}" r="4" fill="#23343a"/><path d="M38 50 q8 -6 14 -2 M68 48 q6 -4 14 2" stroke="#23343a" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  else if (mood === "mad") eyes = `<circle cx="46" cy="${ey + 2}" r="5" fill="#23343a"/><circle cx="74" cy="${ey + 2}" r="5" fill="#23343a"/><path d="M36 52 l16 8 M84 52 l-16 8" stroke="#23343a" stroke-width="4" stroke-linecap="round"/>`;
+  else eyes = `<circle cx="46" cy="${ey}" r="5" fill="#23343a"/><circle cx="74" cy="${ey}" r="5" fill="#23343a"/>`;
+  let mouth = "";
+  if (mood === "scared") mouth = `<ellipse cx="60" cy="90" rx="7" ry="9" fill="#23343a"/>`;
+  else if (mood === "mad") mouth = `<path d="M46 92 q14 -8 28 0" stroke="#23343a" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  else
+  if (mood === "happy") mouth = `<path d="M44 82 q16 16 32 0" stroke="#23343a" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  else if (mood === "excited") mouth = `<path d="M42 80 q18 22 36 0z" fill="#23343a"/>`;
+  else if (mood === "sad") mouth = `<path d="M46 92 q14 -12 28 0" stroke="#23343a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M80 72 q4 8 0 12 q-4 -4 0 -12z" fill="#7cc6ff"/>`;
+  else mouth = `<path d="M48 86 h24" stroke="#23343a" stroke-width="4" stroke-linecap="round"/>`;
+  const cheeks = ["sad", "scared", "mad"].includes(mood) ? "" : `<circle cx="36" cy="80" r="5" fill="#ff8f8f" opacity=".6"/><circle cx="84" cy="80" r="5" fill="#ff8f8f" opacity=".6"/>`;
+  return `<svg viewBox="0 0 120 120" role="img" aria-label="${kind} feeling ${mood}">${body}${cheeks}${eyes}${mouth}</svg>`;
+}
+
+const SCENES = [
+  { friend:"mango", name:"Mango", title:"Big happy feelings",
+    setup:"You and Mango are playing. You feel SO happy and excited!",
+    ask:"What can your hands do?",
+    good:{ pic:"✋", text:"High five!" }, bad:{ pic:"💥", text:"Hit Mango" },
+    yes:"High five! Mango feels happy. Excited hands can high five.",
+    no:"Ouch! Hitting hurts, even when you are playing.", feel:"sad", you:"someone hit you",
+    ing:"🥚" },
+  { friend:"berry", name:"Berry", title:"Toy time",
+    setup:"You have a ball. You want Berry to play with you!",
+    ask:"What can you do with the ball?",
+    good:{ pic:"⚽", text:"Say \"Catch!\" and roll it" }, bad:{ pic:"🧸", text:"Throw it at Berry" },
+    yes:"Catch! Berry is ready. Now you are playing together.",
+    no:"Bonk! The ball hit Berry. Throwing at a friend hurts.", feel:"sad", you:"a ball bonked your head",
+    ing:"🧈" },
+  { friend:"toast", name:"Toast", title:"Tag game",
+    setup:"You and Toast are playing tag. You are running fast!",
+    ask:"How do you tag Toast?",
+    good:{ pic:"☝️", text:"Soft tap. \"You're it!\"" }, bad:{ pic:"💢", text:"Push Toast hard" },
+    yes:"Soft tap! Toast giggles and chases you. Tag is fun with gentle hands.",
+    no:"Oof! Toast fell down. A hard push hurts.", feel:"sad", you:"someone pushed you down",
+    ing:"🍓" },
+  { friend:"pepper", name:"Pepper", title:"Look at me!",
+    setup:"You want Pepper to see your cool block tower.",
+    ask:"How do you get Pepper's attention?",
+    good:{ pic:"🗣️", text:"Tap and say \"Look!\"" }, bad:{ pic:"✊", text:"Grab Pepper's arm" },
+    yes:"Pepper looks! \"Wow, cool tower!\" Gentle taps and words work.",
+    no:"Hey! Grabbing hurts. Pepper does not want to look now.", feel:"mad", you:"someone grabbed your arm",
+    ing:"🌾" },
+  { pack:"school", friend:"waffle", name:"Waffle", title:"Art table",
+    setup:"You are done cutting paper. You feel silly. Waffle is cutting too.",
+    ask:"What do you do with your scissors?",
+    good:{ pic:"✂️", text:"Set them down on the table" }, bad:{ pic:"💨", text:"Throw the scissors" },
+    yes:"Set them down. Now everyone is safe. Waffle says, \"Thanks!\"",
+    no:"Stop! Scissors are sharp. Throwing them can really hurt Waffle.", feel:"scared", you:"scissors flew at you",
+    ing:"🍫" },
+  { pack:"school", friend:"muffin", name:"Muffin", title:"Coloring time",
+    setup:"You are coloring with Muffin. You feel wiggly and want to be funny!",
+    ask:"What can you do with your crayons?",
+    good:{ pic:"🖍️", text:"Draw a funny picture for Muffin" }, bad:{ pic:"🌪️", text:"Throw crayons" },
+    yes:"A funny picture! Muffin laughs and laughs. Crayons are for drawing.",
+    no:"Ow! A crayon hit Muffin's face. Muffin moves away.", feel:"sad", you:"a crayon hit your face",
+    ing:"🥛" },
+  { pack:"school", friend:"cookie", name:"Cookie", title:"Sandbox",
+    setup:"You and Cookie are in the sandbox. You want to play!",
+    ask:"What do you do with the sand?",
+    good:{ pic:"🏰", text:"Make a sand cake together" }, bad:{ pic:"🌬️", text:"Throw sand at Cookie" },
+    yes:"Yum, a sand cake! Cookie adds a stick candle. Sand stays low and in the box.",
+    no:"Ouch! Sand got in Cookie's eyes. It stings and hurts.", feel:"sad", you:"sand got in your eyes",
+    ing:"🍯" },
+  { pack:"school", friend:"carrot", name:"Carrot", title:"Classroom",
+    setup:"You are in the classroom. You see Carrot and want to chase!",
+    ask:"What do your feet do inside?",
+    good:{ pic:"🚶", text:"Walking feet. \"Chase at recess?\"" }, bad:{ pic:"🏃", text:"Chase Carrot around the room" },
+    yes:"Walking feet! Carrot says, \"Yes! Let's play chase outside at recess.\"",
+    no:"Crash! Running inside makes friends bump and fall.", feel:"scared", you:"a friend crashed into you",
+    ing:"🍒" },
+  { pack:"play", friend:"pickle", name:"Pickle", title:"Stop means stop",
+    setup:"You and Pickle are wrestling and laughing. Then Pickle says, STOP!",
+    ask:"What do you do?",
+    good:{ pic:"🛑", text:"Stop right away" }, bad:{ pic:"🤼", text:"Keep going. It's funny!" },
+    yes:"You stopped right away! Pickle feels safe. Stop means stop, every time.",
+    no:"Pickle said stop, but you kept going.", feel:"scared", you:"you said stop and nobody listened",
+    ing:"🍋" },
+  { pack:"friend", friend:"egg", name:"Egg", title:"Big hugs",
+    setup:"You see Egg and feel SO excited. You want to give a big hug!",
+    ask:"What do you do first?",
+    good:{ pic:"🤗", text:"Ask, \"Can I hug you?\"" }, bad:{ pic:"💥", text:"Run and tackle-hug Egg" },
+    yes:"Egg says, \"Yes!\" A gentle hug. Asking first keeps friends safe.",
+    no:"Bam! Egg got squished and fell over.", feel:"scared", you:"someone squished you without asking",
+    ing:"🍌" },
+  { pack:"friend", friend:"berry", name:"Berry", title:"Block tower",
+    setup:"Berry built a tall block tower. You feel wiggly and excited!",
+    ask:"What can you do?",
+    good:{ pic:"🧱", text:"Say \"Cool!\" and add a block" }, bad:{ pic:"🦶", text:"Knock it down" },
+    yes:"Berry smiles. Now you are building it together!",
+    no:"Crash! Berry's tower is all gone.", feel:"sad", you:"someone knocked down your tower",
+    ing:"🫐" },
+  { pack:"friend", friend:"toast", name:"Toast", title:"Line up",
+    setup:"Everyone is lining up for the slide. Toast is in front of you.",
+    ask:"What do you do?",
+    good:{ pic:"🧍", text:"Wait for my turn" }, bad:{ pic:"👐", text:"Push Toast to go first" },
+    yes:"You waited! Toast slides, then it's your turn. Wheee!",
+    no:"Oof! Toast tripped on the ladder.", feel:"mad", you:"someone pushed you out of line",
+    ing:"🍑" },
+  { pack:"friend", friend:"muffin", name:"Muffin", title:"When it happens to you",
+    setup:"Muffin throws sand at you. It stings!",
+    ask:"What do you do?",
+    good:{ pic:"✋", text:"Say \"Stop! I don't like that\" and tell a teacher" }, bad:{ pic:"🌬️", text:"Throw sand back at Muffin" },
+    yes:"Strong words! The teacher helps. You kept your body safe and gentle.",
+    no:"Now sand is in Muffin's eyes too. Two friends are hurt.", feel:"sad", you:"sand got in your eyes",
+    yesFeel:"You feel safe. Muffin learned sand stays down.",
+    ing:"🥥" },
+  { pack:"friend", friend:"bagel", name:"Bagel", title:"Game over",
+    setup:"You and Bagel play a game. Bagel wins. You feel mad!",
+    ask:"What can you do with that mad feeling?",
+    good:{ pic:"🌬️", text:"Breathe and say \"Good game!\"" }, bad:{ pic:"🎲", text:"Throw the game pieces" },
+    yes:"Good game! Bagel says, \"Let's play again!\" Mad feelings can be calm.",
+    no:"Game pieces flew everywhere. One hit Bagel.", feel:"sad", you:"game pieces flew at you",
+    ing:"🍊" },
+  { pack:"friend", friend:"taco", name:"Taco", title:"A friend is crying",
+    setup:"You are playing. You see Taco sitting alone, crying.",
+    ask:"What can you do?",
+    good:{ pic:"💛", text:"Ask, \"Are you okay?\"" }, bad:{ pic:"😆", text:"Laugh and keep playing" },
+    yes:"Taco says, \"I fell down.\" You sit with Taco. Kind friends notice.",
+    no:"Taco is still crying, and now feels alone.", feel:"sad", you:"you were crying and a friend laughed",
+    yesFeel:"Taco feels a little better. You feel proud and kind.",
+    ing:"🍐" }
+];
+SCENES.forEach(s => { if (!s.pack) s.pack = "play"; });
+const ACTS = {
+  "Big happy feelings":"Give a grown-up a real high five!",
+  "Toy time":"Pretend to roll a ball on the floor. Roll it slow and gentle.",
+  "Tag game":"Give a grown-up a soft tag on the shoulder. Say, You're it!",
+  "Look at me!":"Tap a grown-up softly on the arm and say, Look!",
+  "Stop means stop":"Wiggle and dance! When you hear STOP, freeze with calm hands.",
+  "Art table":"Pretend to cut paper. Snip, snip! Now set the scissors down. Calm hands.",
+  "Coloring time":"Draw a funny face in the air with your finger!",
+  "Sandbox":"Pretend to scoop sand and pat a sand cake. Pat, pat, pat.",
+  "Classroom":"Walk in place with slow walking feet. One, two, three, four!",
+  "Big hugs":"Ask a grown-up, Can I hug you? If they say yes, give a gentle hug.",
+  "Block tower":"Stack your fists one on top of the other, like blocks!",
+  "Line up":"Stand still like a statue with calm hands. Count to five.",
+  "When it happens to you":"Hold your hand out strong and say, Stop! I don't like that!",
+  "Game over":"Take a big breath. Give a thumbs up and say, Good game!",
+  "A friend is crying":"Put your hand on your heart and say, Are you okay?"
+};
+SCENES.forEach(s => { s.act = ACTS[s.title]; });
+
+const CHANT = ["Hands can wave.", "Hands can clap.", "Hands can high five.", "Hands can tap.", "Funny is when we ALL laugh.", "Gentle hands are soft.", "Calm hands rest.", "That's how friends play!"];
+
+let soundOn = true, idx = 0, bowl = [], round = SCENES.filter(s => s.pack === "play");
+const screen = document.getElementById("screen");
+const slotsEl = document.getElementById("slots");
+
+function speak(text, onEnd) {
+  try {
+    if (!soundOn || !window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 900); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.88; u.pitch = 1.1; u.lang = "en-US";
+    if (onEnd) u.onend = onEnd;
+    speechSynthesis.speak(u);
+  } catch (e) { if (onEnd) setTimeout(onEnd, 900); }
+}
+function hush() { try { speechSynthesis.cancel(); } catch (e) {} }
+let actx;
+function chime(good) {
+  if (!soundOn) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const notes = good ? [523, 659, 784] : [330, 262];
+    notes.forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = f; o.type = "sine";
+      g.gain.setValueAtTime(0.0001, actx.currentTime + i * .12);
+      g.gain.exponentialRampToValueAtTime(0.2, actx.currentTime + i * .12 + .02);
+      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + i * .12 + .35);
+      o.connect(g).connect(actx.destination); o.start(actx.currentTime + i * .12); o.stop(actx.currentTime + i * .12 + .4);
+    });
+  } catch (e) {}
+}
+function renderBowl() {
+  slotsEl.innerHTML = round.map((s, i) => `<span class="slot ${bowl[i] ? "full" : ""}">${bowl[i] ? s.ing : ""}</span>`).join("");
+}
+
+function start() {
+  hush(); clearTimers(); idx = 0; bowl = []; renderBowl();
+  screen.innerHTML = `
+    <div class="step">Chef Noah's recipe</div>
+    <h1>Let's cook up gentle hands!</h1>
+    <div class="stage">${face("chef","excited")}</div>
+    <p class="say">Your food friends want to play. Pick the gentle way, and add something yummy to the friendship cake.</p>
+    <p class="say"><b>Gentle hands</b> are soft with friends. <b>Calm hands</b> rest and stay still.</p>
+    <div class="row">
+      <button class="btn" data-pack="school">School day</button>
+      <button class="btn" data-pack="play">Play time</button>
+      <button class="btn" data-pack="friend">Being a friend</button>
+    </div>
+    <div class="row">
+      <button class="btn alt" data-pack="all">All 15 friends</button>
+      <button class="btn alt" id="calm">Squeeze &amp; breathe</button>
+      <button class="btn alt" id="wiggle">Wiggle &amp; calm game</button>
+    </div>`;
+  document.getElementById("wiggle").onclick = wiggleGame;
+  screen.querySelectorAll("[data-pack]").forEach(b => b.onclick = () => {
+    const p = b.dataset.pack;
+    round = p === "all" ? SCENES.slice() : SCENES.filter(s => s.pack === p);
+    idx = 0; bowl = []; renderBowl(); scene();
+  });
+  document.getElementById("calm").onclick = () => breathe(start, "Ready to cook");
+}
+
+function scene() {
+  hush(); clearTimers();
+  const s = round[idx];
+  const opts = Math.random() < .5 ? [["good", s.good], ["bad", s.bad]] : [["bad", s.bad], ["good", s.good]];
+  screen.innerHTML = `
+    <div class="step">Step ${idx + 1} of ${round.length} · ${s.title}</div>
+    <div class="stage">${face("chef","excited")}${face(s.friend,"happy")}</div>
+    <p class="say">${s.setup}</p>
+    <h2>${s.ask}</h2>
+    <div class="choices">${opts.map(([k, o]) => `<button class="choice" data-k="${k}"><span class="pic" aria-hidden="true">${o.pic}</span>${o.text}</button>`).join("")}</div>
+    <button class="iconbtn" id="again">Hear it again</button>`;
+  const read = () => { hush(); speak(s.setup + " " + s.ask + " " + opts[0][1].text.replace(/"/g,"") + "? Or " + opts[1][1].text.replace(/"/g,"") + "?"); };
+  read();
+  document.getElementById("again").onclick = read;
+  screen.querySelectorAll(".choice").forEach(b => b.onclick = () => b.dataset.k === "good" ? yes() : no());
+}
+
+function yes() {
+  hush(); chime(true);
+  const s = round[idx]; bowl[idx] = true; renderBowl();
+  screen.innerHTML = `
+    <div class="step">Gentle hands!</div>
+    <div class="stage bounce">${face("chef","excited")}${face(s.friend,"excited")}</div>
+    <h2>${s.yes}</h2>
+    <p class="say">${s.yesFeel || s.name + " feels happy. You feel happy too!"} Now ${s.ing} goes in the friendship cake.</p>
+    <button class="btn" id="next">Act it out!</button>`;
+  speak(s.yes + " " + (s.yesFeel || s.name + " feels happy. You feel happy too!"));
+  document.getElementById("next").onclick = act;
+}
+
+let timers = [];
+function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+function act() {
+  hush(); clearTimers();
+  const s = round[idx];
+  const last = idx >= round.length - 1;
+  screen.innerHTML = `
+    <div class="step">Act it out · Get up and move!</div>
+    <div class="stage bounce">${face("chef","excited")}</div>
+    <h2 id="actcue">${s.act}</h2>
+    <div class="row">
+      <button class="btn" id="did">I did it!</button>
+      <button class="btn alt" id="hear">Hear it again</button>
+    </div>`;
+  const go = () => {
+    hush(); clearTimers(); speak(s.act);
+    if (s.title === "Stop means stop") {
+      timers.push(setTimeout(() => { document.getElementById("actcue").textContent = "STOP! Freeze! Calm hands."; speak("STOP! Freeze! Calm hands."); }, 7000));
+    }
+  };
+  go();
+  document.getElementById("hear").onclick = go;
+  document.getElementById("did").onclick = () => { clearTimers(); idx++; last ? finish() : scene(); };
+}
+
+const MOVES = [
+  ["wiggle","Wiggle your fingers fast!"],
+  ["calm","Calm hands! Put your hands in your lap."],
+  ["wiggle","Clap, clap, clap!"],
+  ["calm","Calm hands! Give yourself a hug."],
+  ["wiggle","Jump like popcorn!"],
+  ["calm","Calm hands! Hands on your knees. Be still."],
+  ["wiggle","Shake your whole body like jello!"],
+  ["gentle","Gentle hands! Pat your own arm softly."],
+  ["calm","Calm hands! Hands on your tummy. Big breath."]
+];
+function wiggleGame() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    <div class="step">Wiggle &amp; calm game</div>
+    <div class="cuebox" id="cuebox" data-mode="calm">
+      <div class="cuelabel" id="cuelabel">Get ready</div>
+      <h2 id="cue">Stand up! Listen and move.</h2>
+    </div>
+    <div class="row"><button class="btn alt" id="stopgame">Back to the kitchen</button></div>`;
+  document.getElementById("stopgame").onclick = () => { clearTimers(); start(); };
+  const box = document.getElementById("cuebox"), lab = document.getElementById("cuelabel"), cue = document.getElementById("cue");
+  speak("Stand up! Listen and move.");
+  let t = 2600;
+  MOVES.forEach(([mode, text]) => {
+    timers.push(setTimeout(() => {
+      box.dataset.mode = mode;
+      lab.textContent = mode === "wiggle" ? "Wiggly body" : mode === "gentle" ? "Gentle hands" : "Calm hands";
+      cue.textContent = text; hush(); speak(text);
+    }, t));
+    t += mode === "wiggle" ? 4500 : 5000;
+  });
+  timers.push(setTimeout(() => {
+    box.dataset.mode = "gentle"; lab.textContent = "You did it!";
+    cue.textContent = "You can be wiggly. You can be calm. You are the boss of your hands!";
+    hush(); speak(cue.textContent); chime(true);
+  }, t));
+}
+
+function no() {
+  hush(); chime(false);
+  const s = round[idx];
+  screen.innerHTML = `
+    <div class="step">Uh oh</div>
+    <div class="stage">${face("chef","neutral")}${face(s.friend,s.feel)}</div>
+    <h2>${s.no}</h2>
+    <button class="btn" id="look">Look at ${s.name}'s face</button>`;
+  speak(s.no + " Look at " + s.name + "'s face.");
+  document.getElementById("look").onclick = feelQ;
+}
+
+const FEELS = [["happy","Happy"],["sad","Sad"],["scared","Scared"],["mad","Mad"]];
+function feelGrid(kind) {
+  return `<div class="feels">${FEELS.map(([m, l]) => `<button class="choice feel" data-m="${m}">${face(kind, m)}${l}</button>`).join("")}</div>`;
+}
+
+function feelQ() {
+  hush();
+  const s = round[idx];
+  screen.innerHTML = `
+    <div class="step">Feelings detective</div>
+    <div class="stage">${face(s.friend, s.feel)}</div>
+    <h2>How does ${s.name} feel?</h2>
+    <p class="say" id="hint">Look at the eyes and the mouth.</p>
+    ${feelGrid(s.friend)}`;
+  speak("How does " + s.name + " feel? Happy? Sad? Scared? Or mad?");
+  screen.querySelectorAll(".feel").forEach(b => b.onclick = () => {
+    if (b.dataset.m === s.feel) { chime(true); speak("Yes! " + s.name + " feels " + s.feel + ".", funnyQ); }
+    else {
+      const h = document.getElementById("hint");
+      h.textContent = b.dataset.m === "happy" ? `Look again. Is ${s.name} smiling?` : `Look again at ${s.name}'s eyes and mouth.`;
+      speak(h.textContent);
+    }
+  });
+}
+
+function funnyQ() {
+  hush();
+  const s = round[idx];
+  screen.innerHTML = `
+    <div class="step">Is it funny?</div>
+    <div class="stage">${face("chef","excited")}${face(s.friend, s.feel)}</div>
+    <h2>Sometimes you laugh. Is ${s.name} laughing?</h2>
+    <div class="choices">
+      <button class="choice" data-f="yes"><span class="pic" aria-hidden="true">😂</span>Funny</button>
+      <button class="choice" data-f="no"><span class="pic" aria-hidden="true">🙅</span>Not funny</button>
+    </div>
+    <p class="say" id="fmsg">Funny is only funny when everyone laughs.</p>
+    <button class="btn" id="fnext" hidden>Next</button>`;
+  speak("Sometimes you laugh. Look at " + s.name + ". Is it funny? Or not funny?");
+  const msg = document.getElementById("fmsg"), nx = document.getElementById("fnext");
+  screen.querySelectorAll("[data-f]").forEach(b => b.onclick = () => {
+    if (b.dataset.f === "no") {
+      chime(true);
+      msg.textContent = `Right, not funny. ${s.name} is not laughing. Funny is only funny when everyone laughs.`;
+      nx.hidden = false;
+    } else {
+      msg.textContent = `Look at ${s.name}. ${s.name} is not laughing. When a friend is hurt, it is not funny.`;
+    }
+    speak(msg.textContent);
+  });
+  nx.onclick = youQ;
+}
+
+function youQ() {
+  hush();
+  const s = round[idx];
+  screen.innerHTML = `
+    <div class="step">What about you?</div>
+    <div class="stage">${face("chef","neutral")}</div>
+    <h2>What if ${s.you}? How would YOU feel?</h2>
+    <p class="say" id="ymsg">Think about your own body and face.</p>
+    ${feelGrid("chef")}
+    <button class="btn" id="ynext" hidden>Breathe &amp; try again</button>`;
+  speak("What if " + s.you + "? How would you feel?");
+  const msg = document.getElementById("ymsg"), nx = document.getElementById("ynext");
+  screen.querySelectorAll(".feel").forEach(b => b.onclick = () => {
+    if (b.dataset.m === "happy") {
+      msg.textContent = `Hmm. Would that feel happy? Think about how it would hurt.`;
+    } else {
+      chime(true);
+      msg.textContent = `Yes. You would feel ${b.dataset.m} too. ${s.name} feels ${s.feel} right now. We can say, "Sorry. Are you okay?"`;
+      nx.hidden = false;
+    }
+    speak(msg.textContent.replace(/"/g, ""));
+  });
+  nx.onclick = () => breathe(scene, "Try again");
+}
+
+function breathe(next, label) {
+  hush();
+  screen.innerHTML = `
+    <div class="step">Calm-down break</div>
+    <h2 id="cue">Squeeze your hands tight…</h2>
+    <div class="breathe" id="ball" aria-hidden="true"></div>
+    <button class="btn" id="done" hidden>${label}</button>`;
+  const cue = document.getElementById("cue"), ball = document.getElementById("ball"), done = document.getElementById("done");
+  speak("Squeeze your hands tight.");
+  setTimeout(() => { cue.textContent = "Breathe in… like smelling a cookie"; ball.classList.add("go"); speak("Breathe in, like smelling a cookie."); }, 1800);
+  setTimeout(() => { cue.textContent = "Blow out… like cooling hot soup"; speak("Blow out, like cooling hot soup."); }, 4800);
+  setTimeout(() => { cue.textContent = "Let go. Calm hands."; speak("Let go. Calm hands. Now you are ready."); done.hidden = false; done.focus(); }, 8000);
+  done.onclick = next;
+}
+
+function finish() {
+  hush(); chime(true);
+  screen.innerHTML = `
+    <div class="step">Recipe complete</div>
+    <h1>You baked the Friendship Cake!</h1>
+    <div class="stage bounce">${face("mango","excited")}${face("chef","excited")}${face("berry","excited")}</div>
+    <p class="say">Your friends feel happy and safe. Let's say the gentle hands chant together.</p>
+    <ol class="chant" id="chant">${CHANT.map(l => `<li>${l}</li>`).join("")}</ol>
+    <div class="row">
+      <button class="btn" id="sing">Say it together</button>
+      <button class="btn alt" id="replay">Cook again</button>
+    </div>
+    <p class="note">Grown-ups: say the chant with real moves. Wave, clap, high five, tap, then rest hands in your lap for "calm hands."</p>`;
+  speak("Hooray! You baked the friendship cake!");
+  document.getElementById("replay").onclick = start;
+  document.getElementById("sing").onclick = sing;
+}
+
+function sing() {
+  hush();
+  const items = [...document.querySelectorAll("#chant li")];
+  let i = 0;
+  const step = () => {
+    items.forEach(li => li.classList.remove("on"));
+    if (i >= items.length) return;
+    items[i].classList.add("on");
+    speak(CHANT[i], () => { i++; setTimeout(step, 350); });
+  };
+  step();
+}
+
+document.getElementById("soundBtn").onclick = (e) => {
+  soundOn = !soundOn; if (!soundOn) hush();
+  e.currentTarget.textContent = soundOn ? "Sound on" : "Sound off";
+  e.currentTarget.setAttribute("aria-pressed", soundOn);
+};
+start();
+</script>
+
+</body>
+</html>
