@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ready to Learn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap">
+<style>
+/* Layout: one column like Noah's Kitchen — a reward meter (coin jar or cupcake tray) above a single scene card.
+   Single warm light look on purpose, matching the Noah's Kitchen app. */
+:root {
+  --cream: #FFF8EA; --butter: #F5C451; --tomato: #E8654A; --sage: #7FA684; --sage-deep: #5E8564;
+  --cocoa: #4A3428; --sky: #6FA8C9; --sky-deep: #4E86A6; --paper: #FFFFFF; --muted: #8C7B6B;
+  --shadow: rgba(74, 52, 40, 0.18); --gold: #E9B53D; --gold-deep: #B8862A;
+  --display: "Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body: "Nunito", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--cream); color: var(--cocoa); font-family: var(--body); font-size: 18px; line-height: 1.4;
+  background-image: radial-gradient(circle at 90% 6%, rgba(245,196,81,.35) 0%, transparent 45%), radial-gradient(circle at 6% 94%, rgba(111,168,201,.22) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+.app { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.brand { font: 800 1.45rem/1.05 var(--display); }
+.brand small { display: block; font: 700 .8rem var(--body); color: var(--muted); }
+.toprow { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { border: 3px solid var(--cocoa); background: var(--paper); color: var(--cocoa); border-radius: 999px; padding: 6px 14px;
+  font: 800 .85rem var(--display); cursor: pointer; text-decoration: none; }
+.card { background: var(--paper); border: 3px solid var(--cocoa); border-radius: 22px; padding: 20px 18px 22px;
+  box-shadow: 0 8px 20px var(--shadow); display: flex; flex-direction: column; gap: 14px; }
+.eyebrow { font: 800 .78rem var(--display); text-transform: uppercase; letter-spacing: .09em; color: var(--sage-deep); }
+h1, h2 { font-family: var(--display); font-weight: 800; margin: 0; line-height: 1.12; text-wrap: balance; }
+h1 { font-size: clamp(1.8rem, 7vw, 2.2rem); }
+h2 { font-size: clamp(1.35rem, 5.6vw, 1.65rem); }
+p { margin: 0; }
+.say { font-size: 1.1rem; }
+.es { color: var(--tomato); font-weight: 800; }
+.stage { display: flex; justify-content: center; align-items: flex-end; gap: 8px; min-height: 120px; }
+.stage svg { width: 112px; height: 112px; max-width: 40%; }
+.pop { animation: pop .6s ease; }
+@keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.08) translateY(-8px)} 100%{transform:scale(1)} }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+.choice { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 120px;
+  padding: 14px 8px; border: 3px solid var(--cocoa); background: var(--paper); color: var(--cocoa); border-radius: 18px;
+  cursor: pointer; font: 800 1rem/1.2 var(--display); text-align: center; box-shadow: 0 4px 0 var(--shadow); }
+.choice .pic { font-size: 2.4rem; line-height: 1; }
+.choice:active { transform: translateY(2px); box-shadow: none; }
+.choice.done { background: #E9F2E7; border-color: var(--sage-deep); }
+.choice .num { font: 800 1.4rem var(--display); color: var(--sage-deep); }
+.shake { animation: shake .35s; }
+@keyframes shake { 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.btn { border: 3px solid var(--cocoa); border-radius: 18px; padding: 14px 18px; font: 800 1.15rem var(--display); cursor: pointer;
+  background: var(--butter); color: var(--cocoa); box-shadow: 0 5px 0 var(--cocoa); }
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--cocoa); }
+.btn.alt { background: var(--paper); }
+.btn.go { background: var(--sage); color: #fff; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row > * { flex: 1 1 180px; }
+.hint { font-weight: 800; color: var(--sky-deep); min-height: 1.4em; }
+.script { border: 3px dashed var(--tomato); border-radius: 18px; padding: 16px; text-align: center; background: #FFF4EF; }
+.script b { display: block; font: 800 clamp(1.4rem, 6vw, 1.8rem)/1.15 var(--display); color: var(--cocoa); }
+.script small { display: block; margin-top: 6px; color: var(--muted); font-weight: 700; }
+.rule { background: #E6F1F7; border-radius: 16px; padding: 12px 14px; font: 800 1.05rem var(--display); color: var(--sky-deep); text-align: center; }
+.meter { background: var(--paper); border: 3px solid var(--cocoa); border-radius: 22px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 6px 14px var(--shadow); }
+.meter svg { width: 120px; height: 84px; flex-shrink: 0; }
+.meter .mlabel { font: 800 1.05rem/1.15 var(--display); }
+.meter .mlabel small { display: block; font: 700 .82rem var(--body); color: var(--muted); }
+.stations { display: grid; gap: 14px; }
+.station { display: flex; align-items: center; gap: 14px; text-align: left; border: 3px solid var(--cocoa); background: var(--paper);
+  border-radius: 22px; padding: 14px; cursor: pointer; box-shadow: 0 8px 20px var(--shadow); color: var(--cocoa); font: inherit; width: 100%; }
+.station:active { transform: scale(.98); }
+.station svg { width: 92px; height: 70px; flex-shrink: 0; }
+.station .t { font: 800 1.25rem/1.1 var(--display); }
+.station .s { font: 700 .88rem var(--body); color: var(--muted); margin-top: 2px; }
+.timer { font: 800 clamp(3.2rem, 16vw, 4.4rem)/1 var(--display); text-align: center; font-variant-numeric: tabular-nums; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.chip { border: 3px solid var(--cocoa); background: var(--paper); border-radius: 999px; padding: 8px 16px; font: 800 1rem var(--display); cursor: pointer; color: var(--cocoa); }
+.chip[aria-pressed="true"] { background: var(--butter); }
+.big-svg { display: flex; justify-content: center; }
+.big-svg svg { width: 220px; max-width: 70%; height: auto; }
+details { background: var(--paper); border: 2px solid #E8DCC8; border-radius: 16px; padding: 10px 14px; font-size: .95rem; }
+summary { font: 800 1rem var(--display); cursor: pointer; }
+details ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; }
+.bubble { animation: rise 2.2s ease-in infinite; }
+@keyframes rise { 0%{transform:translateY(0); opacity:0} 20%{opacity:1} 100%{transform:translateY(-38px); opacity:0} }
+.steam { animation: steam 3s ease-in-out infinite; }
+@keyframes steam { 0%,100%{opacity:.25; transform:translateY(0)} 50%{opacity:.8; transform:translateY(-6px)} }
+.lid-open { transform-origin: 30px 58px; animation: lid 1s ease forwards; }
+@keyframes lid { to { transform: rotate(-28deg) translateY(-6px); } }
+.twinkle { animation: tw 1.2s ease-in-out infinite alternate; }
+@keyframes tw { from{opacity:.2} to{opacity:1} }
+.paused .bubble, .paused .steam { animation-play-state: paused; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--sky-deep); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .pop, .shake, .bubble, .steam, .lid-open, .twinkle { animation: none; } }
+@media (max-width: 380px) { .choices.three { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="top">
+    <div class="brand">Ready to Learn<small>Listen to my body</small></div>
+    <div class="toprow">
+      <a class="pill" href="index.html">Noah's Kitchen</a>
+      <button class="pill" id="homeBtn">Home</button>
+      <button class="pill" id="soundBtn" aria-pressed="true">Sound on</button>
+    </div>
+  </div>
+  <div class="meter" id="meter" hidden></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+</div>
+
+<script>
+/* ---------- pictures ---------- */
+const INK = "#4A3428";
+function face(kind, mood) {
+  let body = "";
+  if (kind === "chef") body = `<circle cx="60" cy="74" r="36" fill="#F6C9A4" stroke="${INK}" stroke-width="3"/><path d="M28 48 q-8 -26 16 -26 q4 -14 16 -10 q12 -4 16 10 q24 0 16 26z" fill="#fff" stroke="${INK}" stroke-width="3"/><rect x="30" y="42" width="60" height="10" rx="3" fill="#fff" stroke="${INK}" stroke-width="3"/>`;
+  else if (kind === "maestra") body = `<path d="M14 54 h92 a46 46 0 0 1 -92 0z" fill="#E8654A" stroke="${INK}" stroke-width="3"/><path d="M14 54 h92" stroke="#7FA684" stroke-width="9"/><circle cx="40" cy="74" r="2.4" fill="${INK}"/><circle cx="80" cy="78" r="2.4" fill="${INK}"/><circle cx="60" cy="90" r="2.4" fill="${INK}"/><circle cx="46" cy="66" r="10" fill="none" stroke="${INK}" stroke-width="2.5"/><circle cx="74" cy="66" r="10" fill="none" stroke="${INK}" stroke-width="2.5"/><path d="M56 66 h8" stroke="${INK}" stroke-width="2.5"/>`;
+  else if (kind === "mango") body = `<ellipse cx="60" cy="70" rx="38" ry="42" fill="#FFA63D" stroke="${INK}" stroke-width="3"/><path d="M60 28 q14 -16 28 -8 q-10 14 -28 8z" fill="#7FA684" stroke="${INK}" stroke-width="2"/>`;
+  else body = `<circle cx="60" cy="70" r="40" fill="#6F7CF2" stroke="${INK}" stroke-width="3"/><path d="M46 30 l7 8 l7 -10 l7 10 l7 -8 v8 h-28z" fill="#3D4BB8"/>`;
+  const ey = kind === "maestra" ? 66 : 70;
+  let eyes = `<circle cx="46" cy="${ey}" r="4.5" fill="${INK}"/><circle cx="74" cy="${ey}" r="4.5" fill="${INK}"/>`;
+  if (mood === "sad") eyes = `<path d="M40 ${ey} q6 -5 12 0 M68 ${ey} q6 -5 12 0" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  if (mood === "worried") eyes += `<path d="M38 ${ey-12} q8 -6 14 -2 M68 ${ey-14} q6 -4 14 2" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  const my = kind === "maestra" ? 82 : 86;
+  let mouth = `<path d="M46 ${my} q14 13 28 0" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  if (mood === "excited") mouth = `<path d="M44 ${my-2} q16 20 32 0z" fill="${INK}"/>`;
+  if (mood === "neutral") mouth = `<path d="M48 ${my+2} h24" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`;
+  if (mood === "worried") mouth = `<ellipse cx="60" cy="${my+4}" rx="6" ry="7" fill="${INK}"/>`;
+  if (mood === "sad") mouth = `<path d="M46 ${my+8} q14 -11 28 0" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  const cheeks = (mood === "sad" || mood === "worried") ? "" : `<circle cx="36" cy="${my-4}" r="5" fill="#FF8F8F" opacity=".55"/><circle cx="84" cy="${my-4}" r="5" fill="#FF8F8F" opacity=".55"/>`;
+  return `<svg viewBox="0 0 120 120" role="img" aria-label="${kind} ${mood}">${body}${cheeks}${eyes}${mouth}</svg>`;
+}
+
+function jarSVG(n) {
+  let coins = "";
+  for (let i = 0; i < n; i++) {
+    const y = 70 - i * 7, x = 30 + (i % 2) * 6;
+    coins += `<ellipse cx="${x + 12}" cy="${y}" rx="14" ry="4.5" fill="#E9B53D" stroke="#B8862A" stroke-width="1.6"/>`;
+  }
+  return `<svg viewBox="0 0 120 84" role="img" aria-label="Coin bank with ${n} of 6 coins">
+    <rect x="18" y="8" width="48" height="8" rx="3" fill="#7FA684" stroke="${INK}" stroke-width="2.5"/>
+    <path d="M20 16 h44 v58 q0 6 -6 6 h-32 q-6 0 -6 -6z" fill="#EAF4F8" stroke="${INK}" stroke-width="2.5"/>
+    ${coins}
+    <rect x="24" y="30" width="36" height="14" rx="3" fill="#fff" stroke="${INK}" stroke-width="1.5" opacity=".92"/>
+    <text x="42" y="40" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="8" fill="${INK}">COIN BANK</text>
+    <text x="96" y="52" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="26" fill="${INK}">${n}/6</text>
+  </svg>`;
+}
+
+const LINERS = ["#8BC34A", "#FF9F45", "#F48FB1", "#64B5F6", "#8BC34A", "#F48FB1"];
+const POMS = [["#E53935","#E53935","#C62828"],["#43A047","#7E57C2","#F06292"],["#F06292","#F48FB1","#EC407A"],["#1E88E5","#64B5F6","#1565C0"],["#FDD835","#FFFFFF","#FDD835"],["#795548","#64B5F6","#795548"]];
+function cupcake(x, y, i, s = 1) {
+  const L = LINERS[i % 6], P = POMS[i % 6];
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <path d="M-10 0 h20 l-3 12 h-14z" fill="${L}" stroke="${INK}" stroke-width="1.4"/>
+    <path d="M-6 1 l1 10 M-2 1 v11 M2 1 v11 M6 1 l-1 10" stroke="${INK}" stroke-width=".8" opacity=".5"/>
+    <circle cx="-6" cy="-2" r="5" fill="${P[0]}"/><circle cx="6" cy="-2" r="5" fill="${P[1]}"/><circle cx="0" cy="-3" r="5.5" fill="${P[2]}"/>
+    <circle cx="-3" cy="-8" r="4.6" fill="${P[1]}"/><circle cx="3" cy="-8" r="4.6" fill="${P[0]}"/><circle cx="0" cy="-12" r="4" fill="${P[2]}"/>
+  </g>`;
+}
+function traySVG(n) {
+  let cells = "";
+  for (let i = 0; i < 6; i++) {
+    const cx = 14 + (i % 3) * 25, cy = 30 + Math.floor(i / 3) * 30;
+    cells += i < n ? cupcake(cx, cy, i, .95) : `<ellipse cx="${cx}" cy="${cy + 8}" rx="9" ry="4" fill="#58585C"/>`;
+  }
+  return `<svg viewBox="0 0 120 84" role="img" aria-label="Cupcake tray with ${n} of 6 cupcakes">
+    <rect x="1" y="10" width="76" height="70" rx="10" fill="#6E6E73" stroke="${INK}" stroke-width="2.5"/>
+    ${cells}
+    <text x="99" y="52" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="26" fill="${INK}">${n}/6</text>
+  </svg>`;
+}
+
+function basketSVG(open) {
+  let weave = "";
+  for (let y = 70; y < 128; y += 9) weave += `<path d="M18 ${y} h164" stroke="#C9A877" stroke-width="2"/>`;
+  for (let x = 30; x < 180; x += 16) weave += `<path d="M${x} 64 v66" stroke="#D9BF8F" stroke-width="1.6" opacity=".7"/>`;
+  const bow = (x) => `<path d="M${x} 62 q-14 -12 -16 2 q2 10 16 -2 q14 -12 16 2 q-2 10 -16 -2" fill="none" stroke="#D93A3A" stroke-width="5"/><path d="M${x} 62 l-6 18 M${x} 62 l6 18" stroke="#D93A3A" stroke-width="4"/>`;
+  const stars = open ? `<g class="twinkle"><path d="M60 22 l4 8 9 1 -7 6 2 9 -8 -5 -8 5 2 -9 -7 -6 9 -1z" fill="#F5C451"/><path d="M140 14 l3 6 7 1 -5 4 1 7 -6 -4 -6 4 1 -7 -5 -4 7 -1z" fill="#F5C451"/><path d="M100 4 l3 6 7 1 -5 4 1 7 -6 -4 -6 4 1 -7 -5 -4 7 -1z" fill="#E8654A"/></g>` : "";
+  return `<svg viewBox="0 0 200 140" role="img" aria-label="Chef Noah's picnic basket">
+    ${stars}
+    <path d="M70 58 v-36 q0 -6 6 -6 h48 q6 0 6 6 v36" fill="none" stroke="#E3C9A0" stroke-width="9"/>
+    <path d="M16 64 h168 l-8 66 h-152z" fill="#E8D2A8" stroke="${INK}" stroke-width="3"/>
+    ${weave}
+    <g class="${open ? "lid-open" : ""}"><rect x="12" y="50" width="176" height="14" rx="4" fill="#EBD8B3" stroke="${INK}" stroke-width="3"/></g>
+    ${bow(50)}${bow(150)}
+    <rect x="58" y="78" width="84" height="44" rx="5" fill="#2A2A2A" stroke="#E8D2A8" stroke-width="3"/>
+    <text x="100" y="94" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="11" fill="#7CE36F">Chef Noah's</text>
+    <text x="100" y="106" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="10" fill="#7CE36F">Picnic</text>
+    <text x="100" y="117" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="10" fill="#7CE36F">Basket</text>
+  </svg>`;
+}
+
+function ovenSVG(baked) {
+  let cakes = "";
+  for (let i = 0; i < 6; i++) cakes += cupcake(58 + (i % 3) * 32 + (i > 2 ? 16 : 0), i > 2 ? 104 : 84, i, 1);
+  const glow = baked ? `<rect x="38" y="58" width="124" height="64" rx="8" fill="#FFD27A" opacity=".55" class="twinkle"/>` : "";
+  return `<svg viewBox="0 0 200 150" role="img" aria-label="Play kitchen oven with 6 cupcakes">
+    <rect x="22" y="14" width="156" height="130" rx="14" fill="#F2EEE8" stroke="${INK}" stroke-width="3"/>
+    <rect x="22" y="14" width="156" height="30" rx="14" fill="#E8654A" stroke="${INK}" stroke-width="3"/>
+    <circle cx="50" cy="29" r="7" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="74" cy="29" r="7" fill="#fff" stroke="${INK}" stroke-width="2"/>
+    <rect x="110" y="22" width="56" height="14" rx="4" fill="#fff" stroke="${INK}" stroke-width="2"/>
+    <text x="138" y="33" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="10" fill="${INK}">${baked ? "DING!" : "BAKE"}</text>
+    <rect x="34" y="54" width="132" height="72" rx="10" fill="#3A2C26" stroke="${INK}" stroke-width="3"/>
+    ${glow}${cakes}
+    <rect x="60" y="130" width="80" height="6" rx="3" fill="${INK}"/>
+  </svg>`;
+}
+
+function potSVG() {
+  return `<svg viewBox="0 0 200 150" role="img" aria-label="Pot of soup simmering">
+    <path class="steam" d="M70 30 q-8 -10 0 -20 q8 -10 0 -20" transform="translate(0 20)" stroke="#BFD9E8" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path class="steam" style="animation-delay:.8s" d="M100 30 q-8 -10 0 -20 q8 -10 0 -20" transform="translate(0 16)" stroke="#BFD9E8" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path class="steam" style="animation-delay:1.6s" d="M130 30 q-8 -10 0 -20 q8 -10 0 -20" transform="translate(0 20)" stroke="#BFD9E8" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="62" rx="70" ry="12" fill="#F5C451" stroke="${INK}" stroke-width="3"/>
+    <circle class="bubble" cx="74" cy="64" r="5" fill="#FFE39A"/><circle class="bubble" style="animation-delay:.7s" cx="104" cy="62" r="6" fill="#FFE39A"/><circle class="bubble" style="animation-delay:1.4s" cx="130" cy="64" r="4" fill="#FFE39A"/>
+    <path d="M30 62 h140 v52 q0 22 -22 22 h-96 q-22 0 -22 -22z" fill="#6FA8C9" stroke="${INK}" stroke-width="3"/>
+    <rect x="12" y="70" width="22" height="10" rx="5" fill="#4E86A6" stroke="${INK}" stroke-width="2.5"/>
+    <rect x="166" y="70" width="22" height="10" rx="5" fill="#4E86A6" stroke="${INK}" stroke-width="2.5"/>
+    <path d="M44 142 h112" stroke="#E8654A" stroke-width="8" stroke-linecap="round"/>
+  </svg>`;
+}
+function doughSVG() {
+  return `<svg viewBox="0 0 200 130" role="img" aria-label="Play-Doh">
+    <path d="M40 100 q-10 -40 30 -50 q20 -30 50 -10 q40 -6 40 34 q10 30 -30 30 h-70 q-20 0 -20 -4z" fill="#F48FB1" stroke="${INK}" stroke-width="3"/>
+    <path d="M70 70 q10 -8 20 0 M110 64 q10 -6 18 2" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+    <circle cx="150" cy="40" r="14" fill="#64B5F6" stroke="${INK}" stroke-width="3"/>
+  </svg>`;
+}
+
+/* ---------- content ---------- */
+// «text» = Spanish (shown in tomato, spoken with a Spanish voice)
+const COIN = [
+  { title:"The potty feeling", who:"chef", mood:"worried",
+    setup:"You are playing with blocks. Your tummy feels tight and squeezy. Your legs want to dance!",
+    clue:{ q:"What does your body need?", opts:[["🚽","The «baño»",1],["🍎","A snack",0],["😴","A nap",0]],
+      yes:"Yes! Tummy squeeze plus dancing legs means the «baño».", hint:"Look again. Squeezy tummy and dancing legs. Where do we go?" },
+    ask:"What do you do?",
+    good:["🏃","Stop and go to the «baño» now"], bad:["🧱","Keep playing. Go later."],
+    yes:"You listened to your body! The blocks will wait. You stayed dry.",
+    no:"The potty feeling can't wait. Uh-oh, wet pants.",
+    act:"Sit tall. Put your hand on your tummy. Say: My body is telling me something!" },
+  { title:"Tell the Maestra", who:"maestra", mood:"happy",
+    setup:"It's work time. You feel the potty feeling.",
+    ask:"What do you do?",
+    good:["🙋","Tell the «Maestra»"], bad:["🤞","Wait and hope it goes away"],
+    yes:"You told the «Maestra»! She said yes. You stayed dry.",
+    no:"The potty feeling got bigger and bigger. Uh-oh, an accident.",
+    say:{ line:"«Maestra, ¿puedo ir al baño?»", en:"Teacher, can I go to the bathroom?" } },
+  { title:"Try the baño", who:"maestra", mood:"happy",
+    setup:"The «Maestra» says, Noah, time to try the «baño». But you don't feel the potty feeling.",
+    ask:"What do you do?",
+    good:["👍","Say Okay, I'll try!"], bad:["🙅","Say No, I don't have to!"],
+    yes:"Trying counts! A little pee was hiding. Now you stay dry.",
+    no:"Pee can hide in your body. Later it sneaks out. Uh-oh, wet pants.",
+    rule:"Pee can hide. When the Maestra says try, I try!",
+    say:{ line:"Okay, I'll try!" } },
+  { title:"Toys can wait", who:"maestra", mood:"happy",
+    setup:"You are building a big tower. The «Maestra» says, Time to try the «baño»!",
+    ask:"What do you do?",
+    good:["🧸","Okay! My toys will wait."], bad:["😤","NO! I'm playing!"],
+    yes:"Your tower waited for you! Next time, be the boss: tell the «Maestra» before she asks.",
+    no:"Then the potty feeling came too fast. Uh-oh, wet pants.",
+    rule:"Be the boss of your body: tell the Maestra first!",
+    act:"Pretend to put your toys down gently. Then give a thumbs up!" },
+  { title:"Baño steps", type:"order",
+    setup:"Let's go to the «baño» the right way!",
+    ask:"Tap the steps in order.",
+    steps:[["🚶","Go to the «baño»"],["🚽","Pee"],["🌊","Flush"],["🧼","Wash hands"],["🪑","Back to my seat"]],
+    yes:"All done! Pee, flush, wash, and right back to your seat." },
+  { title:"Big feelings", who:"chef", mood:"sad",
+    setup:"Your tower fell down. You feel SO mad. And your tummy feels the potty squeeze!",
+    clue:{ q:"Big feelings! Check your body. What does it need?", opts:[["🚽","The «baño»",1],["🧱","Throw blocks",0],["🍪","A cookie",0]],
+      yes:"Yes! Big feelings can hide the potty feeling. Check your body!", hint:"Look again. Your tummy is squeezing. Where do we go?" },
+    ask:"What do you do?",
+    good:["🙋","Tell the «Maestra»: I'm upset. I need the «baño»."], bad:["😠","Stay mad and wait"],
+    yes:"«Baño» first, then calm down. You stayed dry!",
+    no:"Big feelings and holding pee at the same time is too much for a body. Uh-oh, an accident.",
+    rule:"When feelings get big, I check: do I need the baño?",
+    say:{ line:"«Maestra», I'm upset. I need the «baño».", en:"Baño first, then calm down." },
+    act:"Squeeze your hands tight. Breathe in, like smelling a cookie. Blow out, like cooling soup." },
+  { title:"If an accident happens", type:"accident" }
+];
+
+const CUP = [
+  { title:"Wiggly at the table", who:"chef", mood:"worried",
+    setup:"It's work time. Your legs feel jumpy. Your body wants to move!",
+    ask:"What can you do?",
+    good:["🤲","Do a seat wiggle"], bad:["🏃","Walk around the room"],
+    yes:"Seat wiggle! Your body moved, and you stayed at your table.",
+    no:"You walked around the room. You missed your work, and your friends got distracted.",
+    act:"Sitting down: push your palms together hard. Now wiggle your toes. Now chair push-ups: lift yourself up with your arms!" },
+  { title:"I need a break", who:"chef", mood:"worried",
+    setup:"You have been working a long time. Your head feels full. Your eyes feel tired.",
+    clue:{ q:"What does your brain need?", opts:[["⏸️","A break",1],["🚽","The «baño»",0],["🍎","A snack",0]],
+      yes:"Yes! A full head and tired eyes mean you need a break.", hint:"Look again. Full head, tired eyes. What helps?" },
+    ask:"What do you do?",
+    good:["🙋","Ask for a break"], bad:["🚪","Walk away from the table"],
+    yes:"You asked! The «Maestra» says yes. Two minutes of Play-Doh!",
+    no:"You walked away. The «Maestra» didn't know what you needed.",
+    say:{ line:"«Maestra», I need a break.", en:"Use your words. Then wait for her answer." } },
+  { title:"This is hard", who:"maestra", mood:"happy",
+    setup:"The worksheet is tricky. You don't know what to do!",
+    ask:"What do you do?",
+    good:["🙋","Ask for help"], bad:["🏃","Leave the table"],
+    yes:"You asked for help! The «Maestra» showed you. Now you can do it.",
+    no:"You left the table. The work is still tricky, and nobody knew you needed help.",
+    say:{ line:"«Maestra», can you help me?" } },
+  { title:"First work, then Play-Doh", who:"chef", mood:"neutral",
+    setup:"You have one more line to finish. Then it's Play-Doh time!",
+    ask:"What comes first?",
+    good:["✏️","Finish the line first"], bad:["🟣","Grab the Play-Doh now"],
+    yes:"First work, then Play-Doh! Now you earned your break.",
+    no:"Play-Doh comes after work. The line is still not done.",
+    rule:"First work, then break.",
+    act:"Trace a big line in the air with your finger. Done! Now squish pretend Play-Doh!" },
+  { title:"Coming back", who:"chef", mood:"happy",
+    setup:"Ding! The break timer is done. You love Play-Doh!",
+    ask:"What do you do?",
+    good:["🪑","Squish it in a ball. Back to my seat."], bad:["🙈","Keep playing"],
+    yes:"You came right back! The «Maestra» is so proud. Break time will come again.",
+    no:"The «Maestra» had to wait. Work time got shorter, and the next break got farther away.",
+    rule:"When the timer dings, I come back.",
+    act:"Squish pretend Play-Doh into a ball. Put it away. Hands in your lap!" },
+  { title:"Carpet time", who:"maestra", mood:"happy",
+    setup:"The «Maestra» is reading a story on the carpet.",
+    ask:"How do you listen?",
+    good:["👂","Eyes watching, hands in lap"], bad:["🌀","Roll around and get up"],
+    yes:"Whole-body listening! You heard the whole story.",
+    no:"You missed the best part of the story.",
+    act:"Sit criss-cross. Eyes on a grown-up. Hands in your lap. Count to five!" },
+  { title:"Hands to myself at the table", who:"mango", mood:"happy",
+    setup:"Mango is sitting next to you, working. You want to touch Mango's pencil and paper.",
+    ask:"What do your hands do?",
+    good:["✍️","Hands on my own paper"], bad:["👉","Poke and grab Mango's stuff"],
+    yes:"Hands to myself! Calm hands stay on my own body and my own work.",
+    no:"Mango's paper got messy. Mango feels upset, and the «Maestra» says: hands to yourself.",
+    act:"Put both hands flat on the table. Now hold a pretend pencil tight!" },
+  { title:"Hands to myself on the carpet", who:"berry", mood:"happy",
+    setup:"Berry is sitting next to you on the carpet. Berry's hair looks fun to touch.",
+    ask:"What do your hands do?",
+    good:["🤗","Hands in my lap"], bad:["✋","Touch Berry's hair"],
+    yes:"Hands to myself! Berry can listen to the story too.",
+    no:"Berry got bothered and couldn't hear the story. Berry feels upset.",
+    act:"Give yourself a big hug. Now hands in your lap. Calm hands!" }
+];
+
+/* ---------- helpers ---------- */
+const $ = (id) => document.getElementById(id);
+const screen = $("screen"), meterEl = $("meter");
+let soundOn = true;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const fmt = (t) => t.replace(/«(.*?)»/g, '<span class="es">$1</span>');
+const plain = (t) => t.replace(/[«»]/g, "");
+function hush() { try { speechSynthesis.cancel(); } catch (e) {} }
+function speak(text, onEnd) {
+  try {
+    if (!soundOn || !window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 800); return; }
+    const parts = text.split(/[«»]/);
+    const items = parts.map((p, i) => [p.trim(), i % 2 === 1]).filter(([p]) => p);
+    items.forEach(([p, es], i) => {
+      const u = new SpeechSynthesisUtterance(p);
+      u.lang = es ? "es-MX" : "en-US"; u.rate = es ? .8 : .88; u.pitch = 1.08;
+      if (i === items.length - 1 && onEnd) u.onend = onEnd;
+      speechSynthesis.speak(u);
+    });
+  } catch (e) { if (onEnd) setTimeout(onEnd, 800); }
+}
+let actx;
+function chime(good) {
+  if (!soundOn) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    (good ? [523, 659, 784] : [392, 330]).forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime + i * .12;
+      o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + .35);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + .4);
+    });
+  } catch (e) {}
+}
+const shuffle = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+let timers = [], tick = null, wake = null;
+function clearAll() { timers.forEach(clearTimeout); timers = []; if (tick) { clearInterval(tick); tick = null; } hush(); }
+
+/* ---------- state ---------- */
+let mode = null, list = [], idx = 0, earned = 0;
+function renderMeter() {
+  if (!mode) { meterEl.hidden = true; return; }
+  meterEl.hidden = false;
+  meterEl.innerHTML = mode === "coin"
+    ? `${jarSVG(earned)}<div class="mlabel">Chef Noah's Coin Bank<small>6 coins opens the picnic basket</small></div>`
+    : `${traySVG(earned)}<div class="mlabel">Cupcake Tray<small>6 cupcakes go in the oven</small></div>`;
+}
+
+/* ---------- home ---------- */
+function home() {
+  clearAll(); mode = null; renderMeter();
+  screen.innerHTML = `
+    <div class="eyebrow">Ready to Learn</div>
+    <h1>Hi Chef Noah! What's cooking today?</h1>
+    <div class="stations">
+      <button class="station" data-go="coin">${jarSVG(3)}<div><div class="t">Coin Bank</div><div class="s">Listen to your body and use the «baño»</div></div></button>
+      <button class="station" data-go="cup">${traySVG(4)}<div><div class="t">Cupcake Tray</div><div class="s">Wiggly bodies, breaks, and hands to myself</div></div></button>
+      <button class="station" data-go="simmer"><svg viewBox="0 0 200 150">${potSVG().replace(/^<svg[^>]*>|<\/svg>$/g, "")}</svg><div><div class="t">Simmer Timer</div><div class="s">Real work time, then a Play-Doh break</div></div></button>
+    </div>
+    <details>
+      <summary>For grown-ups</summary>
+      <ul>
+        <li>The Coin Bank and Cupcake Tray mirror Noah's school system: 6 coins for staying dry opens the picnic basket, and 6 cupcakes go to the play kitchen. App coins and cupcakes are practice only.</li>
+        <li>Spanish phrases match his class: «Maestra, ¿puedo ir al baño?»</li>
+        <li>Each Cupcake Tray round plays 6 of the 8 scenarios and rotates, so every one comes up.</li>
+        <li>Act-it-out moves are done sitting down so he can use them at his table.</li>
+      </ul>
+    </details>`;
+  screen.querySelectorAll(".station .s").forEach(el => el.innerHTML = fmt(el.textContent));
+  screen.querySelectorAll("[data-go]").forEach(b => b.onclick = () => b.dataset.go === "simmer" ? simmerSetup() : startStation(b.dataset.go));
+  speak("Hi Chef Noah! What's cooking today?");
+}
+
+function startStation(m) {
+  clearAll(); mode = m; idx = 0; earned = 0;
+  if (m === "coin") list = COIN.slice();
+  else {
+    const off = store.get("rtl-cup-offset", 0) % CUP.length;
+    list = Array.from({ length: 6 }, (_, i) => CUP[(off + i) % CUP.length]);
+    store.set("rtl-cup-offset", (off + 6) % CUP.length);
+  }
+  renderMeter(); showScene();
+}
+
+function showScene() {
+  clearAll();
+  const s = list[idx];
+  if (s.type === "order") return orderGame(s, () => reward(s));
+  if (s.type === "accident") return accident();
+  if (s.clue) return clueQ(s);
+  choiceQ(s);
+}
+function stepLabel(s) { return `${mode === "coin" ? "Coin Bank" : "Cupcake Tray"} · ${idx + 1} of ${list.length} · ${s.title}`; }
+function stage(s) { return `<div class="stage">${face("chef", s.who === "chef" ? s.mood : "happy")}${s.who && s.who !== "chef" ? face(s.who, s.mood) : ""}</div>`; }
+
+function clueQ(s) {
+  screen.innerHTML = `
+    <div class="eyebrow">${stepLabel(s)} · Body clue</div>
+    ${stage(s)}
+    <p class="say">${fmt(s.setup)}</p>
+    <h2>${fmt(s.clue.q)}</h2>
+    <div class="choices three">${s.clue.opts.map(([p, t, ok]) => `<button class="choice" data-ok="${ok}"><span class="pic" aria-hidden="true">${p}</span><span>${fmt(t)}</span></button>`).join("")}</div>
+    <p class="hint" id="hint"></p>
+    <button class="btn go" id="nx" hidden>Next</button>`;
+  speak(s.setup + " " + s.clue.q);
+  screen.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => {
+    if (b.dataset.ok === "1") { chime(true); b.classList.add("done"); $("hint").innerHTML = fmt(s.clue.yes); speak(s.clue.yes); $("nx").hidden = false; }
+    else { b.classList.add("shake"); setTimeout(() => b.classList.remove("shake"), 400); $("hint").innerHTML = fmt(s.clue.hint); speak(s.clue.hint); }
+  });
+  $("nx").onclick = () => choiceQ(s);
+}
+
+function choiceQ(s) {
+  hush();
+  const opts = shuffle([["good", s.good], ["bad", s.bad]]);
+  screen.innerHTML = `
+    <div class="eyebrow">${stepLabel(s)}</div>
+    ${stage(s)}
+    ${s.clue ? "" : `<p class="say">${fmt(s.setup)}</p>`}
+    <h2>${fmt(s.ask)}</h2>
+    <div class="choices">${opts.map(([k, [p, t]]) => `<button class="choice" data-k="${k}"><span class="pic" aria-hidden="true">${p}</span><span>${fmt(t)}</span></button>`).join("")}</div>
+    <button class="pill" id="again">Hear it again</button>`;
+  const read = () => { hush(); speak((s.clue ? "" : s.setup + " ") + s.ask + " " + plain(opts[0][1][1]) + "? Or " + plain(opts[1][1][1]) + "?"); };
+  read(); $("again").onclick = read;
+  screen.querySelectorAll("[data-k]").forEach(b => b.onclick = () => b.dataset.k === "good" ? yes(s) : no(s));
+}
+
+function reward(s) {
+  hush(); chime(true); earned++; renderMeter(); meterEl.classList.remove("pop"); void meterEl.offsetWidth; meterEl.classList.add("pop");
+  const prize = mode === "coin" ? "a coin in the Coin Bank" : "a cupcake on the tray";
+  screen.innerHTML = `
+    <div class="eyebrow">You did it!</div>
+    <div class="stage pop">${face("chef", "excited")}${s.who && s.who !== "chef" ? face(s.who, "excited") : ""}</div>
+    <h2>${fmt(s.yes)}</h2>
+    <p class="say">You earned ${prize}!</p>
+    ${s.rule ? `<div class="rule">${fmt(s.rule)}</div>` : ""}
+    <button class="btn" id="nx">${s.say ? "Say it out loud" : s.act ? "Act it out" : "Next"}</button>`;
+  speak(s.yes + " You earned " + prize + "!" + (s.rule ? " " + s.rule : ""));
+  $("nx").onclick = () => s.say ? sayIt(s) : s.act ? act(s) : advance();
+}
+const yes = reward;
+
+function no(s) {
+  hush(); chime(false);
+  const miss = mode === "coin" ? "No coin this time." : "No cupcake this time.";
+  const learn = mode === "coin" ? "That's okay. Bodies are learning." : "That's okay. Brains are learning.";
+  screen.innerHTML = `
+    <div class="eyebrow">Oops</div>
+    <div class="stage">${face("chef", "neutral")}${s.who && s.who !== "chef" ? face(s.who, s.who === "mango" || s.who === "berry" ? "sad" : "worried") : ""}</div>
+    <h2>${fmt(s.no)}</h2>
+    <p class="say">${miss} ${learn} Let's try again.</p>
+    <button class="btn" id="retry">Try again</button>`;
+  speak(s.no + " " + miss + " " + learn + " Let's try again.");
+  $("retry").onclick = () => choiceQ(s);
+}
+
+function sayIt(s, after) {
+  hush();
+  screen.innerHTML = `
+    <div class="eyebrow">Say it out loud</div>
+    <h2>Use your words. Say it with me!</h2>
+    <div class="script"><b>${fmt(s.say.line)}</b>${s.say.en ? `<small>${fmt(s.say.en)}</small>` : ""}</div>
+    <div class="row">
+      <button class="btn alt" id="hear">Hear it</button>
+      <button class="btn go" id="did">I said it!</button>
+    </div>`;
+  const read = () => { hush(); speak("Say it with me. " + s.say.line); };
+  read(); $("hear").onclick = read;
+  $("did").onclick = () => { chime(true); after ? after() : s.act ? act(s) : advance(); };
+}
+
+function act(s) {
+  hush();
+  screen.innerHTML = `
+    <div class="eyebrow">Act it out · Sitting down</div>
+    <div class="stage pop">${face("chef", "excited")}</div>
+    <h2>${fmt(s.act)}</h2>
+    <div class="row">
+      <button class="btn alt" id="hear">Hear it again</button>
+      <button class="btn go" id="did">I did it!</button>
+    </div>`;
+  const read = () => { hush(); speak(s.act); };
+  read(); $("hear").onclick = read;
+  $("did").onclick = advance;
+}
+
+function advance() { idx++; idx < list.length ? showScene() : finish(); }
+
+function orderGame(s, done, label) {
+  hush();
+  const order = s.steps.map((st, i) => ({ st, i }));
+  const cards = shuffle(order);
+  let next = 0;
+  screen.innerHTML = `
+    <div class="eyebrow">${label || stepLabel(s)}</div>
+    <p class="say">${fmt(s.setup)}</p>
+    <h2>${fmt(s.ask)}</h2>
+    <div class="choices">${cards.map(c => `<button class="choice" data-i="${c.i}"><span class="pic" aria-hidden="true">${c.st[0]}</span><span>${fmt(c.st[1])}</span></button>`).join("")}</div>
+    <p class="hint" id="hint"></p>`;
+  speak(s.setup + " " + s.ask);
+  screen.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
+    if (b.classList.contains("done")) return;
+    if (+b.dataset.i === next) {
+      b.classList.add("done"); b.insertAdjacentHTML("afterbegin", `<span class="num">${next + 1}</span>`);
+      speak(plain(s.steps[next][1])); next++;
+      if (next === s.steps.length) { $("hint").textContent = "All in order!"; timers.push(setTimeout(done, 1200)); }
+    } else {
+      b.classList.add("shake"); setTimeout(() => b.classList.remove("shake"), 400);
+      $("hint").textContent = next === 0 ? "Hmm. What comes first?" : "Hmm. What comes next?"; speak($("hint").textContent);
+    }
+  });
+}
+
+function accident() {
+  hush();
+  const s = { title:"If an accident happens" };
+  screen.innerHTML = `
+    <div class="eyebrow">${stepLabel(s)} · Practice</div>
+    <div class="stage">${face("chef", "worried")}</div>
+    <p class="say">Uh-oh. Chef Noah had an accident. His pants are wet. That's okay. Accidents happen when bodies are learning.</p>
+    <h2>What do you do?</h2>
+    <div class="choices" id="ch"></div>
+    <p class="hint" id="hint"></p>`;
+  const opts = shuffle([["tell", "🙋", "Tell the «Maestra»"], ["hide", "🙈", "Hide it and say nothing"]]);
+  $("ch").innerHTML = opts.map(([k, p, t]) => `<button class="choice" data-k="${k}"><span class="pic" aria-hidden="true">${p}</span><span>${fmt(t)}</span></button>`).join("");
+  speak("Uh-oh. Chef Noah had an accident. That's okay. Accidents happen when bodies are learning. What do you do? Tell the Maestra? Or hide it?");
+  screen.querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
+    if (b.dataset.k === "tell") {
+      chime(true);
+      sayIt({ say:{ line:"«Maestra», I had an accident.", en:"Nobody is mad. Grown-ups want to help." } }, () =>
+        orderGame({ setup:"Now let's get clean and comfy.", ask:"Tap the steps in order.",
+          steps:[["🙋","Tell the «Maestra»"],["👖","Get clean clothes"],["🧼","Wash hands"],["🪑","Back to class"]] },
+          braveBadge, "If an accident happens · Steps"));
+    } else {
+      $("hint").innerHTML = "Wet clothes feel cold and yucky. Nobody is mad. Grown-ups want to help. Let's tell!";
+      speak(plain($("hint").textContent));
+    }
+  });
+}
+function braveBadge() {
+  hush(); chime(true);
+  screen.innerHTML = `
+    <div class="eyebrow">Brave telling</div>
+    <div class="big-svg pop"><svg viewBox="0 0 120 110" role="img" aria-label="Brave heart badge"><path d="M60 100 C10 66 6 30 32 20 C46 14 56 22 60 32 C64 22 74 14 88 20 C114 30 110 66 60 100z" fill="#E8654A" stroke="${INK}" stroke-width="4"/><text x="60" y="62" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="18" fill="#fff">BRAVE</text></svg></div>
+    <h2>You told a grown-up. That's brave!</h2>
+    <p class="say">Accidents happen. Telling is always the right thing to do.</p>
+    <button class="btn" id="nx">Next</button>`;
+  speak("You told a grown-up. That's brave! Accidents happen. Telling is always the right thing to do.");
+  $("nx").onclick = advance;
+}
+
+function finish() {
+  clearAll(); chime(true);
+  if (mode === "coin") {
+    screen.innerHTML = `
+      <div class="eyebrow">6 coins!</div>
+      <div class="big-svg" id="pic">${basketSVG(false)}</div>
+      <h1>The Coin Bank is full!</h1>
+      <p class="say">Open Chef Noah's picnic basket!</p>
+      <button class="btn" id="open">Open the basket</button>`;
+    speak("Six coins! The coin bank is full! Open Chef Noah's picnic basket!");
+    $("open").onclick = () => {
+      chime(true); $("pic").innerHTML = basketSVG(true);
+      screen.querySelector("h1").textContent = "Hooray, Chef Noah!";
+      screen.querySelector(".say").textContent = "At school, 6 coins means a prize from your picnic basket. Listen to your body and tell the Maestra!";
+      $("open").outerHTML = `<div class="row"><button class="btn go" id="again">Play again</button><button class="btn alt" id="hm">Home</button></div>`;
+      speak("Hooray! At school, six coins means a prize from your picnic basket. Listen to your body and tell the Maestra!");
+      $("again").onclick = () => startStation("coin"); $("hm").onclick = home;
+    };
+  } else {
+    screen.innerHTML = `
+      <div class="eyebrow">6 cupcakes!</div>
+      <div class="big-svg" id="pic">${ovenSVG(false)}</div>
+      <h1>Your tray is full!</h1>
+      <p class="say">Let's bake them in the play kitchen!</p>
+      <button class="btn" id="bake">Bake the cupcakes</button>`;
+    speak("Six cupcakes! Your tray is full! Let's bake them in the play kitchen!");
+    $("bake").onclick = () => {
+      $("bake").disabled = true;
+      timers.push(setTimeout(() => {
+        chime(true); $("pic").innerHTML = ovenSVG(true);
+        screen.querySelector("h1").textContent = "Ding! Cupcakes are ready!";
+        screen.querySelector(".say").textContent = "At school, 6 cupcakes means 5 minutes in the play kitchen. Great focus, Chef Noah!";
+        $("bake").outerHTML = `<div class="row"><button class="btn go" id="again">Play again</button><button class="btn alt" id="hm">Home</button></div>`;
+        speak("Ding! At school, six cupcakes means five minutes in the play kitchen. Great focus, Chef Noah!");
+        $("again").onclick = () => startStation("cup"); $("hm").onclick = home;
+      }, 1500));
+    };
+  }
+}
+
+/* ---------- simmer timer ---------- */
+function today() { return new Date().toISOString().slice(0, 10); }
+function simmerTray() { const t = store.get("rtl-simmer", { d: today(), n: 0 }); return t.d === today() ? t : { d: today(), n: 0 }; }
+async function keepAwake() { try { if (navigator.wakeLock) wake = await navigator.wakeLock.request("screen"); } catch (e) {} }
+function letSleep() { try { if (wake) wake.release(); } catch (e) {} wake = null; }
+function mmss(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; }
+
+function simmerSetup() {
+  clearAll(); mode = null;
+  const tray = simmerTray();
+  meterEl.hidden = false;
+  meterEl.innerHTML = `${traySVG(Math.min(tray.n, 6))}<div class="mlabel">Today's Simmer Tray<small>Each simmer + break earns a cupcake</small></div>`;
+  let mins = store.get("rtl-simmer-min", 5);
+  screen.innerHTML = `
+    <div class="eyebrow">Simmer Timer</div>
+    <div class="big-svg">${potSVG()}</div>
+    <h2>Let's simmer! Sit and work until the soup is ready.</h2>
+    <p class="say">Then you get a 2-minute Play-Doh break, just like school.</p>
+    <p class="eyebrow" style="text-align:center">Grown-up: work minutes</p>
+    <div class="chips">${[2, 3, 4, 5].map(m => `<button class="chip" data-m="${m}" aria-pressed="${m === mins}">${m} min</button>`).join("")}</div>
+    <button class="btn go" id="start">Start simmering</button>`;
+  screen.querySelectorAll("[data-m]").forEach(b => b.onclick = () => {
+    mins = +b.dataset.m; store.set("rtl-simmer-min", mins);
+    screen.querySelectorAll("[data-m]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  });
+  speak("Let's simmer! Sit and work until the soup is ready. Then you get a Play-Doh break.");
+  $("start").onclick = () => runTimer(mins * 60000, "work");
+}
+
+function runTimer(total, phase) {
+  clearAll(); keepAwake();
+  const isWork = phase === "work";
+  let left = total, end = Date.now() + total, paused = false, halfSaid = false;
+  screen.innerHTML = `
+    <div class="eyebrow">${isWork ? "Simmering · Work time" : "Break time · Play-Doh"}</div>
+    <div class="big-svg" id="pic">${isWork ? potSVG() : doughSVG()}</div>
+    <div class="timer" id="clock">${mmss(total)}</div>
+    <h2 id="msg">${isWork ? "Eyes on your work. Bottom in your seat." : "Squish, roll, and play!"}</h2>
+    <div class="row">
+      <button class="btn alt" id="pause">Pause</button>
+      <button class="btn alt" id="stop">Stop</button>
+    </div>`;
+  speak(isWork ? "Simmering! Eyes on your work. Bottom in your seat." : "Break time! Squish, roll, and play with your Play-Doh!");
+  $("stop").onclick = () => { letSleep(); simmerSetup(); };
+  $("pause").onclick = () => {
+    paused = !paused;
+    if (paused) { left = end - Date.now(); $("pause").textContent = "Keep going"; $("pic").classList.add("paused"); }
+    else { end = Date.now() + left; $("pause").textContent = "Pause"; $("pic").classList.remove("paused"); }
+  };
+  tick = setInterval(() => {
+    if (paused) return;
+    const rem = end - Date.now();
+    $("clock").textContent = mmss(rem);
+    if (isWork && !halfSaid && rem <= total / 2) { halfSaid = true; $("msg").textContent = "Halfway! Keep simmering."; speak("Halfway! Keep simmering."); }
+    if (rem <= 0) { clearInterval(tick); tick = null; chime(true); isWork ? workDone() : breakDone(); }
+  }, 250);
+}
+
+function workDone() {
+  hush();
+  screen.innerHTML = `
+    <div class="eyebrow">Ding!</div>
+    <div class="big-svg pop">${potSVG()}</div>
+    <h1>Your soup is ready! Great focus!</h1>
+    <button class="btn go" id="brk">Start Play-Doh break</button>`;
+  speak("Ding! Your soup is ready! Great focus, Chef Noah! Time for your Play-Doh break.");
+  $("brk").onclick = () => runTimer(2 * 60000, "break");
+}
+
+function breakDone() {
+  hush(); letSleep();
+  screen.innerHTML = `
+    <div class="eyebrow">Ding! Break is over</div>
+    <div class="big-svg">${doughSVG()}</div>
+    <h2>Squish the Play-Doh into a ball. Come back to your seat.</h2>
+    <button class="btn go" id="back">I'm back!</button>`;
+  speak("Ding! Break is over. Squish the Play-Doh into a ball, and come back to your seat.");
+  $("back").onclick = () => {
+    const tray = simmerTray(); tray.n = Math.min(tray.n + 1, 6); store.set("rtl-simmer", tray);
+    chime(true);
+    meterEl.innerHTML = `${traySVG(tray.n)}<div class="mlabel">Today's Simmer Tray<small>Each simmer + break earns a cupcake</small></div>`;
+    meterEl.classList.remove("pop"); void meterEl.offsetWidth; meterEl.classList.add("pop");
+    const full = tray.n >= 6;
+    screen.innerHTML = `
+      <div class="eyebrow">You came right back!</div>
+      <div class="big-svg pop">${full ? ovenSVG(true) : traySVG(tray.n)}</div>
+      <h2>${full ? "6 cupcakes! Time to bake them in the play kitchen!" : "You earned a cupcake!"}</h2>
+      <div class="row">
+        <button class="btn go" id="again">Simmer again</button>
+        <button class="btn alt" id="hm">Home</button>
+      </div>`;
+    speak(full ? "Six cupcakes! Time to bake them in the play kitchen!" : "You came right back! You earned a cupcake!");
+    if (full) store.set("rtl-simmer", { d: today(), n: 0 });
+    $("again").onclick = simmerSetup; $("hm").onclick = home;
+  };
+}
+
+/* ---------- boot ---------- */
+$("homeBtn").onclick = home;
+$("soundBtn").onclick = (e) => {
+  soundOn = !soundOn; if (!soundOn) hush();
+  e.currentTarget.textContent = soundOn ? "Sound on" : "Sound off";
+  e.currentTarget.setAttribute("aria-pressed", soundOn);
+};
+home();
+</script>
+
+</body>
+</html>
