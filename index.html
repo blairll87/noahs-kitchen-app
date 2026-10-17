@@ -481,6 +481,15 @@
   .station .station-title { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 15px; color: var(--cocoa); line-height: 1.15; }
   .station .station-sub { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 11px; color: #9C8E7F; }
   .station.dimmed { opacity: 0.72; }
+  /* Home screen: 3 compact tiles per row so all stations fit without scrolling */
+  #view-home .stations-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #view-home .stations-grid .station:last-child:nth-child(odd) { grid-column: auto; }
+  #view-home .station { padding: 12px 4px 10px; gap: 6px; border-radius: 18px; box-shadow: 0 5px 12px var(--shadow); }
+  #view-home .station .icon-wrap { width: 46px; height: 46px; border-radius: 14px; }
+  #view-home .station svg { width: 30px; height: 30px; }
+  #view-home .station .station-title { font-size: 14px; }
+  #view-home .station .station-sub { display: none; }
+  #view-home .header { margin-bottom: 14px; }
   .soon-tag {
     position: absolute; top: -8px; right: -6px; background: var(--tomato); color: white;
     font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 8px; padding: 3px 6px; border-radius: 100px;
