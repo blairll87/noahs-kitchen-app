@@ -104,7 +104,8 @@ button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
 <div class="app">
   <div class="top">
     <div class="brand">Gentle Hands Kitchen<small>Cooking up kind ways to play</small></div>
-    <div class="toprow"><a class="iconbtn" href="index.html">Back to Noah's Kitchen</a><button class="iconbtn" id="soundBtn" aria-pressed="true">Sound on</button></div>
+    <div class="toprow"><a class="iconbtn" href="index.html">Back to Noah's Kitchen</a><button class="iconbtn" id="againBtn">🔊 Again</button>
+      <button class="iconbtn" id="soundBtn" aria-pressed="true">Sound on</button></div>
   </div>
   <div class="bowl" aria-label="Mixing bowl">
     <b>Friendship cake</b><div class="slots" id="slots"></div>
@@ -288,7 +289,15 @@ const slotsEl = document.getElementById("slots");
 let speechId = 0; window.__utt = [];
 function hush() { speechId++; try { speechSynthesis.cancel(); } catch (e) {} }
 // Some phones drop speech that starts right after a cancel, so wait a moment before speaking.
+let lastSpoken = "", speechUnlocked = false;
+// iPhones and iPads only allow speech after a tap, so speak a silent sound on the first tap to unlock it.
+function unlockSpeech() {
+  if (speechUnlocked) return; speechUnlocked = true;
+  try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); } catch (e) {}
+}
+["pointerdown", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, unlockSpeech, true));
 function speak(text, onEnd) {
+  lastSpoken = text;
   const id = ++speechId;
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
   setTimeout(() => { if (id === speechId) speakNow(text, onEnd); }, 180);
@@ -581,6 +590,7 @@ function sing() {
   step();
 }
 
+document.getElementById("againBtn").onclick = () => { if (lastSpoken) speak(lastSpoken); };
 document.getElementById("soundBtn").onclick = (e) => {
   soundOn = !soundOn; if (!soundOn) hush();
   e.currentTarget.textContent = soundOn ? "Sound on" : "Sound off";
