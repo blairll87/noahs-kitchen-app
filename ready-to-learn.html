@@ -366,14 +366,35 @@ const store = {
 const fmt = (t) => t.replace(/«(.*?)»/g, '<span class="es">$1</span>');
 const plain = (t) => t.replace(/[«»]/g, "");
 function hush() { try { speechSynthesis.cancel(); } catch (e) {} }
+let VOICES = [];
+function loadVoices() { try { VOICES = speechSynthesis.getVoices() || []; } catch (e) {} }
+try { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {}
+function pickVoice(lang) {
+  const norm = (v) => (v.lang || "").replace("_", "-").toLowerCase(), want = lang.toLowerCase(), pre = want.slice(0, 2);
+  return VOICES.find(v => norm(v) === want && v.localService) || VOICES.find(v => norm(v) === want)
+    || VOICES.find(v => norm(v).startsWith(pre + "-") && v.localService) || VOICES.find(v => norm(v).startsWith(pre)) || null;
+}
 function speak(text, onEnd) {
   try {
     if (!soundOn || !window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 800); return; }
+    if (!VOICES.length) loadVoices();
     const parts = text.split(/[«»]/);
-    const items = parts.map((p, i) => [p.trim(), i % 2 === 1]).filter(([p]) => p);
+    // Raw items: [text, isSpanish]. Only full Spanish phrases (2+ words) use the Spanish voice;
+    // single words like Maestra or baño stay in the English voice so it never gets stuck in Spanish.
+    const esVoice = pickVoice("es-MX") || pickVoice("es-US") || pickVoice("es-ES");
+    const enVoice = pickVoice("en-US") || pickVoice("en-GB");
+    const raw = parts.map((p, i) => [p.trim(), i % 2 === 1 && /\s/.test(p.trim()) && !!esVoice]).filter(([p]) => p);
+    const items = [];
+    raw.forEach(([p, es]) => {
+      const last = items[items.length - 1];
+      if (!es && last && !last[1]) last[0] += " " + p; else items.push([p, es]);
+    });
     items.forEach(([p, es], i) => {
-      const u = new SpeechSynthesisUtterance(p);
-      u.lang = es ? "es-MX" : "en-US"; u.rate = es ? .8 : .88; u.pitch = 1.08;
+      const say = es ? p : p.replace(/baño/gi, "bahnyo").replace(/[¿¡]/g, "");
+      const u = new SpeechSynthesisUtterance(say);
+      u.lang = es ? (esVoice.lang || "es-MX") : "en-US";
+      const v = es ? esVoice : enVoice; if (v) u.voice = v;
+      u.rate = es ? .8 : .88; u.pitch = 1.08;
       if (i === items.length - 1 && onEnd) u.onend = onEnd;
       speechSynthesis.speak(u);
     });
