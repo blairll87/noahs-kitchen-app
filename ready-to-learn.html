@@ -243,8 +243,8 @@ function doughSVG() {
 const COIN = [
   { title:"The potty feeling", who:"chef", mood:"worried",
     setup:"You are playing with blocks. Your tummy feels tight and squeezy. Your legs want to dance!",
-    clue:{ q:"What does your body need?", opts:[["🚽","The «baño»",1],["🍎","A snack",0],["😴","A nap",0]],
-      yes:"Yes! Tummy squeeze plus dancing legs means the «baño».", hint:"Look again. Squeezy tummy and dancing legs. Where do we go?" },
+    clue:{ q:"What does your body need?", opts:[["🚽","The «baño»",1],["😴","A nap",0]],
+      yes:"Yes! Tummy squeeze plus dancing legs means the «baño».", hint:"Look again. Squeezy tummy and dancing legs. Does a nap help, or the «baño»?" },
     ask:"What do you do?",
     good:["🏃","Stop and go to the «baño» now"], bad:["🧱","Keep playing. Go later."],
     yes:"You listened to your body! The blocks will wait. You stayed dry.",
@@ -280,7 +280,7 @@ const COIN = [
     yes:"All done! Pee, flush, wash, and right back to your seat." },
   { title:"Big feelings", who:"chef", mood:"sad",
     setup:"Your tower fell down. You feel SO mad. And your tummy feels the potty squeeze!",
-    clue:{ q:"Big feelings! Check your body. What does it need?", opts:[["🚽","The «baño»",1],["🧱","Throw blocks",0],["🍪","A cookie",0]],
+    clue:{ q:"Big feelings! Check your body. What does it need?", opts:[["🚽","The «baño»",1],["🧱","Throw blocks",0]],
       yes:"Yes! Big feelings can hide the potty feeling. Check your body!", hint:"Look again. Your tummy is squeezing. Where do we go?" },
     ask:"What do you do?",
     good:["🙋","Tell the «Maestra»: I'm upset. I need the «baño»."], bad:["😠","Stay mad and wait"],
@@ -302,8 +302,8 @@ const CUP = [
     act:"Sitting down: push your palms together hard. Now wiggle your toes. Now chair push-ups: lift yourself up with your arms!" },
   { title:"I need a break", who:"chef", mood:"worried",
     setup:"You have been working a long time. Your head feels full. Your eyes feel tired.",
-    clue:{ q:"What does your brain need?", opts:[["⏸️","A break",1],["🚽","The «baño»",0],["🍎","A snack",0]],
-      yes:"Yes! A full head and tired eyes mean you need a break.", hint:"Look again. Full head, tired eyes. What helps?" },
+    clue:{ q:"Your brain is like a pot that's too full! What does it need?", opts:[["⏸️","A little break",1],["📚","More and more work",0]],
+      yes:"Yes! A too-full brain needs a little break. Then it's ready to work again.", hint:"A too-full pot needs a rest. Does more work help, or a little break?" },
     ask:"What do you do?",
     good:["🙋","Ask for a break"], bad:["🚪","Walk away from the table"],
     yes:"You asked! The «Maestra» says yes. Two minutes of Play-Doh!",
@@ -365,7 +365,7 @@ const store = {
 };
 const fmt = (t) => t.replace(/«(.*?)»/g, '<span class="es">$1</span>');
 const plain = (t) => t.replace(/[«»]/g, "");
-function hush() { try { speechSynthesis.cancel(); } catch (e) {} }
+
 let VOICES = [];
 function loadVoices() { try { VOICES = speechSynthesis.getVoices() || []; } catch (e) {} }
 try { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; } catch (e) {}
@@ -374,7 +374,15 @@ function pickVoice(lang) {
   return VOICES.find(v => norm(v) === want && v.localService) || VOICES.find(v => norm(v) === want)
     || VOICES.find(v => norm(v).startsWith(pre + "-") && v.localService) || VOICES.find(v => norm(v).startsWith(pre)) || null;
 }
+let speechId = 0; window.__utt = [];
+function hush() { speechId++; try { speechSynthesis.cancel(); } catch (e) {} }
+// Some phones drop speech that starts right after a cancel, so wait a moment before speaking.
 function speak(text, onEnd) {
+  const id = ++speechId;
+  try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
+  setTimeout(() => { if (id === speechId) speakNow(text, onEnd); }, 180);
+}
+function speakNow(text, onEnd) {
   try {
     if (!soundOn || !window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 800); return; }
     if (!VOICES.length) loadVoices();
@@ -396,7 +404,7 @@ function speak(text, onEnd) {
       const v = es ? esVoice : enVoice; if (v) u.voice = v;
       u.rate = es ? .8 : .88; u.pitch = 1.08;
       if (i === items.length - 1 && onEnd) u.onend = onEnd;
-      speechSynthesis.speak(u);
+      window.__utt.push(u); if (window.__utt.length > 20) window.__utt.shift(); speechSynthesis.speak(u);
     });
   } catch (e) { if (onEnd) setTimeout(onEnd, 800); }
 }
@@ -479,7 +487,7 @@ function clueQ(s) {
     ${stage(s)}
     <p class="say">${fmt(s.setup)}</p>
     <h2>${fmt(s.clue.q)}</h2>
-    <div class="choices three">${s.clue.opts.map(([p, t, ok]) => `<button class="choice" data-ok="${ok}"><span class="pic" aria-hidden="true">${p}</span><span>${fmt(t)}</span></button>`).join("")}</div>
+    <div class="choices ${s.clue.opts.length > 2 ? "three" : ""}">${s.clue.opts.map(([p, t, ok]) => `<button class="choice" data-ok="${ok}"><span class="pic" aria-hidden="true">${p}</span><span>${fmt(t)}</span></button>`).join("")}</div>
     <p class="hint" id="hint"></p>
     <button class="btn go" id="nx" hidden>Next</button>`;
   speak(s.setup + " " + s.clue.q);

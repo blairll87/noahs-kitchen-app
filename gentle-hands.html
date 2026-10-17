@@ -285,16 +285,24 @@ let soundOn = true, idx = 0, bowl = [], round = SCENES.filter(s => s.pack === "p
 const screen = document.getElementById("screen");
 const slotsEl = document.getElementById("slots");
 
+let speechId = 0; window.__utt = [];
+function hush() { speechId++; try { speechSynthesis.cancel(); } catch (e) {} }
+// Some phones drop speech that starts right after a cancel, so wait a moment before speaking.
 function speak(text, onEnd) {
+  const id = ++speechId;
+  try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
+  setTimeout(() => { if (id === speechId) speakNow(text, onEnd); }, 180);
+}
+function speakNow(text, onEnd) {
   try {
     if (!soundOn || !window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 900); return; }
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 0.88; u.pitch = 1.1; u.lang = "en-US";
     if (onEnd) u.onend = onEnd;
-    speechSynthesis.speak(u);
+    window.__utt.push(u); if (window.__utt.length > 20) window.__utt.shift(); speechSynthesis.speak(u);
   } catch (e) { if (onEnd) setTimeout(onEnd, 900); }
 }
-function hush() { try { speechSynthesis.cancel(); } catch (e) {} }
+
 let actx;
 function chime(good) {
   if (!soundOn) return;
