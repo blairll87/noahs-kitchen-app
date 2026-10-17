@@ -111,6 +111,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--sky-deep); outl
     <div class="toprow">
       <a class="pill" href="index.html">Noah's Kitchen</a>
       <button class="pill" id="homeBtn">Home</button>
+      <button class="pill" id="againBtn">🔊 Again</button>
       <button class="pill" id="soundBtn" aria-pressed="true">Sound on</button>
     </div>
   </div>
@@ -243,51 +244,51 @@ function doughSVG() {
 const COIN = [
   { title:"The potty feeling", who:"chef", mood:"worried",
     setup:"You are playing with blocks. Your tummy feels tight and squeezy. Your legs want to dance!",
-    clue:{ q:"What does your body need?", opts:[["🚽","The «baño»",1],["😴","A nap",0]],
-      yes:"Yes! Tummy squeeze plus dancing legs means the «baño».", hint:"Look again. Squeezy tummy and dancing legs. Does a nap help, or the «baño»?" },
+    clue:{ q:"What does your body need?", opts:[["🚽","The potty",1],["😴","A nap",0]],
+      yes:"Yes! Tummy squeeze plus dancing legs means the potty.", hint:"Look again. Squeezy tummy and dancing legs. Does a nap help, or the potty?" },
     ask:"What do you do?",
-    good:["🏃","Stop and go to the «baño» now"], bad:["🧱","Keep playing. Go later."],
+    good:["🏃","Stop and go to the potty now"], bad:["🧱","Keep playing. Go later."],
     yes:"You listened to your body! The blocks will wait. You stayed dry.",
     no:"The potty feeling can't wait. Uh-oh, wet pants.",
     act:"Sit tall. Put your hand on your tummy. Say: My body is telling me something!" },
-  { title:"Tell the Maestra", who:"maestra", mood:"happy",
+  { title:"Tell the teacher", who:"maestra", mood:"happy",
     setup:"It's work time. You feel the potty feeling.",
     ask:"What do you do?",
-    good:["🙋","Tell the «Maestra»"], bad:["🤞","Wait and hope it goes away"],
-    yes:"You told the «Maestra»! She said yes. You stayed dry.",
+    good:["🙋","Tell the teacher"], bad:["🤞","Wait and hope it goes away"],
+    yes:"You told the teacher! She said yes. You stayed dry.",
     no:"The potty feeling got bigger and bigger. Uh-oh, an accident.",
-    say:{ line:"«Maestra, ¿puedo ir al baño?»", en:"Teacher, can I go to the bathroom?" } },
-  { title:"Try the baño", who:"maestra", mood:"happy",
-    setup:"The «Maestra» says, Noah, time to try the «baño». But you don't feel the potty feeling.",
+    say:{ line:"«Maestra, ¿puedo ir al baño?»", en:"Teacher, can I go to the potty?" } },
+  { title:"Try the potty", who:"maestra", mood:"happy",
+    setup:"The teacher says, Noah, time to try the potty. But you don't feel the potty feeling.",
     ask:"What do you do?",
     good:["👍","Say Okay, I'll try!"], bad:["🙅","Say No, I don't have to!"],
     yes:"Trying counts! A little pee was hiding. Now you stay dry.",
     no:"Pee can hide in your body. Later it sneaks out. Uh-oh, wet pants.",
-    rule:"Pee can hide. When the Maestra says try, I try!",
+    rule:"Pee can hide. When the teacher says try, I try!",
     say:{ line:"Okay, I'll try!" } },
   { title:"Toys can wait", who:"maestra", mood:"happy",
-    setup:"You are building a big tower. The «Maestra» says, Time to try the «baño»!",
+    setup:"You are building a big tower. The teacher says, Time to try the potty!",
     ask:"What do you do?",
     good:["🧸","Okay! My toys will wait."], bad:["😤","NO! I'm playing!"],
-    yes:"Your tower waited for you! Next time, be the boss: tell the «Maestra» before she asks.",
+    yes:"Your tower waited for you! Next time, be the boss: tell the teacher before she asks.",
     no:"Then the potty feeling came too fast. Uh-oh, wet pants.",
-    rule:"Be the boss of your body: tell the Maestra first!",
+    rule:"Be the boss of your body: tell the teacher first!",
     act:"Pretend to put your toys down gently. Then give a thumbs up!" },
-  { title:"Baño steps", type:"order",
-    setup:"Let's go to the «baño» the right way!",
+  { title:"Potty steps", type:"order",
+    setup:"Let's go to the potty the right way!",
     ask:"Tap the steps in order.",
-    steps:[["🚶","Go to the «baño»"],["🚽","Pee"],["🌊","Flush"],["🧼","Wash hands"],["🪑","Back to my seat"]],
+    steps:[["🚶","Go to the potty"],["🚽","Pee"],["🌊","Flush"],["🧼","Wash hands"],["🪑","Back to my seat"]],
     yes:"All done! Pee, flush, wash, and right back to your seat." },
   { title:"Big feelings", who:"chef", mood:"sad",
     setup:"Your tower fell down. You feel SO mad. And your tummy feels the potty squeeze!",
-    clue:{ q:"Big feelings! Check your body. What does it need?", opts:[["🚽","The «baño»",1],["🧱","Throw blocks",0]],
+    clue:{ q:"Big feelings! Check your body. What does it need?", opts:[["🚽","The potty",1],["🧱","Throw blocks",0]],
       yes:"Yes! Big feelings can hide the potty feeling. Check your body!", hint:"Look again. Your tummy is squeezing. Where do we go?" },
     ask:"What do you do?",
-    good:["🙋","Tell the «Maestra»: I'm upset. I need the «baño»."], bad:["😠","Stay mad and wait"],
-    yes:"«Baño» first, then calm down. You stayed dry!",
+    good:["🙋","Tell the teacher: I'm upset. I need the potty."], bad:["😠","Stay mad and wait"],
+    yes:"Potty first, then calm down. You stayed dry!",
     no:"Big feelings and holding pee at the same time is too much for a body. Uh-oh, an accident.",
-    rule:"When feelings get big, I check: do I need the baño?",
-    say:{ line:"«Maestra», I'm upset. I need the «baño».", en:"Baño first, then calm down." },
+    rule:"When feelings get big, I check: do I need the potty?",
+    say:{ line:"Teacher, I'm upset. I need the potty.", en:"Potty first, then calm down." },
     act:"Squeeze your hands tight. Breathe in, like smelling a cookie. Blow out, like cooling soup." },
   { title:"If an accident happens", type:"accident" }
 ];
@@ -306,16 +307,16 @@ const CUP = [
       yes:"Yes! A too-full brain needs a little break. Then it's ready to work again.", hint:"A too-full pot needs a rest. Does more work help, or a little break?" },
     ask:"What do you do?",
     good:["🙋","Ask for a break"], bad:["🚪","Walk away from the table"],
-    yes:"You asked! The «Maestra» says yes. Two minutes of Play-Doh!",
-    no:"You walked away. The «Maestra» didn't know what you needed.",
-    say:{ line:"«Maestra», I need a break.", en:"Use your words. Then wait for her answer." } },
+    yes:"You asked! The teacher says yes. Two minutes of Play-Doh!",
+    no:"You walked away. The teacher didn't know what you needed.",
+    say:{ line:"Teacher, I need a break.", en:"Use your words. Then wait for her answer." } },
   { title:"This is hard", who:"maestra", mood:"happy",
     setup:"The worksheet is tricky. You don't know what to do!",
     ask:"What do you do?",
     good:["🙋","Ask for help"], bad:["🏃","Leave the table"],
-    yes:"You asked for help! The «Maestra» showed you. Now you can do it.",
+    yes:"You asked for help! The teacher showed you. Now you can do it.",
     no:"You left the table. The work is still tricky, and nobody knew you needed help.",
-    say:{ line:"«Maestra», can you help me?" } },
+    say:{ line:"Teacher, can you help me?" } },
   { title:"First work, then Play-Doh", who:"chef", mood:"neutral",
     setup:"You have one more line to finish. Then it's Play-Doh time!",
     ask:"What comes first?",
@@ -328,12 +329,12 @@ const CUP = [
     setup:"Ding! The break timer is done. You love Play-Doh!",
     ask:"What do you do?",
     good:["🪑","Squish it in a ball. Back to my seat."], bad:["🙈","Keep playing"],
-    yes:"You came right back! The «Maestra» is so proud. Break time will come again.",
-    no:"The «Maestra» had to wait. Work time got shorter, and the next break got farther away.",
+    yes:"You came right back! The teacher is so proud. Break time will come again.",
+    no:"The teacher had to wait. Work time got shorter, and the next break got farther away.",
     rule:"When the timer dings, I come back.",
     act:"Squish pretend Play-Doh into a ball. Put it away. Hands in your lap!" },
   { title:"Carpet time", who:"maestra", mood:"happy",
-    setup:"The «Maestra» is reading a story on the carpet.",
+    setup:"The teacher is reading a story on the carpet.",
     ask:"How do you listen?",
     good:["👂","Eyes watching, hands in lap"], bad:["🌀","Roll around and get up"],
     yes:"Whole-body listening! You heard the whole story.",
@@ -344,7 +345,7 @@ const CUP = [
     ask:"What do your hands do?",
     good:["✍️","Hands on my own paper"], bad:["👉","Poke and grab Mango's stuff"],
     yes:"Hands to myself! Calm hands stay on my own body and my own work.",
-    no:"Mango's paper got messy. Mango feels upset, and the «Maestra» says: hands to yourself.",
+    no:"Mango's paper got messy. Mango feels upset, and the teacher says: hands to yourself.",
     act:"Put both hands flat on the table. Now hold a pretend pencil tight!" },
   { title:"Hands to myself on the carpet", who:"berry", mood:"happy",
     setup:"Berry is sitting next to you on the carpet. Berry's hair looks fun to touch.",
@@ -377,7 +378,15 @@ function pickVoice(lang) {
 let speechId = 0; window.__utt = [];
 function hush() { speechId++; try { speechSynthesis.cancel(); } catch (e) {} }
 // Some phones drop speech that starts right after a cancel, so wait a moment before speaking.
+let lastSpoken = "", speechUnlocked = false;
+// iPhones and iPads only allow speech after a tap, so speak a silent sound on the first tap to unlock it.
+function unlockSpeech() {
+  if (speechUnlocked) return; speechUnlocked = true;
+  try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); } catch (e) {}
+}
+["pointerdown", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, unlockSpeech, true));
 function speak(text, onEnd) {
+  lastSpoken = text;
   const id = ++speechId;
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
   setTimeout(() => { if (id === speechId) speakNow(text, onEnd); }, 180);
@@ -388,17 +397,17 @@ function speakNow(text, onEnd) {
     if (!VOICES.length) loadVoices();
     const parts = text.split(/[«»]/);
     // Raw items: [text, isSpanish]. Only full Spanish phrases (2+ words) use the Spanish voice;
-    // single words like Maestra or baño stay in the English voice so it never gets stuck in Spanish.
+    // single words like teacher or potty stay in the English voice so it never gets stuck in Spanish.
     const esVoice = pickVoice("es-MX") || pickVoice("es-US") || pickVoice("es-ES");
     const enVoice = pickVoice("en-US") || pickVoice("en-GB");
-    const raw = parts.map((p, i) => [p.trim(), i % 2 === 1 && /\s/.test(p.trim()) && !!esVoice]).filter(([p]) => p);
+    const raw = parts.map((p, i) => [p.trim(), i % 2 === 1]).filter(([p, es]) => p && (!es || esVoice));
     const items = [];
     raw.forEach(([p, es]) => {
       const last = items[items.length - 1];
       if (!es && last && !last[1]) last[0] += " " + p; else items.push([p, es]);
     });
     items.forEach(([p, es], i) => {
-      const say = es ? p : p.replace(/baño/gi, "bahnyo").replace(/[¿¡]/g, "");
+      const say = es ? p : p.replace(/[¿¡]/g, "");
       const u = new SpeechSynthesisUtterance(say);
       u.lang = es ? (esVoice.lang || "es-MX") : "en-US";
       const v = es ? esVoice : enVoice; if (v) u.voice = v;
@@ -441,7 +450,7 @@ function home() {
     <div class="eyebrow">Ready to Learn</div>
     <h1>Hi Chef Noah! What's cooking today?</h1>
     <div class="stations">
-      <button class="station" data-go="coin">${jarSVG(3)}<div><div class="t">Coin Bank</div><div class="s">Listen to your body and use the «baño»</div></div></button>
+      <button class="station" data-go="coin">${jarSVG(3)}<div><div class="t">Coin Bank</div><div class="s">Listen to your body and use the potty</div></div></button>
       <button class="station" data-go="cup">${traySVG(4)}<div><div class="t">Cupcake Tray</div><div class="s">Wiggly bodies, breaks, and hands to myself</div></div></button>
       <button class="station" data-go="simmer"><svg viewBox="0 0 200 150">${potSVG().replace(/^<svg[^>]*>|<\/svg>$/g, "")}</svg><div><div class="t">Simmer Timer</div><div class="s">Real work time, then a Play-Doh break</div></div></button>
     </div>
@@ -449,7 +458,6 @@ function home() {
       <summary>For grown-ups</summary>
       <ul>
         <li>The Coin Bank and Cupcake Tray mirror Noah's school system: 6 coins for staying dry opens the picnic basket, and 6 cupcakes go to the play kitchen. App coins and cupcakes are practice only.</li>
-        <li>Spanish phrases match his class: «Maestra, ¿puedo ir al baño?»</li>
         <li>Each Cupcake Tray round plays 6 of the 8 scenarios and rotates, so every one comes up.</li>
         <li>Act-it-out moves are done sitting down so he can use them at his table.</li>
       </ul>
@@ -552,7 +560,13 @@ function sayIt(s, after) {
       <button class="btn alt" id="hear">Hear it</button>
       <button class="btn go" id="did">I said it!</button>
     </div>`;
-  const read = () => { hush(); speak("Say it with me. " + s.say.line); };
+  const read = () => {
+    hush();
+    const hasEs = /«/.test(s.say.line);
+    const canEs = !!(pickVoice("es-MX") || pickVoice("es-US") || pickVoice("es-ES"));
+    if (hasEs && canEs) speak("Say it with me. " + s.say.line + " That means, " + s.say.en);
+    else speak("Say it with me. " + (hasEs ? s.say.en : s.say.line));
+  };
   read(); $("hear").onclick = read;
   $("did").onclick = () => { chime(true); after ? after() : s.act ? act(s) : advance(); };
 }
@@ -609,15 +623,15 @@ function accident() {
     <h2>What do you do?</h2>
     <div class="choices" id="ch"></div>
     <p class="hint" id="hint"></p>`;
-  const opts = shuffle([["tell", "🙋", "Tell the «Maestra»"], ["hide", "🙈", "Hide it and say nothing"]]);
+  const opts = shuffle([["tell", "🙋", "Tell the teacher"], ["hide", "🙈", "Hide it and say nothing"]]);
   $("ch").innerHTML = opts.map(([k, p, t]) => `<button class="choice" data-k="${k}"><span class="pic" aria-hidden="true">${p}</span><span>${fmt(t)}</span></button>`).join("");
-  speak("Uh-oh. Chef Noah had an accident. That's okay. Accidents happen when bodies are learning. What do you do? Tell the Maestra? Or hide it?");
+  speak("Uh-oh. Chef Noah had an accident. That's okay. Accidents happen when bodies are learning. What do you do? Tell the teacher? Or hide it?");
   screen.querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
     if (b.dataset.k === "tell") {
       chime(true);
-      sayIt({ say:{ line:"«Maestra», I had an accident.", en:"Nobody is mad. Grown-ups want to help." } }, () =>
+      sayIt({ say:{ line:"Teacher, I had an accident.", en:"Nobody is mad. Grown-ups want to help." } }, () =>
         orderGame({ setup:"Now let's get clean and comfy.", ask:"Tap the steps in order.",
-          steps:[["🙋","Tell the «Maestra»"],["👖","Get clean clothes"],["🧼","Wash hands"],["🪑","Back to class"]] },
+          steps:[["🙋","Tell the teacher"],["👖","Get clean clothes"],["🧼","Wash hands"],["🪑","Back to class"]] },
           braveBadge, "If an accident happens · Steps"));
     } else {
       $("hint").innerHTML = "Wet clothes feel cold and yucky. Nobody is mad. Grown-ups want to help. Let's tell!";
@@ -650,9 +664,9 @@ function finish() {
     $("open").onclick = () => {
       chime(true); $("pic").innerHTML = basketSVG(true);
       screen.querySelector("h1").textContent = "Hooray, Chef Noah!";
-      screen.querySelector(".say").textContent = "At school, 6 coins means a prize from your picnic basket. Listen to your body and tell the Maestra!";
+      screen.querySelector(".say").textContent = "At school, 6 coins means a prize from your picnic basket. Listen to your body and tell the teacher!";
       $("open").outerHTML = `<div class="row"><button class="btn go" id="again">Play again</button><button class="btn alt" id="hm">Home</button></div>`;
-      speak("Hooray! At school, six coins means a prize from your picnic basket. Listen to your body and tell the Maestra!");
+      speak("Hooray! At school, six coins means a prize from your picnic basket. Listen to your body and tell the teacher!");
       $("again").onclick = () => startStation("coin"); $("hm").onclick = home;
     };
   } else {
@@ -776,6 +790,7 @@ function breakDone() {
 
 /* ---------- boot ---------- */
 $("homeBtn").onclick = home;
+document.getElementById("againBtn").onclick = () => { if (lastSpoken) speak(lastSpoken); };
 $("soundBtn").onclick = (e) => {
   soundOn = !soundOn; if (!soundOn) hush();
   e.currentTarget.textContent = soundOn ? "Sound on" : "Sound off";
