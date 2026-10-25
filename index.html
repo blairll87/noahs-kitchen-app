@@ -224,6 +224,42 @@
   }
   .ready-banner.show { display: block; animation: fadeIn 0.3s ease; }
 
+
+  /* ---- Más o Menos ---- */
+  .mm-dots { display:flex; justify-content:center; gap:8px; margin:6px 0 10px; }
+  .mm-dot { width:14px; height:14px; border-radius:50%; background:#fff; border:2.5px solid var(--cocoa); }
+  .mm-dot.done { background:var(--sage-deep); }
+  .mm-dot.now { background:var(--butter); transform:scale(1.25); }
+  .mm-prompt-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; }
+  .mm-speak { width:48px; height:48px; border-radius:50%; border:2.5px solid var(--cocoa); background:var(--sky); font-size:22px; cursor:pointer; }
+  .mm-prompt { font-family:'Baloo 2',sans-serif; font-weight:800; font-size:26px; color:var(--cocoa); text-align:center; }
+  .mm-pair { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .mm-pick { background:#fff; border:3px solid var(--cocoa); border-radius:20px; padding:12px 8px; text-align:center; cursor:pointer; font-family:'Baloo 2',sans-serif; color:var(--cocoa); display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .mm-pick.right { background:#E9F2E7; border-color:var(--sage-deep); animation:fadeIn .3s ease; }
+  .mm-pick.shake, .mm-tile.shake { animation:mmShake .35s; }
+  @keyframes mmShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+  .mm-frames { display:flex; flex-direction:column; gap:6px; align-items:center; }
+  .mm-frame { display:grid; grid-template-columns:repeat(5,28px); gap:2px; background:var(--cream); border:2px solid var(--cocoa); border-radius:8px; padding:3px; }
+  .mm-cell { width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:20px; border-radius:4px; background:#fff; }
+  .mm-pet svg { width:84px; height:84px; }
+  .mm-petname { font-weight:800; font-size:18px; }
+  .mm-numeral { font-size:84px; font-weight:800; line-height:1; padding:8px 0; }
+  .mm-strip { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; margin-top:14px; }
+  .mm-strip-cell { text-align:center; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:13px; padding:4px 0; border-radius:6px; background:#fff; border:1.5px solid #d9cdb4; color:var(--cocoa); }
+  .mm-strip-cell.a { background:var(--tomato); color:#fff; border-color:var(--cocoa); }
+  .mm-strip-cell.b { background:var(--sky-deep); color:#fff; border-color:var(--cocoa); }
+  .mm-sentence { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:6px 0 14px; }
+  .mm-slot { min-width:64px; height:60px; padding:0 10px; border:3px dashed var(--cocoa); border-radius:14px; display:flex; align-items:center; justify-content:center; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:28px; color:var(--cocoa); background:#fff; }
+  .mm-slot.filled { border-style:solid; background:var(--butter); }
+  .mm-bank { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .mm-tile { min-width:70px; height:60px; padding:0 14px; border:3px solid var(--cocoa); border-radius:14px; background:var(--sky); font-family:'Baloo 2',sans-serif; font-weight:800; font-size:26px; color:var(--cocoa); cursor:pointer; }
+  .mm-tile.used { opacity:.25; pointer-events:none; }
+  .mm-hint { text-align:center; font-family:'Baloo 2',sans-serif; font-weight:700; font-size:15px; color:var(--sage-deep); margin-top:12px; }
+  .mm-next { margin-top:10px; }
+  .mm-parent { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:18px; font-size:11px; color:#a39683; font-family:'Nunito',sans-serif; opacity:.8; }
+  .mm-stage-pill { border:1.5px solid #c9bda3; background:#fff; border-radius:10px; padding:4px 9px; font-size:12px; color:var(--cocoa); cursor:pointer; }
+  .mm-stage-pill.active { background:var(--sage-deep); color:#fff; border-color:var(--sage-deep); }
+
   /* ---- Homework ---- */
   .hw-due-badge {
     display: inline-flex; align-items: center; gap: 6px; background: var(--tomato); color: white;
@@ -759,6 +795,13 @@
         <div class="station-title">Homework</div>
         <div class="station-sub">This week's assignment</div>
       </div>
+      <div class="station" data-goto="view-masmenos">
+        <div class="icon-wrap" style="background:#E3EEF7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="13" cy="22" r="7" fill="#D9A066" stroke="#4A3428" stroke-width="2.5"/><circle cx="27" cy="22" r="7" fill="#D9A066" stroke="#4A3428" stroke-width="2.5"/><circle cx="25" cy="20" r="1.3" fill="#4A3428"/><circle cx="29" cy="24" r="1.3" fill="#4A3428"/><circle cx="27" cy="12" r="1.3" fill="#4A3428"/><path d="M8 8 L18 8 M13 3 L13 13" stroke="#E8654A" stroke-width="3" stroke-linecap="round"/><path d="M22 33 L32 33" stroke="#4A90C2" stroke-width="3" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title">Más o Menos</div>
+        <div class="station-sub">¿Cuál tiene más?</div>
+      </div>
       <a class="station" href="gentle-hands.html?v=202610171631" style="text-decoration:none;">
         <div class="icon-wrap" style="background:#E6F1F7">
           <svg viewBox="0 0 40 40" fill="none"><path d="M12 22 V11 a2.5 2.5 0 0 1 5 0 V19 V8 a2.5 2.5 0 0 1 5 0 V19 V10 a2.5 2.5 0 0 1 5 0 V21 V15 a2.5 2.5 0 0 1 5 0 V25 c0 6 -4 10 -10 10 h-2 c-4 0 -6 -2 -8 -5 l-5 -7 a2.5 2.5 0 0 1 4 -3 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.2" stroke-linejoin="round"/><path d="M20 30 c-2 -2 -4 -3 -4 -5 a2 2 0 0 1 4 -1 a2 2 0 0 1 4 1 c0 2 -2 3 -4 5z" fill="#E8654A"/></svg>
@@ -1024,6 +1067,36 @@
         </div>
       </div>
       <div class="hw-other-empty" id="hwOtherEmpty" data-goto="view-parent-homework">+ Add an extra assignment (like Social-Emotional Learning)</div>
+    </div>
+  </div>
+
+  <!-- ============ MAS O MENOS VIEW ============ -->
+  <div class="view" id="view-masmenos">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Más o Menos</div>
+      <div class="mm-dots" id="mmDots"></div>
+      <div class="mm-prompt-row">
+        <button class="mm-speak" id="mmSpeak" aria-label="Escuchar">🔊</button>
+        <div class="mm-prompt" id="mmPrompt"></div>
+      </div>
+      <div id="mmBoard"></div>
+      <div class="game-feedback" id="mmFeedback"></div>
+      <div class="ready-banner" id="mmBanner">
+        <div id="mmBannerText">¡Muy bien!</div>
+        <button class="cook-btn mm-next" id="mmNext">Siguiente ▶</button>
+      </div>
+      <div class="mm-parent">
+        <span>Parent: etapa</span>
+        <button class="mm-stage-pill" data-stage="0">Auto</button>
+        <button class="mm-stage-pill" data-stage="1">1</button>
+        <button class="mm-stage-pill" data-stage="2">2</button>
+        <button class="mm-stage-pill" data-stage="3">3</button>
+        <button class="mm-stage-pill" data-stage="4">4</button>
+      </div>
     </div>
   </div>
 
@@ -2944,6 +3017,249 @@
     });
   }
   if (parentWeekEditRows) renderParentWeekEdit();
+
+  /* ---------- MÁS O MENOS ---------- */
+  (function () {
+    const board = document.getElementById('mmBoard');
+    if (!board) return;
+    const promptEl = document.getElementById('mmPrompt');
+    const fb = document.getElementById('mmFeedback');
+    const banner = document.getElementById('mmBanner');
+    const bannerText = document.getElementById('mmBannerText');
+    const dotsEl = document.getElementById('mmDots');
+    const KEY = 'noahsKitchenMasMenos';
+    const WORDS = ['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte'];
+    let save = { rounds: 0, lock: 0 };
+    try { const r = JSON.parse(localStorage.getItem(KEY)); if (r && typeof r.rounds === 'number') save = { rounds: r.rounds, lock: r.lock || 0 }; } catch (e) {}
+    function persist() { try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) {} }
+
+    let pair = null, queue = [], cur = null, locked = false, firstTry = true;
+    let sPets = null, sMode = '', sBuild = null;
+
+    function say(t, cb) { speak(t, 'es-MX', cb); }
+    function cap(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
+
+    function newPair() {
+      const gap = Math.max(1, 6 - Math.floor(save.rounds / 2));
+      const g = save.rounds >= 10 ? (Math.random() < 0.6 ? 1 : 2) : gap;
+      let a, b, tries = 0;
+      do {
+        a = 1 + Math.floor(Math.random() * 20);
+        b = Math.random() < 0.5 ? a + g : a - g;
+        tries++;
+      } while ((b < 1 || b > 20) && tries < 50);
+      if (b < 1 || b > 20) { a = 4; b = 4 + g > 20 ? 20 : 4 + g; }
+      return Math.random() < 0.5 ? { a, b } : { a: b, b: a };
+    }
+
+    function buildQueue() {
+      const stages = save.lock ? [save.lock] : [1, 2, 3, 4];
+      const q = [];
+      stages.forEach(st => {
+        if (st === 4) q.push({ stage: 4 });
+        else {
+          const kinds = Math.random() < 0.5 ? ['more', 'less'] : ['less', 'more'];
+          kinds.forEach(k => q.push({ stage: st, kind: k }));
+        }
+      });
+      return q;
+    }
+
+    function renderDots() {
+      const stages = save.lock ? [save.lock] : [1, 2, 3, 4];
+      dotsEl.innerHTML = '';
+      stages.forEach(st => {
+        const d = document.createElement('div');
+        d.className = 'mm-dot' + (cur && cur.stage === st ? ' now' : (cur && st < cur.stage ? ' done' : ''));
+        dotsEl.appendChild(d);
+      });
+      document.querySelectorAll('.mm-stage-pill').forEach(p => {
+        p.classList.toggle('active', parseInt(p.getAttribute('data-stage')) === save.lock);
+      });
+    }
+
+    function frames(n, emoji) {
+      let html = '<div class="mm-frames">';
+      let left = n;
+      while (left > 0) {
+        const here = Math.min(10, left);
+        html += '<div class="mm-frame">';
+        for (let i = 0; i < 10; i++) html += '<div class="mm-cell">' + (i < here ? emoji : '') + '</div>';
+        html += '</div>';
+        left -= here;
+      }
+      return html + '</div>';
+    }
+
+    function newRound() {
+      pair = newPair();
+      queue = buildQueue();
+      banner.classList.remove('show');
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      if (!queue.length) { finishRound(); return; }
+      cur = queue.shift();
+      locked = false; firstTry = true;
+      fb.textContent = '';
+      renderDots();
+      if (cur.stage === 1) renderPlates();
+      else if (cur.stage === 2) renderPets();
+      else if (cur.stage === 3) renderNumbers();
+      else renderSentence();
+    }
+
+    function finishRound() {
+      save.rounds++; persist();
+      board.innerHTML = '';
+      promptEl.textContent = '🎉';
+      bannerText.textContent = '¡Muy bien, Noah!';
+      banner.classList.add('show');
+      say('¡Muy bien, Noah!');
+    }
+
+    function setPrompt(t) { promptEl.textContent = t; say(t); }
+
+    function isMore() { return cur.kind === 'more'; }
+    function correctSide() {
+      const bigger = pair.a > pair.b ? 'a' : 'b';
+      const smaller = bigger === 'a' ? 'b' : 'a';
+      return isMore() ? bigger : smaller;
+    }
+    function celebrateLine() {
+      const w = correctSide() === 'a' ? pair.a : pair.b;
+      const o = correctSide() === 'a' ? pair.b : pair.a;
+      return cap(WORDS[w]) + (isMore() ? ' es más que ' : ' es menos que ') + WORDS[o] + '.';
+    }
+
+    /* --- Stages 1-3: pick one of two --- */
+    function pickHtml(side, inner) {
+      return '<div class="mm-pick" data-side="' + side + '">' + inner + '</div>';
+    }
+    function renderPlates() {
+      promptEl.dataset.q = '';
+      board.innerHTML = '<div class="mm-pair">' +
+        pickHtml('a', frames(pair.a, '🍪')) + pickHtml('b', frames(pair.b, '🍪')) + '</div>';
+      setPrompt(isMore() ? '¿Cuál tiene más?' : '¿Cuál tiene menos?');
+    }
+    function renderPets() {
+      sPets = shuffle(pets).slice(0, 2);
+      const card = (side, pet, n) => pickHtml(side,
+        '<div class="mm-pet">' + pet.svg + '</div><div class="mm-petname">' + pet.name + '</div>' + frames(n, '🍓'));
+      board.innerHTML = '<div class="mm-pair">' + card('a', sPets[0], pair.a) + card('b', sPets[1], pair.b) + '</div>';
+      setPrompt(isMore() ? '¿Quién tiene más fresas?' : '¿Quién tiene menos fresas?');
+    }
+    function renderNumbers() {
+      let strip = '<div class="mm-strip">';
+      for (let i = 1; i <= 20; i++) {
+        strip += '<div class="mm-strip-cell' + (i === pair.a ? ' a' : (i === pair.b ? ' b' : '')) + '">' + i + '</div>';
+      }
+      strip += '</div>';
+      board.innerHTML = '<div class="mm-pair">' +
+        pickHtml('a', '<div class="mm-numeral" style="color:var(--tomato)">' + pair.a + '</div>') +
+        pickHtml('b', '<div class="mm-numeral" style="color:var(--sky-deep)">' + pair.b + '</div>') +
+        '</div>' + strip;
+      setPrompt(isMore() ? '¿Cuál número es más?' : '¿Cuál número es menos?');
+    }
+
+    /* --- Stage 4: sentence --- */
+    function renderSentence() {
+      const x = Math.random() < 0.5 ? pair.a : pair.b;
+      const y = x === pair.a ? pair.b : pair.a;
+      const cmp = x > y ? 'mayor' : 'menor';
+      sMode = save.rounds < 3 ? 'choose' : 'build';
+      sBuild = { words: [String(x), 'es', cmp, 'que', String(y)], cmp, x, y, pos: 0 };
+      const hint = '<div class="mm-hint">mayor = más 🔼 &nbsp;&nbsp; menor = menos 🔽</div>';
+      if (sMode === 'choose') {
+        board.innerHTML = '<div class="mm-sentence">' +
+          '<div class="mm-slot filled">' + x + '</div><div class="mm-slot filled">es</div>' +
+          '<div class="mm-slot" id="mmCmpSlot">?</div><div class="mm-slot filled">que</div>' +
+          '<div class="mm-slot filled">' + y + '</div></div>' +
+          '<div class="mm-bank"><button class="mm-tile" data-cmp="mayor">mayor</button><button class="mm-tile" data-cmp="menor">menor</button></div>' + hint;
+        setPrompt('Escoge la palabra.');
+      } else {
+        const tiles = shuffle(sBuild.words.map((w, i) => ({ w, i })));
+        board.innerHTML = '<div class="mm-sentence">' +
+          sBuild.words.map((w, i) => '<div class="mm-slot" data-slot="' + i + '"></div>').join('') + '</div>' +
+          '<div class="mm-bank">' + tiles.map(t => '<button class="mm-tile" data-tile="' + t.i + '">' + t.w + '</button>').join('') + '</div>' + hint;
+        setPrompt('Arma la oración.');
+      }
+    }
+    function sentenceText() { return sBuild.words.join(' ') + '.'; }
+    function sentenceSpoken() {
+      return WORDS[sBuild.x] + ' es ' + sBuild.cmp + ' que ' + WORDS[sBuild.y] + '.';
+    }
+
+    function shake(el) {
+      el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+      setTimeout(() => el.classList.remove('shake'), 400);
+    }
+    function wrong(el) {
+      firstTry = false;
+      shake(el);
+      fb.textContent = 'Inténtalo otra vez 💪';
+      say(promptEl.textContent);
+    }
+    function correct(onDone) {
+      locked = true;
+      fb.textContent = '⭐ ¡Sí!';
+      onDone();
+    }
+
+    board.addEventListener('click', (e) => {
+      if (locked || !cur) return;
+      const pick = e.target.closest('.mm-pick');
+      if (pick && cur.stage <= 3) {
+        if (pick.getAttribute('data-side') === correctSide()) {
+          pick.classList.add('right');
+          correct(() => {
+            triggerCookEffect(pick);
+            say('¡Sí! ' + celebrateLine(), () => setTimeout(nextQuestion, 500));
+          });
+        } else wrong(pick);
+        return;
+      }
+      if (cur.stage !== 4) return;
+      const tile = e.target.closest('.mm-tile');
+      if (!tile) return;
+      if (sMode === 'choose') {
+        if (tile.getAttribute('data-cmp') === sBuild.cmp) {
+          const slot = document.getElementById('mmCmpSlot');
+          slot.textContent = sBuild.cmp; slot.classList.add('filled');
+          correct(() => say('¡Sí! ' + sentenceSpoken(), () => setTimeout(nextQuestion, 600)));
+        } else wrong(tile);
+      } else {
+        const idx = parseInt(tile.getAttribute('data-tile'));
+        if (idx === sBuild.pos) {
+          const slot = board.querySelector('[data-slot="' + idx + '"]');
+          slot.textContent = sBuild.words[idx]; slot.classList.add('filled');
+          tile.classList.add('used');
+          sBuild.pos++;
+          if (sBuild.pos === sBuild.words.length) {
+            correct(() => say('¡Sí! ' + sentenceSpoken(), () => setTimeout(nextQuestion, 600)));
+          } else {
+            locked = true;
+            const spoken = (idx === 0 || idx === 4) ? WORDS[parseInt(sBuild.words[idx])] : sBuild.words[idx];
+            say(spoken, () => { locked = false; });
+          }
+        } else wrong(tile);
+      }
+    });
+
+    document.getElementById('mmSpeak').addEventListener('click', () => { if (cur) say(promptEl.textContent); });
+    document.getElementById('mmNext').addEventListener('click', newRound);
+    document.querySelectorAll('.mm-stage-pill').forEach(p => {
+      p.addEventListener('click', () => {
+        save.lock = parseInt(p.getAttribute('data-stage')); persist();
+        newRound();
+      });
+    });
+    document.querySelectorAll('[data-goto="view-masmenos"]').forEach(el => {
+      el.addEventListener('click', () => newRound());
+    });
+    window.__mm = { newRound, get pair() { return pair; }, get cur() { return cur; }, save };
+  })();
 </script>
 </body>
 </html>
