@@ -260,6 +260,19 @@
   .mm-stage-pill { border:1.5px solid #c9bda3; background:#fff; border-radius:10px; padding:4px 9px; font-size:12px; color:var(--cocoa); cursor:pointer; }
   .mm-stage-pill.active { background:var(--sage-deep); color:#fff; border-color:var(--sage-deep); }
 
+
+  /* ---- Hubs & My Week ---- */
+  .hub-grid { margin-top: 14px; }
+  .today-big { display:flex; align-items:center; gap:14px; background:var(--butter); border:3px solid var(--cocoa); border-radius:22px; padding:14px 16px; cursor:pointer; box-shadow:0 5px 0 var(--cocoa); animation: todayPulse 1.6s ease-in-out infinite; -webkit-tap-highlight-color:transparent; }
+  .today-big:active { transform: translateY(3px); box-shadow:0 2px 0 var(--cocoa); }
+  .today-big .tb-icon svg { width:54px; height:54px; }
+  .today-big .tb-text { flex:1; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:24px; color:var(--cocoa); line-height:1.1; }
+  .today-big .tb-text small { display:block; font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; font-style:italic; color:var(--sky-deep); }
+  .today-big .tb-tap { font-size:34px; animation: tapPoint 1s ease-in-out infinite; }
+  @keyframes todayPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.025)} }
+  @keyframes tapPoint { 0%,100%{transform:translateX(0)} 50%{transform:translateX(-8px)} }
+  @media (prefers-reduced-motion: reduce) { .today-big, .today-big .tb-tap { animation:none; } }
+
   /* ---- Homework ---- */
   .hw-due-badge {
     display: inline-flex; align-items: center; gap: 6px; background: var(--tomato); color: white;
@@ -725,83 +738,27 @@
     </div>
 
     <div class="stations-grid">
-      <div class="station" data-goto="view-day">
-        <div class="icon-wrap" id="dayStationIconWrap" style="background:#FCEFC7">
-          <svg id="dayStationIcon" viewBox="0 0 40 40" fill="none"><path d="M8 20 a12 12 0 0 1 24 0 v6 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="27" width="28" height="4" rx="2" fill="#4A3428"/><line x1="20" y1="6" x2="20" y2="2" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>
-        </div>
-        <div class="station-title" id="dayStationTitle">My Day</div>
-        <div class="station-sub" id="dayStationSub">What's cooking today</div>
-      </div>
       <div class="station" data-goto="view-week">
         <div class="icon-wrap" style="background:#E6F1F7">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="8" y="8" width="24" height="26" rx="3" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="8" y="8" width="24" height="7" rx="3" fill="#4A3428"/><line x1="13" y1="21" x2="27" y2="21" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="27" x2="27" y2="27" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="9" width="28" height="25" rx="4" fill="#6FA8C9" stroke="#4A3428" stroke-width="2.5"/><rect x="6" y="9" width="28" height="8" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><circle cx="14" cy="24" r="2" fill="#FBF3E1"/><circle cx="20" cy="24" r="2" fill="#FBF3E1"/><circle cx="26" cy="24" r="2" fill="#F5C451"/><circle cx="14" cy="29" r="2" fill="#FBF3E1"/><circle cx="20" cy="29" r="2" fill="#FBF3E1"/></svg>
         </div>
-        <div class="station-title">This Week</div>
-        <div class="station-sub">See the week</div>
+        <div class="station-title">My Week</div>
+        <div class="station-sub">Tap a day!</div>
       </div>
-      <div class="station" data-goto="view-school">
-        <div class="icon-wrap" style="background:#FCEFC7">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="8" y="12" width="24" height="22" rx="4" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M14 12 V9 a6 6 0 0 1 12 0 v3" stroke="#4A3428" stroke-width="2.5" fill="none"/></svg>
+      <a class="station" href="big-feelings.html?v=1" style="text-decoration:none;">
+        <div class="icon-wrap" style="background:#FDE9D9">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><circle cx="14" cy="17" r="2" fill="#4A3428"/><circle cx="26" cy="17" r="2" fill="#4A3428"/><path d="M13 27 q7 -7 14 0" stroke="#4A3428" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M31 8 q3 4 0 7 q-3 -3 0 -7z" fill="#7CC6FF" stroke="#4A3428" stroke-width="1.5"/></svg>
         </div>
-        <div class="station-title">Get Ready<br>for School</div>
-        <div class="station-sub">Before we go</div>
-      </div>
-      <div class="station" data-goto="view-words">
+        <div class="station-title">Big Feelings</div>
+        <div class="station-sub">What can I do?</div>
+      </a>
+      <a class="station" href="waiting-turns.html?v=1" style="text-decoration:none;">
         <div class="icon-wrap" style="background:#E9F2E7">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M20 7 A13 13 0 0 1 20 33" stroke="#4A3428" stroke-width="2" fill="none"/></svg>
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="9" cy="14" r="4" fill="#F5C451" stroke="#4A3428" stroke-width="2"/><circle cx="20" cy="14" r="4" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><circle cx="31" cy="14" r="4" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><path d="M5 30 h30" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/><path d="M9 20 v6 M20 20 v6 M31 20 v6" stroke="#4A3428" stroke-width="2.5" stroke-linecap="round"/></svg>
         </div>
-        <div class="station-title">Kitchen Words</div>
-        <div class="station-sub">Spanish words</div>
-      </div>
-      <div class="station" data-goto="view-practice">
-        <div class="icon-wrap" style="background:#FCEFEA">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="12" height="12" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="22" y="6" width="12" height="12" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/><rect x="6" y="22" width="12" height="12" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="22" y="22" width="12" height="12" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>
-        </div>
-        <div class="station-title">Practice</div>
-        <div class="station-sub">Play and learn</div>
-      </div>
-      <div class="station" data-goto="view-extra">
-        <div class="icon-wrap" style="background:#E9F2E7">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M20 12 L22 18 L28 18 L23 22 L25 28 L20 24 L15 28 L17 22 L12 18 L18 18 Z" fill="#E8654A" stroke="#4A3428" stroke-width="1.5" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="station-title">Extra Practice</div>
-        <div class="station-sub">Sounds &amp; more, any day</div>
-      </div>
-      <div class="station" data-goto="view-let-cook">
-        <div class="icon-wrap" style="background:#FCEFC7">
-          <svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="4" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="31" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/></svg>
-        </div>
-        <div class="station-title">Let's Cook!</div>
-        <div class="station-sub">Make a pretend dish</div>
-      </div>
-      <div class="station" data-goto="view-baking">
-        <div class="icon-wrap" style="background:#FCEFEA">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="28" height="28" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="11" y="11" width="18" height="14" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="28" cy="29" r="1.5" fill="#4A3428"/></svg>
-        </div>
-        <div class="station-title">Let's Bake!</div>
-        <div class="station-sub">Sweet treats</div>
-      </div>
-      <div class="station" data-goto="view-pets">
-        <div class="icon-wrap" style="background:#E9F2E7">
-          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="14" ry="12" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="7" width="12" height="4" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><ellipse cx="20" cy="6" rx="7" ry="5" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="15" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="25" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="15" cy="23" r="1.3" fill="#4A3428"/><circle cx="25" cy="23" r="1.3" fill="#4A3428"/></svg>
-        </div>
-        <div class="station-title">Kitchen Crew</div>
-        <div class="station-sub">Feed &amp; play</div>
-      </div>
-      <div class="station" data-goto="view-homework">
-        <div class="icon-wrap" style="background:#FCEFC7">
-          <svg viewBox="0 0 40 40" fill="none"><rect x="9" y="8" width="22" height="26" rx="3" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="5" width="12" height="6" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><line x1="13" y1="18" x2="27" y2="18" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="23" x2="27" y2="23" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="28" x2="22" y2="28" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <div class="station-title">Homework</div>
-        <div class="station-sub">This week's assignment</div>
-      </div>
-      <div class="station" data-goto="view-masmenos">
-        <div class="icon-wrap" style="background:#E3EEF7">
-          <svg viewBox="0 0 40 40" fill="none"><circle cx="13" cy="22" r="7" fill="#D9A066" stroke="#4A3428" stroke-width="2.5"/><circle cx="27" cy="22" r="7" fill="#D9A066" stroke="#4A3428" stroke-width="2.5"/><circle cx="25" cy="20" r="1.3" fill="#4A3428"/><circle cx="29" cy="24" r="1.3" fill="#4A3428"/><circle cx="27" cy="12" r="1.3" fill="#4A3428"/><path d="M8 8 L18 8 M13 3 L13 13" stroke="#E8654A" stroke-width="3" stroke-linecap="round"/><path d="M22 33 L32 33" stroke="#4A90C2" stroke-width="3" stroke-linecap="round"/></svg>
-        </div>
-        <div class="station-title">Más o Menos</div>
-        <div class="station-sub">¿Cuál tiene más?</div>
-      </div>
+        <div class="station-title">Waiting &amp; Turns</div>
+        <div class="station-sub">Wait, sit &amp; share</div>
+      </a>
       <a class="station" href="gentle-hands.html?v=202610171631" style="text-decoration:none;">
         <div class="icon-wrap" style="background:#E6F1F7">
           <svg viewBox="0 0 40 40" fill="none"><path d="M12 22 V11 a2.5 2.5 0 0 1 5 0 V19 V8 a2.5 2.5 0 0 1 5 0 V19 V10 a2.5 2.5 0 0 1 5 0 V21 V15 a2.5 2.5 0 0 1 5 0 V25 c0 6 -4 10 -10 10 h-2 c-4 0 -6 -2 -8 -5 l-5 -7 a2.5 2.5 0 0 1 4 -3 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.2" stroke-linejoin="round"/><path d="M20 30 c-2 -2 -4 -3 -4 -5 a2 2 0 0 1 4 -1 a2 2 0 0 1 4 1 c0 2 -2 3 -4 5z" fill="#E8654A"/></svg>
@@ -816,14 +773,112 @@
         <div class="station-title">Ready to Learn</div>
         <div class="station-sub">Baño, breaks &amp; focus</div>
       </a>
+      <div class="station" data-goto="view-masmenos">
+        <div class="icon-wrap" style="background:#E3EEF7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="13" cy="22" r="7" fill="#D9A066" stroke="#4A3428" stroke-width="2.5"/><circle cx="27" cy="22" r="7" fill="#D9A066" stroke="#4A3428" stroke-width="2.5"/><circle cx="25" cy="20" r="1.3" fill="#4A3428"/><circle cx="29" cy="24" r="1.3" fill="#4A3428"/><circle cx="27" cy="12" r="1.3" fill="#4A3428"/><path d="M8 8 L18 8 M13 3 L13 13" stroke="#E8654A" stroke-width="3" stroke-linecap="round"/><path d="M22 33 L32 33" stroke="#4A90C2" stroke-width="3" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title">Más o Menos</div>
+        <div class="station-sub">¿Cuál tiene más?</div>
+      </div>
+      <div class="station" data-goto="view-learn">
+        <div class="icon-wrap" style="background:#FCEFEA">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M6 12 q7 -4 14 2 v20 q-7 -6 -14 -2 Z" fill="#F5C451" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/><path d="M34 12 q-7 -4 -14 2 v20 q7 -6 14 -2 Z" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="station-title">Learn</div>
+        <div class="station-sub">Words &amp; practice</div>
+      </div>
+      <div class="station" data-goto="view-cookbake">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M6 18 h20 a2 2 0 0 1 2 2 c0 7 -5 11 -12 11 s-12 -4 -12 -11 a2 2 0 0 1 2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><circle cx="29" cy="12" r="6" fill="#D9A066" stroke="#4A3428" stroke-width="2.2"/><circle cx="27" cy="11" r="1" fill="#4A3428"/><circle cx="31" cy="13" r="1" fill="#4A3428"/></svg>
+        </div>
+        <div class="station-title">Cook &amp; Bake</div>
+        <div class="station-sub">Pretend kitchen</div>
+      </div>
+      <div class="station" data-goto="view-pets">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="24" rx="14" ry="12" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="7" width="12" height="4" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><ellipse cx="20" cy="6" rx="7" ry="5" fill="#FBF3E1" stroke="#4A3428" stroke-width="2"/><circle cx="15" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="25" cy="22" r="3" fill="white" stroke="#4A3428" stroke-width="1.5"/><circle cx="15" cy="23" r="1.3" fill="#4A3428"/><circle cx="25" cy="23" r="1.3" fill="#4A3428"/></svg>
+        </div>
+        <div class="station-title">Kitchen Crew</div>
+        <div class="station-sub">Feed &amp; play</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LEARN HUB ============ -->
+  <div class="view" id="view-learn">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Learn</div>
+      <div class="card-sub">Pick something to practice</div>
+      <div class="stations-grid hub-grid">
+      <div class="station" data-goto="view-practice">
+        <div class="icon-wrap" style="background:#FCEFEA">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="12" height="12" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="22" y="6" width="12" height="12" rx="2" fill="#F5C451" stroke="#4A3428" stroke-width="2"/><rect x="6" y="22" width="12" height="12" rx="2" fill="#6FA8C9" stroke="#4A3428" stroke-width="2"/><rect x="22" y="22" width="12" height="12" rx="2" fill="#7FA684" stroke="#4A3428" stroke-width="2"/></svg>
+        </div>
+        <div class="station-title">Practice</div>
+        <div class="station-sub">Play and learn</div>
+      </div>
+      <div class="station" data-goto="view-extra">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="14" fill="#F5C451" stroke="#4A3428" stroke-width="2.5"/><path d="M20 12 L22 18 L28 18 L23 22 L25 28 L20 24 L15 28 L17 22 L12 18 L18 18 Z" fill="#E8654A" stroke="#4A3428" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="station-title">Extra Practice</div>
+        <div class="station-sub">Sounds &amp; more, any day</div>
+      </div>
+      <div class="station" data-goto="view-words">
+        <div class="icon-wrap" style="background:#E9F2E7">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" fill="#7FA684" stroke="#4A3428" stroke-width="2.5"/><path d="M20 7 A13 13 0 0 1 20 33" stroke="#4A3428" stroke-width="2" fill="none"/></svg>
+        </div>
+        <div class="station-title">Kitchen Words</div>
+        <div class="station-sub">Spanish words</div>
+      </div>
+      <div class="station" data-goto="view-homework">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="9" y="8" width="22" height="26" rx="3" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><rect x="14" y="5" width="12" height="6" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><line x1="13" y1="18" x2="27" y2="18" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="23" x2="27" y2="23" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="28" x2="22" y2="28" stroke="#4A3428" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="station-title">Homework</div>
+        <div class="station-sub">This week's assignment</div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COOK &AMP; BAKE HUB ============ -->
+  <div class="view" id="view-cookbake">
+    <div class="back-btn" data-goto="view-home">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to the Kitchen
+    </div>
+    <div class="card">
+      <div class="card-title">Cook &amp; Bake</div>
+      <div class="card-sub">Make something yummy</div>
+      <div class="stations-grid hub-grid">
+      <div class="station" data-goto="view-let-cook">
+        <div class="icon-wrap" style="background:#FCEFC7">
+          <svg viewBox="0 0 40 40" fill="none"><path d="M8 18 h24 a2 2 0 0 1 2 2 c0 8 -6 12 -14 12 s-14 -4 -14 -12 a2 2 0 0 1 2 -2 Z" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="4" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/><rect x="31" y="19" width="5" height="4" rx="2" fill="#E8654A" stroke="#4A3428" stroke-width="2"/></svg>
+        </div>
+        <div class="station-title">Let's Cook!</div>
+        <div class="station-sub">Make a pretend dish</div>
+      </div>
+      <div class="station" data-goto="view-baking">
+        <div class="icon-wrap" style="background:#FCEFEA">
+          <svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="28" height="28" rx="4" fill="#E8654A" stroke="#4A3428" stroke-width="2.5"/><rect x="11" y="11" width="18" height="14" rx="2" fill="#FBF3E1" stroke="#4A3428" stroke-width="2.5"/><circle cx="28" cy="29" r="1.5" fill="#4A3428"/></svg>
+        </div>
+        <div class="station-title">Let's Bake!</div>
+        <div class="station-sub">Sweet treats</div>
+      </div>
+      </div>
     </div>
   </div>
 
   <!-- ============ MY DAY VIEW ============ -->
   <div class="view" id="view-day">
-    <div class="back-btn" data-goto="view-home">
+    <div class="back-btn" data-goto="view-week">
       <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back to the Kitchen
+      Back to the Week
     </div>
 
     <div class="lang-toggle on" id="langToggleDay">
@@ -859,9 +914,9 @@
 
   <!-- ============ EXTRA PRACTICE VIEW ============ -->
   <div class="view" id="view-extra">
-    <div class="back-btn" data-goto="view-home">
+    <div class="back-btn" data-goto="view-learn">
       <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back to the Kitchen
+      Back
     </div>
 
     <div class="lang-toggle on" id="langToggleExtra">
@@ -886,9 +941,9 @@
 
   <!-- ============ LET'S COOK VIEW ============ -->
   <div class="view" id="view-let-cook">
-    <div class="back-btn" data-goto="view-home">
+    <div class="back-btn" data-goto="view-cookbake">
       <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back to the Kitchen
+      Back
     </div>
 
     <div class="lang-toggle on" id="langToggleCook">
@@ -928,9 +983,9 @@
 
   <!-- ============ LET'S BAKE VIEW ============ -->
   <div class="view" id="view-baking">
-    <div class="back-btn" data-goto="view-home">
+    <div class="back-btn" data-goto="view-cookbake">
       <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back to the Kitchen
+      Back
     </div>
 
     <div class="lang-toggle on" id="langToggleBake">
@@ -1008,9 +1063,9 @@
 
   <!-- ============ HOMEWORK VIEW ============ -->
   <div class="view" id="view-homework">
-    <div class="back-btn" data-goto="view-home">
+    <div class="back-btn" data-goto="view-learn">
       <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back to the Kitchen
+      Back
     </div>
 
     <div class="card">
@@ -1113,8 +1168,9 @@
     </div>
 
     <div class="card">
-      <div class="card-title">Yesterday, Today &amp; Tomorrow</div>
-      <div class="card-sub">Swipe or tap a day to hear it</div>
+      <div class="today-big" id="todayBig" role="button" tabindex="0"></div>
+      <div class="card-title" style="margin-top:18px">Yesterday, Today &amp; Tomorrow</div>
+      <div class="card-sub">Tap any day to open it</div>
       <div class="day-counter" id="dayCounter"></div>
       <div class="carousel-wrap">
         <div class="carousel" id="carousel"></div>
@@ -1124,7 +1180,7 @@
 
     <div class="card">
       <div class="card-title">The Full Week</div>
-      <div class="card-sub">Monday through Sunday</div>
+      <div class="card-sub">Monday through Sunday. Tap a day!</div>
       <div class="week-tally" id="weekTally"></div>
       <div class="week-list" id="weekList"></div>
     </div>
@@ -1150,9 +1206,9 @@
 
   <!-- ============ KITCHEN WORDS ============ -->
   <div class="view" id="view-words">
-    <div class="back-btn" data-goto="view-home">
+    <div class="back-btn" data-goto="view-learn">
       <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back to the Kitchen
+      Back
     </div>
     <div class="card">
       <div class="card-title">Kitchen Words</div>
@@ -1163,9 +1219,9 @@
 
   <!-- ============ PRACTICE ============ -->
   <div class="view" id="view-practice">
-    <div class="back-btn" data-goto="view-home">
+    <div class="back-btn" data-goto="view-learn">
       <svg viewBox="0 0 24 24" fill="none"><path d="M15 18 L9 12 L15 6" stroke="#4A3428" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back to the Kitchen
+      Back
     </div>
 
     <div class="card game-card">
@@ -1521,10 +1577,15 @@
     if (isNowComplete && typeof showDancePet === 'function') showDancePet();
   }
 
-  function getDayMode() {
+  let viewDayIndex = null; // null = today; a number = a day picked from My Week
+  function getTodayMode() {
     const hour = new Date().getHours();
     if (hour >= 19) return 'night';
     return week[TODAY_INDEX].type; // 'school' or 'home'
+  }
+  function getDayMode() {
+    if (viewDayIndex !== null && viewDayIndex !== TODAY_INDEX) return week[viewDayIndex].type;
+    return getTodayMode();
   }
 
   const moonIconSvg = `<svg viewBox="0 0 40 40" fill="none"><path d="M25 6 A16 16 0 1 0 25 34 A12 12 0 1 1 25 6 Z" fill="#9B7EDE" stroke="#4A3428" stroke-width="2.5"/></svg>`;
@@ -1596,12 +1657,16 @@
       document.getElementById("allDoneText").textContent = "🌙 All done! Sweet dreams! 🌙";
       document.getElementById('dayThenText').innerHTML = 'THEN...<br><b>Sleep tight! See you in the morning! 🌙</b>';
     }
+    const dsub = document.getElementById('dayCardSub');
+    if (dsub && viewDayIndex !== null && viewDayIndex !== TODAY_INDEX) {
+      dsub.textContent = week[viewDayIndex].full + ' · ' + dsub.textContent;
+    }
     renderDay();
   }
 
   // Check every minute in case the app is left open across the 7pm switch
   setInterval(() => {
-    if (getDayMode() !== lastMode) setupDayView();
+    if (viewDayIndex === null && getDayMode() !== lastMode) setupDayView();
     if (typeof updatePetsForTimeOfDay === 'function') updatePetsForTimeOfDay();
   }, 60000);
 
@@ -2395,7 +2460,7 @@
   function updatePetsForTimeOfDay() {
     let isNight = false;
     try {
-      isNight = typeof getDayMode === 'function' && getDayMode() === 'night';
+      isNight = typeof getTodayMode === 'function' && getTodayMode() === 'night';
     } catch (e) {
       // week/TODAY_INDEX not ready yet - just skip the night styling this time
     }
@@ -2634,7 +2699,7 @@
     const badge = document.getElementById('dayBadge');
     if (!badge) return;
     const d = week[TODAY_INDEX];
-    const mode = getDayMode();
+    const mode = getTodayMode();
     if (mode === 'night') {
       badge.textContent = `🌙 BEDTIME — ${d.full.toUpperCase()}`;
       return;
@@ -2680,7 +2745,7 @@
     `;
     }).join('');
     carousel.querySelectorAll('.carousel-card').forEach((el, i) => {
-      el.addEventListener('click', () => speakDay(week[i]));
+      el.addEventListener('click', () => openDay(i));
     });
   }
 
@@ -2693,7 +2758,7 @@
       </div>
     `).join('');
     weekList.querySelectorAll('.week-row').forEach((el, i) => {
-      el.addEventListener('click', () => speakDay(week[i]));
+      el.addEventListener('click', () => openDay(i));
     });
   }
 
@@ -2713,8 +2778,41 @@
     `;
   }
 
+  function openDay(i) {
+    viewDayIndex = (i === TODAY_INDEX) ? null : i;
+    setupDayView();
+    goto('view-day');
+    speakDay(week[i]);
+  }
+  const todayBig = document.getElementById('todayBig');
+  function renderTodayBig() {
+    if (!todayBig) return;
+    const night = getTodayMode() === 'night';
+    const d = week[TODAY_INDEX];
+    todayBig.innerHTML = `
+      <div class="tb-icon">${night ? moonIconSvg : icon(d.type)}</div>
+      <div class="tb-text">${night ? 'Tonight' : 'Today is ' + d.full}<small>${night ? 'Esta noche' : 'Hoy es ' + d.es}</small></div>
+      <div class="tb-tap" aria-hidden="true">👈</div>`;
+  }
+  if (todayBig) {
+    todayBig.addEventListener('click', () => openDay(TODAY_INDEX));
+    todayBig.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') openDay(TODAY_INDEX); });
+  }
+  // coming to My Week from the home screen: say where to tap
+  document.querySelectorAll('[data-goto="view-week"]').forEach(el => {
+    if (el.closest('#view-home')) el.addEventListener('click', () => {
+      renderTodayBig();
+      setTimeout(() => speak('Tap today!', 'en-US'), 250);
+    });
+  });
+  // coming back to My Week from a day: always return to today as the default day
+  document.querySelectorAll('#view-day [data-goto="view-week"]').forEach(el => {
+    el.addEventListener('click', () => { viewDayIndex = null; setupDayView(); renderTodayBig(); });
+  });
+
   renderCarousel();
   renderWeekList();
+  renderTodayBig();
   renderDayCounter();
   renderWeekTally();
   setupDayView();
