@@ -46,11 +46,16 @@ function unlockSpeech() {
   try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); } catch (e) {}
 }
 ["pointerdown", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, unlockSpeech, true));
+let VOICES = [];
+function loadVoices() { try { VOICES = speechSynthesis.getVoices() || []; } catch (e) {} }
+loadVoices();
+try { speechSynthesis.addEventListener("voiceschanged", loadVoices); } catch (e) {}
+// Always choose a voice that matches the language, so a Spanish voice is never reused for English (or the reverse)
 function pickVoice(lang) {
-  try {
-    const vs = speechSynthesis.getVoices();
-    return vs.find(v => v.lang === lang) || vs.find(v => v.lang.replace("_", "-").toLowerCase().startsWith(lang.slice(0, 2))) || null;
-  } catch (e) { return null; }
+  if (!VOICES.length) loadVoices();
+  const l = lang.toLowerCase().replace("_", "-"), base = l.slice(0, 2);
+  const same = VOICES.filter(v => v.lang.toLowerCase().replace("_", "-").startsWith(base));
+  return same.find(v => v.lang.toLowerCase().replace("_", "-") === l) || same[0] || null;
 }
 function speak(text, onEnd, lang) {
   lang = lang || "en-US";
@@ -58,7 +63,8 @@ function speak(text, onEnd, lang) {
   const id = ++speechId;
   window.__said.push(text);
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
-  setTimeout(() => { if (id === speechId) speakNow(text, onEnd, lang); }, 180);
+  if (!VOICES.length) loadVoices();
+  setTimeout(() => { if (id === speechId) speakNow(text, onEnd, lang); }, VOICES.length ? 180 : 600);
 }
 function speakNow(text, onEnd, lang) {
   try {

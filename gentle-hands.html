@@ -339,6 +339,8 @@ function speakNow(text, onEnd, lang) {
     if (!soundOn || !window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 900); return; }
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 0.88; u.pitch = 1.1; u.lang = lang || "en-US";
+    try { const base = u.lang.slice(0, 2).toLowerCase(), vs = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().replace("_", "-").startsWith(base));
+      const v = vs.find(x => x.lang.replace("_", "-").toLowerCase() === u.lang.toLowerCase()) || vs[0]; if (v) u.voice = v; } catch (e) {}
     if (onEnd) u.onend = onEnd;
     window.__utt.push(u); if (window.__utt.length > 20) window.__utt.shift(); speechSynthesis.speak(u);
   } catch (e) { if (onEnd) setTimeout(onEnd, 900); }
