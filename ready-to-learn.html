@@ -354,7 +354,31 @@ const CUP = [
     good:["🤗","Hands in my lap"], bad:["✋","Touch Berry's hair"],
     yes:"Hands to myself! Berry can listen to the story too.",
     no:"Berry got bothered and couldn't hear the story. Berry feels upset.",
-    act:"Give yourself a big hug. Now hands in your lap. Calm hands!" }
+    act:"Give yourself a big hug. Now hands in your lap. Calm hands!" },
+  { title:"I don't feel like it", who:"chef", mood:"worried",
+    setup:"It's work time. You don't feel like doing your work. It feels boring.",
+    ask:"What can you do?",
+    good:["✏️","Do just the first one"], bad:["🙅","Push the paper away"],
+    yes:"Just the first one! Once you start, it gets easier. Then check it off.",
+    no:"The paper is still there. Work time got longer, and your break got farther away.",
+    rule:"Start with just the first one.",
+    act:"Pick up a pretend pencil. Write one big pretend letter. Check! One down!" },
+  { title:"One at a time", who:"maestra", mood:"happy",
+    setup:"You have 3 things to do. It looks like SO much!",
+    ask:"How do you do it?",
+    good:["✅","One at a time. Check it off."], bad:["😩","Give up. It's too much."],
+    yes:"One at a time! Check, check, check. All done, and now you earned a break.",
+    no:"Giving up made the work feel even bigger. The pile was still there.",
+    rule:"One thing at a time.",
+    act:"Hold up 3 fingers. Fold one down: one done! Fold another: two done! Fold the last one: all done!" },
+  { title:"Group time, not my favorite", who:"maestra", mood:"happy",
+    setup:"The class is doing an activity that is not your favorite. Everyone is sitting together.",
+    ask:"What can you do?",
+    good:["👀","Stay with my group. Watch and listen."], bad:["🚶","Wander away"],
+    yes:"You stayed with the group! First group time, then something you like.",
+    no:"You left your group. Your teacher had to stop to find you, and your friends missed you.",
+    rule:"First group time, then free time.",
+    say:{ line:"«Necesito un descanso»", en:"I need a break. Use your words if it is too hard." } }
 ];
 
 /* ---------- helpers ---------- */
@@ -459,7 +483,7 @@ function home() {
       <summary>For grown-ups</summary>
       <ul>
         <li>The Coin Bank and Cupcake Tray mirror Noah's school system: 6 coins for staying dry opens the picnic basket, and 6 cupcakes go to the play kitchen. App coins and cupcakes are practice only.</li>
-        <li>Each Cupcake Tray round plays 6 of the 8 scenarios and rotates, so every one comes up.</li>
+        <li>Each Cupcake Tray round plays 6 of the scenarios and rotates, so every one comes up.</li>
         <li>Act-it-out moves are done sitting down so he can use them at his table.</li>
       </ul>
     </details>`;

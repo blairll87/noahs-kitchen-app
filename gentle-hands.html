@@ -97,6 +97,8 @@ p { margin: 0; }
 button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .bounce, .breathe.go { animation: none; } .breathe.go { transform: scale(.85); } }
 @media (max-width: 380px) { .choices { grid-template-columns: 1fr; } }
+.phrase { text-align: center; padding: 14px; border-radius: 16px; background: #eaf3ff; }
+.phrase b { display: block; font: 700 1.7rem var(--display); } .phrase span { color: var(--soft); }
 </style>
 </head>
 <body>
@@ -258,7 +260,34 @@ const SCENES = [
     yes:"Taco says, \"I fell down.\" You sit with Taco. Kind friends notice.",
     no:"Taco is still crying, and now feels alone.", feel:"sad", you:"you were crying and a friend laughed",
     yesFeel:"Taco feels a little better. You feel proud and kind.",
-    ing:"🍐" }
+    ing:"🍐" },
+  { pack:"touch", friend:"muffin", name:"Muffin", title:"Tickle game",
+    setup:"Muffin comes and tickles you. You do not like it! Your body feels surprised.",
+    ask:"What can you do?",
+    good:{ pic:"✋", text:"Hold up a stop hand. Say \"Stop! I don't like that.\"" }, bad:{ pic:"👊", text:"Hit Muffin" },
+    yes:"Strong words! Muffin hears you and stops. You kept your body safe.",
+    no:"Ouch! Hitting hurts, even when someone was only playing.", feel:"sad", you:"someone hit you",
+    yesFeel:"Look at Muffin's face. Muffin knows you do not like it.",
+    es:["¡Para! No me gusta.","Stop! I don't like that."],
+    ing:"🍇" },
+  { pack:"touch", friend:"toast", name:"Toast", title:"They did not stop",
+    setup:"You said stop, but Toast keeps poking you. You feel upset.",
+    ask:"What do you do now?",
+    good:{ pic:"🧑‍🏫", text:"Walk away and tell a teacher" }, bad:{ pic:"👊", text:"Hit Toast" },
+    yes:"Telling a grown-up is smart. The teacher helps, and you are safe.",
+    no:"Ouch! Hitting hurts. Hitting can get you in trouble, too.", feel:"sad", you:"someone hit you",
+    yesFeel:"You feel safe. Asking for help is brave.",
+    es:["Necesito ayuda.","I need help."],
+    ing:"🍉" },
+  { pack:"touch", friend:"mango", name:"Mango", title:"Play a different way",
+    setup:"Mango is tickling you. You want to play with Mango, but not tickles!",
+    ask:"What can you say?",
+    good:{ pic:"🏃", text:"\"Let's play something else! Chase?\"" }, bad:{ pic:"👊", text:"Hit Mango" },
+    yes:"Mango says, \"Okay! Chase!\" You are both playing, and everybody is happy.",
+    no:"Ouch! Mango only wanted to play. Hitting hurts.", feel:"sad", you:"someone hit you",
+    yesFeel:"Look at Mango's face. Mango is laughing because you are both having fun.",
+    es:["Juguemos a otra cosa.","Let's play something else."],
+    ing:"🍍" }
 ];
 SCENES.forEach(s => { if (!s.pack) s.pack = "play"; });
 const ACTS = {
@@ -276,7 +305,10 @@ const ACTS = {
   "Line up":"Stand still like a statue with calm hands. Count to five.",
   "When it happens to you":"Hold your hand out strong and say, Stop! I don't like that!",
   "Game over":"Take a big breath. Give a thumbs up and say, Good game!",
-  "A friend is crying":"Put your hand on your heart and say, Are you okay?"
+  "A friend is crying":"Put your hand on your heart and say, Are you okay?",
+  "Tickle game":"Hold your hand out strong like a stop sign. Say, Stop! I don't like that!",
+  "They did not stop":"Pretend to walk to a grown-up. Say, Teacher, I need help!",
+  "Play a different way":"Say, Let's play something else! Then pick a game: chase, catch, or tag."
 };
 SCENES.forEach(s => { s.act = ACTS[s.title]; });
 
@@ -296,17 +328,17 @@ function unlockSpeech() {
   try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); } catch (e) {}
 }
 ["pointerdown", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, unlockSpeech, true));
-function speak(text, onEnd) {
+function speak(text, onEnd, lang) {
   lastSpoken = text;
   const id = ++speechId;
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
-  setTimeout(() => { if (id === speechId) speakNow(text, onEnd); }, 180);
+  setTimeout(() => { if (id === speechId) speakNow(text, onEnd, lang); }, 180);
 }
-function speakNow(text, onEnd) {
+function speakNow(text, onEnd, lang) {
   try {
     if (!soundOn || !window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 900); return; }
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.88; u.pitch = 1.1; u.lang = "en-US";
+    u.rate = 0.88; u.pitch = 1.1; u.lang = lang || "en-US";
     if (onEnd) u.onend = onEnd;
     window.__utt.push(u); if (window.__utt.length > 20) window.__utt.shift(); speechSynthesis.speak(u);
   } catch (e) { if (onEnd) setTimeout(onEnd, 900); }
@@ -346,7 +378,8 @@ function start() {
       <button class="btn" data-pack="friend">Being a friend</button>
     </div>
     <div class="row">
-      <button class="btn alt" data-pack="all">All 15 friends</button>
+      <button class="btn" data-pack="touch">When someone touches me</button>
+      <button class="btn alt" data-pack="all">All the friends</button>
       <button class="btn alt" id="calm">Squeeze &amp; breathe</button>
       <button class="btn alt" id="wiggle">Wiggle &amp; calm game</button>
     </div>`;
@@ -400,6 +433,7 @@ function act() {
     <div class="step">Act it out · Get up and move!</div>
     <div class="stage bounce">${face("chef","excited")}</div>
     <h2 id="actcue">${s.act}</h2>
+    ${s.es ? `<div class="phrase"><b>${s.es[0]}</b><span>${s.es[1]}</span><br><button class="btn alt" id="sayes" style="margin-top:8px">🔊 Say it with me</button></div>` : ""}
     <div class="row">
       <button class="btn" id="did">I did it!</button>
       <button class="btn alt" id="hear">Hear it again</button>
@@ -412,6 +446,8 @@ function act() {
   };
   go();
   document.getElementById("hear").onclick = go;
+  const sayes = document.getElementById("sayes");
+  if (sayes) sayes.onclick = () => { hush(); clearTimers(); speak(s.es[0], () => timers.push(setTimeout(() => speak(s.es[1]), 2200)), "es-MX"); };
   document.getElementById("did").onclick = () => { clearTimers(); idx++; last ? finish() : scene(); };
 }
 

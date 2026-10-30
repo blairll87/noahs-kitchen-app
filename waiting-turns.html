@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waiting &amp; Turns Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="story-kit.css?v=202610301631">
+</head>
+<body>
+
+<div class="app">
+  <div class="top">
+    <div class="brand">Waiting &amp; Turns Kitchen<small>Wait, sit, and share like a chef</small></div>
+    <div class="toprow"><a class="iconbtn" href="index.html">Back to Noah's Kitchen</a><button class="iconbtn" id="menuBtn">Menu</button><button class="iconbtn" id="againBtn">🔊 Again</button>
+      <button class="iconbtn" id="soundBtn" aria-pressed="true">Sound on</button></div>
+  </div>
+  <main class="card" id="screen" aria-live="polite"></main>
+</div>
+
+<script src="story-kit.js?v=202610301631"></script>
+<script>
+const screen = document.getElementById("screen");
+
+/* Reusable "do it with the chef" move lists */
+const MOVES = {
+  soup: [["Breathe in. Smell the soup.", "Breathe in…"], ["Blow out. Cool the soup.", "Blow out…"], ["Breathe in. Smell the soup.", "Breathe in…"], ["Blow out. Cool the soup.", "Blow out…"], ["Nice and calm.", "Calm"]],
+  count: [["Let's count the friends. One.", "1"], ["Two.", "2"], ["Three.", "3"], ["Four.", "4"], ["Five. Your turn is coming!", "5"]],
+  squish: [["Hands flat on your seat or the floor.", "Hands flat"], ["Squish! One.", "Squish! 1"], ["Squish! Two.", "Squish! 2"], ["Squish! Three.", "Squish! 3"], ["Nice. Sit tall.", "Sit tall"]],
+  sit: [["Bottom down.", "Bottom down"], ["Feet quiet.", "Feet quiet"], ["Hands in your lap.", "Hands in lap"], ["Eyes on the teacher.", "Eyes on teacher"], ["Great sitting!", "Great sitting!"]],
+  toes: [["Wiggle your toes. Nobody can see!", "Wiggle toes"], ["Take a slow breath. One.", "Breath 1"], ["Slow breath. Two.", "Breath 2"], ["Slow breath. Three.", "Breath 3"], ["Good waiting.", "Good waiting"]],
+};
+
+/* Each story is a list of screens. Types: say, phrase, pick, feel, do, wait, line */
+const STORIES = [
+  { id: "line", pic: "🚶", title: "In line", es: "La fila", sub: "Waiting my turn",
+    screens: [
+      { t: "say", step: "Story: In line", faces: [["chef","neutral"],["berry","happy"],["toast","happy"]], h: "Noah is in line.", p: "Everyone is waiting for a turn." },
+      { t: "phrase", step: "A new word", h: "In Spanish, a line is…", items: [{ pic: "🚶", es: "La fila", en: "The line" }] },
+      { t: "say", step: "Waiting is hard", faces: [["chef","mad"]], h: "Noah's body wants to go, go, go!", p: "That is okay. Waiting is hard. The line is moving, little by little." },
+      { t: "pick", step: "What can Noah do?", faces: [["chef","neutral"]], h: "What can Noah do while he waits?",
+        opts: [{ pic: "🏃", text: "Push to the front", bad: "Pushing hurts friends. The line is for everyone." },
+               { pic: "🔢", text: "Count the friends", good: "Counting is a great waiting trick!", moves: "count" },
+               { pic: "🍲", text: "Cool the soup", good: "Breathing is a great waiting trick!", moves: "soup" }] },
+      { t: "do", step: "Do it with the chef", moves: "pick" },
+      { t: "line", step: "The line moves", h: "The line moves, little by little." },
+      { t: "end", h: "You waited! Your turn came!", p: "Waiting is hard. You did it." },
+    ] },
+  { id: "sit", pic: "🪑", title: "Chair or carpet", es: "Silla o carpeta", sub: "Sitting at school",
+    screens: [
+      { t: "say", step: "Story: Sitting", faces: [["chef","neutral"]], h: "It is time to sit with the class.", p: "The teacher says you can choose." },
+      { t: "phrase", step: "Two choices", h: "Chair or carpet. You choose!", items: [{ pic: "🪑", es: "La silla", en: "The chair" }, { pic: "🟦", es: "La carpeta", en: "The carpet" }] },
+      { t: "pick", step: "You choose!", faces: [["chef","excited"]], h: "Where do you want to sit?",
+        opts: [{ pic: "🪑", text: "La silla (chair)", good: "Good choice! The chair is okay." },
+               { pic: "🟦", text: "La carpeta (carpet)", good: "Good choice! The carpet is okay." }] },
+      { t: "say", step: "My body job", faces: [["chef","happy"]], h: "My body has a job.", p: "Bottom down. Feet quiet. Eyes on the teacher." },
+      { t: "pick", step: "Uh oh, wiggly!", faces: [["chef","mad"]], h: "My body feels wiggly. What can I do?",
+        opts: [{ pic: "🌀", text: "Roll around", bad: "Rolling bumps friends. Let's try a calm tool." },
+               { pic: "🪑", text: "Squish the dough", good: "Squishing is a great calm tool!", moves: "squish" },
+               { pic: "🛋️", text: "Ask for a break", good: "Asking is brave! Let's say it.", moves: "askbreak" }] },
+      { t: "do", step: "Do it with the chef", moves: "pick" },
+      { t: "end", h: "You are a great sitter!", p: "Wiggly bodies can find calm tools." },
+    ] },
+  { id: "boring", pic: "🎬", title: "Long and boring", es: "Un descanso", sub: "Movies and long waits",
+    screens: [
+      { t: "say", step: "Story: A long movie", faces: [["chef","neutral"]], h: "The class is watching a long movie.", p: "Some parts feel boring." },
+      { t: "say", step: "Boring is a feeling", faces: [["chef","sad"]], h: "Boring is a feeling. Bodies get wiggly.", p: "That is normal. Noah can wait without leaving his spot." },
+      { t: "pick", step: "What can Noah do?", faces: [["chef","neutral"]], h: "What can Noah do?",
+        opts: [{ pic: "🏃", text: "Run around the room", bad: "The movie is for sitting. Running bothers the class. Try again." },
+               { pic: "🧸", text: "Hold something soft", good: "Holding something soft helps your body wait.", moves: "toes" },
+               { pic: "🙋", text: "Ask for a break", good: "Asking is brave! Let's say it.", moves: "askbreak" }] },
+      { t: "do", step: "Do it with the chef", moves: "pick" },
+      { t: "board", step: "First and then", h: "First movie. Then it is over!", first: ["🎬", "Movie"], then: ["🎉", "Next thing"] },
+      { t: "end", h: "You waited for the movie!", p: "Long things end. You can wait." },
+    ] },
+  { id: "turns", pic: "🥄", title: "My turn, your turn", es: "Mi turno, tu turno", sub: "Sharing",
+    screens: [
+      { t: "say", step: "Story: Sharing", faces: [["chef","excited"],["berry","excited"]], h: "Noah and Berry both want the big spoon!", p: "There is only one spoon." },
+      { t: "phrase", step: "Take turns", h: "We take turns!", items: [{ pic: "👦", es: "Mi turno", en: "My turn" }, { pic: "👧", es: "Tu turno", en: "Your turn" }] },
+      { t: "say", step: "Berry goes first", faces: [["berry","happy"]], h: "Berry's turn first.", p: "Noah waits. Then it will be Noah's turn." },
+      { t: "wait", step: "Noah waits", faces: [["chef","neutral"]], h: "Noah waits.", p: "Watch the bar. When it is full, it is Noah's turn.", ms: 9000 },
+      { t: "feel", step: "Look at Berry's face", kind: "berry", mood: "sad", h: "What if Noah grabbed the spoon? How would Berry feel?", good: "Yes. Berry would feel sad. We wait for our turn." },
+      { t: "feel", step: "Look at Berry's face", kind: "berry", mood: "happy", h: "Noah waited. How does Berry feel now?", good: "Yes! Berry feels happy. Waiting was kind." },
+      { t: "say", step: "Noah's turn!", faces: [["chef","excited"]], h: "Mi turno! Now it is Noah's turn.", p: "When I share, my turn comes back." },
+      { t: "end", h: "You took turns!", p: "Sharing means my turn comes back." },
+    ] },
+  { id: "group", pic: "👥", title: "Staying with the group", es: "Con el grupo", sub: "When it is not my favorite",
+    screens: [
+      { t: "say", step: "Story: Group time", faces: [["chef","neutral"],["muffin","happy"],["pickle","happy"]], h: "The group is doing something Noah does not love.", p: "It is not his favorite." },
+      { t: "pick", step: "What can Noah do?", faces: [["chef","neutral"]], h: "What can Noah do?",
+        opts: [{ pic: "🚶", text: "Walk away", bad: "Leaving the group is not safe. Let's try a calm way." },
+               { pic: "👀", text: "Sit and watch the teacher", good: "Eyes on the teacher. Great!", moves: "sit" },
+               { pic: "🛋️", text: "Ask for a break", good: "Asking is brave! Let's say it.", moves: "askbreak" }] },
+      { t: "do", step: "Do it with the chef", moves: "pick" },
+      { t: "board", step: "First and then", h: "First group time. Then free time.", first: ["👥", "Group time"], then: ["🧸", "Free time"] },
+      { t: "end", h: "You stayed with the group!", p: "Not my favorite is still okay to do." },
+    ] },
+];
+
+function menu() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    <div class="step">Chef Noah's waiting kitchen</div>
+    <h1>Pick a story</h1>
+    <div class="stage">${face("chef","happy")}${face("berry","happy")}${face("toast","happy")}</div>
+    <div class="hubgrid">
+      ${STORIES.map(s => `<button class="bigcard" data-s="${s.id}"><span class="pic" aria-hidden="true">${s.pic}</span><span>${s.title}<small>${s.es} · ${s.sub}</small></span></button>`).join("")}
+    </div>`;
+  speak("Pick a story.");
+  screen.querySelectorAll("[data-s]").forEach(b => b.onclick = () => runStory(STORIES.find(s => s.id === b.dataset.s)));
+}
+
+let cur = null, pos = 0, picked = null;
+function runStory(s) { cur = s; pos = 0; picked = null; show(); }
+function nextScreen() { pos++; show(); }
+function faceRow(list) { return list && list.length ? `<div class="stage">${list.map(([k, m]) => face(k, m)).join("")}</div>` : ""; }
+function progress() { return dots(cur.screens.length - 1, Math.min(pos, cur.screens.length - 1)); }
+
+function show() {
+  hush(); clearTimers();
+  const sc = cur.screens[pos];
+  ({ say, phrase, pick, feel, do: doIt, wait, line, board, end })[sc.t](sc);
+}
+
+function say(sc) {
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div>${faceRow(sc.faces)}<h2>${sc.h}</h2><p class="say">${sc.p || ""}</p><button class="btn" id="n">Next</button>`;
+  speak(sc.h + " " + (sc.p || ""));
+  document.getElementById("n").onclick = nextScreen;
+}
+
+function phrase(sc) {
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div><h2>${sc.h}</h2>
+    ${sc.items.map((it, i) => `<div class="phrase"><span aria-hidden="true" style="font-size:2rem">${it.pic}</span><b>${it.es}</b><span>${it.en}</span><br><button class="btn alt say-btn" data-i="${i}" style="margin-top:8px">🔊 Say it with me</button></div>`).join("")}
+    <button class="btn" id="n">Next</button>`;
+  speak(sc.h);
+  screen.querySelectorAll(".say-btn").forEach(b => b.onclick = () => {
+    const it = sc.items[+b.dataset.i];
+    speak(it.es, () => later(() => speak(it.en, null, "en-US"), 2200), "es-MX");
+  });
+  document.getElementById("n").onclick = nextScreen;
+}
+
+function pick(sc) {
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div>${faceRow(sc.faces)}<h2>${sc.h}</h2>
+    <div class="${sc.opts.length === 3 ? "toolgrid" : "choices"}">
+      ${sc.opts.map((o, i) => `<button class="${sc.opts.length === 3 ? "tool" : "choice"}" data-i="${i}"><span class="pic" aria-hidden="true">${o.pic}</span>${o.text}</button>`).join("")}
+    </div>
+    <p class="wrongmsg" id="wm"></p>`;
+  speak(sc.h + " " + sc.opts.map(o => o.text.replace(/\s*\(.*\)/, "")).join(". Or ") + "?");
+  screen.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
+    const o = sc.opts[+b.dataset.i];
+    if (o.good) { chime(true); picked = o.moves || null; speak(o.good, nextScreen); }
+    else { chime(false); document.getElementById("wm").textContent = o.bad; speak(o.bad); }
+  });
+}
+
+function feel(sc) {
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div><div class="stage">${face(sc.kind, sc.mood)}</div><h2>${sc.h}</h2>
+    <p class="say" id="hint">Look at the eyes and the mouth.</p>${feelGrid(sc.kind)}`;
+  speak(sc.h);
+  screen.querySelectorAll(".feel").forEach(b => b.onclick = () => {
+    if (b.dataset.m === sc.mood) { chime(true); speak(sc.good, nextScreen); }
+    else { const h = document.getElementById("hint"); h.textContent = "Look again at the eyes and the mouth."; speak(h.textContent); }
+  });
+}
+
+function doIt(sc) {
+  if (picked === "askbreak") return askBreak();
+  const steps = MOVES[picked || sc.moves] || MOVES.soup;
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div><div class="stage">${face("chef","excited")}</div>
+    <div class="cuebig" id="cue">Ready?</div><p class="say">Do it with the chef.</p>`;
+  const cue = document.getElementById("cue"); let i = 0;
+  const step = () => {
+    if (i >= steps.length) { chime(true); return nextScreen(); }
+    const [s, shown] = steps[i++]; cue.textContent = shown; speak(s, () => later(step, 500));
+  };
+  later(step, 600);
+}
+
+function askBreak() {
+  screen.innerHTML = `${progress()}<div class="step">Use my words</div><h2>I can ask for a break.</h2>
+    <div class="phrase"><span aria-hidden="true" style="font-size:2rem">🛋️</span><b>Necesito un descanso</b><span>I need a break</span><br><button class="btn alt" id="sayit" style="margin-top:8px">🔊 Say it with me</button></div>
+    <p class="say">Then walk to the calm spot with a grown-up.</p>
+    <button class="btn" id="n">Next</button>`;
+  speak("I can ask for a break. Then walk to the calm spot with a grown-up.");
+  document.getElementById("sayit").onclick = () => speak("Necesito un descanso", () => later(() => speak("I need a break", null, "en-US"), 2200), "es-MX");
+  document.getElementById("n").onclick = nextScreen;
+}
+
+function wait(sc) {
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div>${faceRow(sc.faces)}<h2>${sc.h}</h2>
+    <div class="waitbar" aria-hidden="true"><i id="bar"></i></div><p class="say" id="sub">${sc.p}</p>
+    <button class="btn" id="n" hidden>My turn!</button>`;
+  speak(sc.h + " " + sc.p);
+  const bar = document.getElementById("bar"), steps = 25; let p = 0;
+  const tick = () => { p++; bar.style.width = (p / steps * 100) + "%"; if (p < steps) later(tick, sc.ms / steps); else done(); };
+  const done = () => { chime(true); const n = document.getElementById("n"); n.hidden = false; document.getElementById("sub").textContent = "The bar is full! Your turn came."; speak("The bar is full! Your turn came."); n.onclick = nextScreen; };
+  later(tick, 800);
+}
+
+function line(sc) {
+  const kids = [["berry","happy"],["toast","happy"],["muffin","happy"],["chef","neutral"]];
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div><h2>${sc.h}</h2>
+    <div class="lines" id="lines"></div><p class="say" id="sub">Count the steps.</p>`;
+  const el = document.getElementById("lines"); let front = 0;
+  const draw = () => { el.innerHTML = kids.slice(front).map(([k, m]) => face(k, m)).join(""); };
+  draw(); speak(sc.h);
+  const advance = () => {
+    front++; draw();
+    if (front >= 3) { chime(true); document.getElementById("sub").textContent = "Noah is next!"; return speak("Noah is next!", nextScreen); }
+    speak("One step closer.", () => later(advance, 700));
+  };
+  later(advance, 1800);
+}
+
+function board(sc) {
+  screen.innerHTML = `${progress()}<div class="step">${sc.step}</div><h2>${sc.h}</h2>
+    <div class="board"><div class="first"><span class="pic" aria-hidden="true">${sc.first[0]}</span>FIRST<br>${sc.first[1]}</div><div class="then"><span class="pic" aria-hidden="true">${sc.then[0]}</span>THEN<br>${sc.then[1]}</div></div>
+    <button class="btn" id="n">Next</button>`;
+  speak(sc.h);
+  document.getElementById("n").onclick = nextScreen;
+}
+
+function end(sc) {
+  hush(); chime(true);
+  screen.innerHTML = `<div class="step">Story complete</div><h1>${sc.h}</h1><div class="stage bounce">${face("chef","excited")}</div>
+    <p class="say">${sc.p}</p><div class="row"><button class="btn" id="again">Read it again</button><button class="btn alt" id="m">More stories</button></div>`;
+  speak(sc.h + " " + sc.p);
+  document.getElementById("again").onclick = () => runStory(cur);
+  document.getElementById("m").onclick = menu;
+}
+
+wireChrome(menu);
+menu();
+</script>
+</body>
+</html>

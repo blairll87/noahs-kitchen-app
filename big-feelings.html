@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big Feelings Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="story-kit.css?v=202610301631">
+</head>
+<body>
+
+<div class="app">
+  <div class="top">
+    <div class="brand">Big Feelings Kitchen<small>What can I do when my body feels BIG?</small></div>
+    <div class="toprow"><a class="iconbtn" href="index.html">Back to Noah's Kitchen</a><button class="iconbtn" id="menuBtn">Menu</button><button class="iconbtn" id="againBtn">🔊 Again</button>
+      <button class="iconbtn" id="soundBtn" aria-pressed="true">Sound on</button></div>
+  </div>
+  <main class="card" id="screen" aria-live="polite"></main>
+</div>
+
+<script src="story-kit.js?v=202610301631"></script>
+<script>
+const screen = document.getElementById("screen");
+
+/* ---------- The tools: each one is a safe swap for something a big feeling wants to do ---------- */
+const TOOLS = [
+  { id: "wall", name: "Push the wall", pic: "🧱", urge: "When I want to THROW",
+    how: "Put both hands flat on the wall or your desk. Push hard!",
+    steps: [["Hands flat on the wall.", "Hands on the wall"], ["Push! One.", "Push! 1"], ["Push! Two.", "Push! 2"], ["Push! Three.", "Push! 3"], ["Shake out your hands.", "Shake it out"]] },
+  { id: "dough", name: "Press the dough", pic: "🙏", urge: "When I want to HIT",
+    how: "Put your hands together. Press them hard, like squishing dough.",
+    steps: [["Put your hands together.", "Hands together"], ["Press! One.", "Press! 1"], ["Press! Two.", "Press! 2"], ["Press! Three.", "Press! 3"], ["Shake out your hands.", "Shake it out"]] },
+  { id: "hug", name: "Burrito hug", pic: "🤗", urge: "When I want to hit my HEAD",
+    how: "Hug yourself tight like a burrito. Or put your hands on your head and rest.",
+    steps: [["Cross your arms. Hug yourself.", "Hug yourself"], ["Squeeze! One.", "Squeeze! 1"], ["Squeeze! Two.", "Squeeze! 2"], ["Squeeze! Three.", "Squeeze! 3"], ["Now hands on your head. Rest.", "Hands on head. Rest."]] },
+  { id: "squish", name: "Squish the dough", pic: "🪑", urge: "When I want to DROP to the floor",
+    how: "Sit down on purpose. Put both hands flat on your seat. Push down hard!",
+    steps: [["Sit down on purpose.", "Sit down"], ["Hands flat on your seat.", "Hands flat"], ["Squish! One.", "Squish! 1"], ["Squish! Two.", "Squish! 2"], ["Squish! Three.", "Squish! 3"], ["Sit up tall.", "Sit tall"]] },
+  { id: "soup", name: "Cool the soup", pic: "🍲", urge: "When I want to YELL",
+    how: "Breathe in like smelling soup. Blow out slowly to cool it.", breathe: true,
+    steps: [["Breathe in. Smell the soup.", "Breathe in…"], ["Blow out. Cool the soup.", "Blow out…"], ["Breathe in. Smell the soup.", "Breathe in…"], ["Blow out. Cool the soup.", "Blow out…"], ["Nice and calm.", "Calm"]] },
+  { id: "roar", name: "Dino roar", pic: "🦖", urge: "When I want to YELL",
+    how: "Put your hands over your mouth. Take a big breath. Roar into your hands!",
+    steps: [["Put your hands over your mouth.", "Hands on mouth"], ["Big breath in.", "Big breath"], ["Roar into your hands!", "ROAR!"], ["Big breath in.", "Big breath"], ["Roar into your hands!", "ROAR!"], ["Dinos rest.", "Dinos rest"]] },
+];
+const WORDS = [
+  { id: "help", pic: "🙋", es: "Necesito ayuda", en: "I need help", say: "Say it to a grown-up" },
+  { id: "break", pic: "🛋️", es: "Necesito un descanso", en: "I need a break", say: "Say it, then walk to the calm spot with a grown-up" },
+];
+
+function menu() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    <div class="step">Chef Noah's feelings kitchen</div>
+    <h1>Big feelings are okay!</h1>
+    <div class="stage">${face("chef","mad")}${face("chef","sad")}${face("chef","happy")}</div>
+    <div class="hubgrid">
+      <button class="bigcard primary" id="goTools"><span class="pic" aria-hidden="true">🧰</span><span>Calm Tools<small>Pick one right now</small></span></button>
+      <button class="bigcard" id="goPlan"><span class="pic" aria-hidden="true">📖</span><span>My Feelings Plan<small>A story with 4 steps</small></span></button>
+      <button class="bigcard" id="goLater"><span class="pic" aria-hidden="true">🛝</span><span>Not Now, Later<small>When I can't do what I want</small></span></button>
+    </div>`;
+  speak("Big feelings are okay! What do you want to do?");
+  document.getElementById("goTools").onclick = () => tools();
+  document.getElementById("goPlan").onclick = () => plan1();
+  document.getElementById("goLater").onclick = () => later1();
+}
+
+/* ---------- Calm Tools ---------- */
+function tools(afterPick) {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${afterPick ? dots(4, 2) : ""}
+    <div class="step">${afterPick ? "Step 3 of 4: Pick a calm tool" : "Calm tools"}</div>
+    <h2>Pick a tool for your body</h2>
+    <div class="toolgrid">
+      ${TOOLS.map(t => `<button class="tool" data-t="${t.id}"><span class="pic" aria-hidden="true">${t.pic}</span>${t.name}<small>${t.urge}</small></button>`).join("")}
+      <button class="tool words" data-t="words"><span class="pic" aria-hidden="true">🗣️</span>Use my words<small>Ask for help or a break</small></button>
+    </div>
+    ${afterPick ? "" : '<button class="btn alt" id="toMenu">Back</button>'}`;
+  speak("Pick a tool for your body.");
+  screen.querySelectorAll(".tool").forEach(b => b.onclick = () => {
+    if (b.dataset.t === "words") words(afterPick);
+    else toolDetail(TOOLS.find(t => t.id === b.dataset.t), afterPick);
+  });
+  const back = document.getElementById("toMenu"); if (back) back.onclick = menu;
+}
+
+function toolDetail(t, afterPick) {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    <div class="step">${t.urge}</div>
+    <div class="bigpic" aria-hidden="true">${t.pic}</div>
+    <h1>${t.name}</h1>
+    <p class="say">${t.how}</p>
+    <div class="row">
+      <button class="btn" id="try">Try it with the chef</button>
+      <button class="btn alt" id="back">Other tools</button>
+    </div>`;
+  speak(t.name + ". " + t.how);
+  document.getElementById("try").onclick = () => tryTool(t, afterPick);
+  document.getElementById("back").onclick = () => tools(afterPick);
+}
+
+function tryTool(t, afterPick) {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    <div class="step">${t.name}</div>
+    <div class="stage">${face("chef","excited")}</div>
+    ${t.breathe ? '<div class="breathe" id="ball" aria-hidden="true"></div>' : ""}
+    <div class="cuebig" id="cue">Ready?</div>
+    <p class="say" id="sub">Do it with the chef.</p>`;
+  const cue = document.getElementById("cue"), ball = document.getElementById("ball");
+  let i = 0;
+  const next = () => {
+    if (i >= t.steps.length) return finishTool(t, afterPick);
+    const [say, shown] = t.steps[i]; i++;
+    cue.textContent = shown;
+    if (ball) { ball.classList.remove("go"); void ball.offsetWidth; ball.classList.add("go"); }
+    speak(say, () => later(next, 500));
+  };
+  later(next, 600);
+}
+
+function finishTool(t, afterPick) {
+  hush(); chime(true);
+  screen.innerHTML = `
+    <div class="step">Nice work!</div>
+    <div class="stage bounce">${face("chef","excited")}</div>
+    <h2>Your body feels calmer!</h2>
+    <p class="say">You used a calm tool. That is brave and smart.</p>
+    <div class="row">
+      <button class="btn" id="again">Do it again</button>
+      <button class="btn alt" id="other">Other tools</button>
+      ${afterPick ? '<button class="btn" id="cont">Keep going</button>' : ""}
+    </div>`;
+  speak("Nice work! Your body feels calmer!");
+  document.getElementById("again").onclick = () => tryTool(t, afterPick);
+  document.getElementById("other").onclick = () => tools(afterPick);
+  const c = document.getElementById("cont"); if (c) c.onclick = afterPick;
+}
+
+function words(afterPick) {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    <div class="step">Use my words</div>
+    <h2>I can ask a grown-up</h2>
+    ${WORDS.map(w => `<div class="phrase"><span aria-hidden="true" style="font-size:2rem">${w.pic}</span><b>${w.es}</b><span>${w.en}</span><br><button class="btn alt say-btn" data-w="${w.id}" style="margin-top:8px">🔊 Say it with me</button></div>`).join("")}
+    <div class="row"><button class="btn alt" id="back">Other tools</button>${afterPick ? '<button class="btn" id="cont">Keep going</button>' : ""}</div>`;
+  speak("I can ask a grown-up. Tap a button and say it with me.");
+  const cont = document.getElementById("cont"); if (cont) cont.onclick = afterPick;
+  screen.querySelectorAll(".say-btn").forEach(b => b.onclick = () => {
+    const w = WORDS.find(x => x.id === b.dataset.w);
+    // Spanish, a pause to say it back, then English
+    speak(w.es, () => later(() => speak(w.en, null, "en-US"), 2200), "es-MX");
+  });
+  document.getElementById("back").onclick = () => tools(afterPick);
+}
+
+/* ---------- My Feelings Plan: 4 steps ---------- */
+let feelPicked = null;
+function plan1() {
+  hush(); clearTimers(); feelPicked = null;
+  screen.innerHTML = `
+    ${dots(4, 0)}
+    <div class="step">Step 1 of 4: Show my feeling</div>
+    <div class="stage">${face("chef","neutral")}</div>
+    <h2>How do you feel? Show me your face.</h2>
+    <p class="say" id="hint">Tap the face that feels like you.</p>
+    ${feelGrid("chef")}`;
+  speak("How do you feel? Tap the face that feels like you.");
+  screen.querySelectorAll(".feel").forEach(b => b.onclick = () => {
+    feelPicked = b.dataset.m;
+    const m = feelPicked;
+    const msg = m === "happy" ? "You feel happy! Great."
+      : m === "sad" ? "You feel sad. That is okay. Sad feelings are okay."
+      : m === "scared" ? "You feel scared. That is okay. Scared feelings are okay."
+      : "You feel mad. That is okay. Mad feelings are okay.";
+    chime(true);
+    screen.innerHTML = `
+      ${dots(4, 0)}
+      <div class="step">Step 1 of 4: Show my feeling</div>
+      <div class="stage">${face("chef", m)}</div>
+      <h2>${msg}</h2>
+      <button class="btn" id="n">Next</button>`;
+    speak(msg);
+    document.getElementById("n").onclick = plan2;
+  });
+}
+
+function plan2() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(4, 1)}
+    <div class="step">Step 2 of 4: Notice my body</div>
+    <div class="stage">${face("chef","mad")}</div>
+    <h2>Big feelings make my body hot and tight.</h2>
+    <p class="say">My body might want to throw, hit, yell, or drop down. But those can hurt me or my friends.</p>
+    <p class="say"><b>I can do something else!</b></p>
+    <button class="btn" id="n">Show me what</button>`;
+  speak("Big feelings make my body hot and tight. My body might want to throw, hit, yell, or drop down. But those can hurt. I can do something else!");
+  document.getElementById("n").onclick = plan3;
+}
+
+function plan3() {
+  hush(); clearTimers();
+  // reuse the tools screens inside the plan; "Keep going" moves to step 4
+  tools(plan4);
+}
+
+function plan4() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(4, 3)}
+    <div class="step">Step 4 of 4: Ask for help</div>
+    <div class="stage">${face("chef","happy")}</div>
+    <h2>Now I can ask a grown-up.</h2>
+    <div class="phrase"><b>Necesito ayuda</b><span>I need help</span><br><button class="btn alt" id="sayit" style="margin-top:8px">🔊 Say it with me</button></div>
+    <button class="btn" id="n">I did it!</button>`;
+  speak("Now I can ask a grown-up for help.");
+  document.getElementById("sayit").onclick = () => speak("Necesito ayuda", () => later(() => speak("I need help", null, "en-US"), 2200), "es-MX");
+  document.getElementById("n").onclick = planDone;
+}
+
+function planDone() {
+  hush(); chime(true);
+  screen.innerHTML = `
+    ${dots(4, 4)}
+    <div class="step">Recipe complete</div>
+    <h1>You are the boss of your body!</h1>
+    <div class="stage bounce">${face("chef","excited")}</div>
+    <p class="say">Show your feeling. Notice your body. Pick a tool. Ask for help.</p>
+    <div class="row"><button class="btn" id="again">Do the plan again</button><button class="btn alt" id="m">Menu</button></div>`;
+  speak("Hooray! You are the boss of your body! Show your feeling. Notice your body. Pick a tool. Ask for help.");
+  document.getElementById("again").onclick = plan1;
+  document.getElementById("m").onclick = menu;
+}
+
+/* ---------- Not Now, Later: the playground story ---------- */
+function later1() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(5, 0)}
+    <div class="step">Story: Not now, later</div>
+    <div class="stage">${face("chef","excited")}</div>
+    <h2>Noah wants to go to the playground!</h2>
+    <div class="bigpic" aria-hidden="true">🛝</div>
+    <button class="btn" id="n">Next</button>`;
+  speak("Noah wants to go to the playground!");
+  document.getElementById("n").onclick = later2;
+}
+function later2() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(5, 1)}
+    <div class="step">The teacher says…</div>
+    <h2>"Not now. First work time. Then the playground."</h2>
+    <div class="board">
+      <div class="first"><span class="pic" aria-hidden="true">✏️</span>FIRST<br>Work time</div>
+      <div class="then"><span class="pic" aria-hidden="true">🛝</span>THEN<br>Playground</div>
+    </div>
+    <p class="say"><b>Not now</b> does not mean <b>never</b>. The playground is coming later.</p>
+    <button class="btn" id="n">Next</button>`;
+  speak("The teacher says: Not now. First work time. Then the playground. Not now does not mean never. The playground is coming later.");
+  document.getElementById("n").onclick = later3;
+}
+function later3() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(5, 2)}
+    <div class="step">Uh oh. A big feeling!</div>
+    <div class="stage">${face("chef","mad")}</div>
+    <h2>Noah's body feels hot and mad. What can he do?</h2>
+    <div class="choices">
+      <button class="choice" data-g="bad"><span class="pic" aria-hidden="true">💨</span>Throw dirt</button>
+      <button class="choice" data-g="good"><span class="pic" aria-hidden="true">🧱</span>Push the wall</button>
+    </div>
+    <p class="wrongmsg" id="wm"></p>`;
+  speak("Noah's body feels hot and mad. What can he do? Throw dirt? Or push the wall?");
+  screen.querySelectorAll("[data-g]").forEach(b => b.onclick = () => {
+    if (b.dataset.g === "good") { chime(true); speak("Yes! Pushing the wall is a calm tool.", later4); }
+    else { chime(false); const w = document.getElementById("wm"); w.textContent = "Dirt can hurt. Try a calm tool."; speak("Dirt can hurt someone. Try a calm tool."); }
+  });
+}
+function later4() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(5, 3)}
+    <div class="step">Do it with Noah</div>
+    <div class="stage">${face("chef","excited")}</div>
+    <h2>Push the wall with Noah.</h2>
+    <div class="cuebig" id="cue">Ready?</div>
+    <p class="say" id="sub"></p>`;
+  const cue = document.getElementById("cue"), t = TOOLS[0];
+  let i = 0;
+  const next = () => {
+    if (i >= t.steps.length) return later5();
+    const [say, shown] = t.steps[i]; i++;
+    cue.textContent = shown; speak(say, () => later(next, 500));
+  };
+  later(next, 600);
+}
+function later5() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(5, 4)}
+    <div class="step">Waiting is hard. You can do it!</div>
+    <div class="stage">${face("chef","neutral")}</div>
+    <h2>Now Noah waits. Work time first.</h2>
+    <div class="waitbar" aria-hidden="true"><i id="bar"></i></div>
+    <p class="say" id="sub">Watch the bar fill up. When it is full, work time is done.</p>
+    <button class="btn" id="n" hidden>The playground!</button>`;
+  speak("Now Noah waits. Work time first. Watch the bar fill up.");
+  const bar = document.getElementById("bar"); let p = 0;
+  const tick = () => { p += 4; bar.style.width = Math.min(p, 100) + "%"; if (p < 100) later(tick, 400); else later6(); };
+  later(tick, 800);
+}
+function later6() {
+  chime(true);
+  const n = document.getElementById("n"); if (n) n.hidden = false;
+  document.getElementById("sub").textContent = "Work time is done! Later came!";
+  speak("Work time is done! Later came! Now it is playground time!");
+  n.onclick = laterDone;
+}
+function laterDone() {
+  hush(); chime(true);
+  screen.innerHTML = `
+    <div class="step">Story complete</div>
+    <h1>Later came! Playground time!</h1>
+    <div class="stage bounce">${face("chef","excited")}</div>
+    <div class="bigpic" aria-hidden="true">🛝</div>
+    <p class="say">Not now is not never. Calm tools help me wait.</p>
+    <div class="row"><button class="btn" id="again">Read it again</button><button class="btn alt" id="m">Menu</button></div>`;
+  speak("Hooray! Later came! Not now is not never. Calm tools help me wait.");
+  document.getElementById("again").onclick = later1;
+  document.getElementById("m").onclick = menu;
+}
+
+wireChrome(menu);
+menu();
+</script>
+</body>
+</html>
