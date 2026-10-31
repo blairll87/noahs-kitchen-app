@@ -6,7 +6,7 @@
 <title>Big Feelings Kitchen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-<link rel="stylesheet" href="story-kit.css?v=202610301656">
+<link rel="stylesheet" href="story-kit.css?v=202610301705">
 </head>
 <body>
 
@@ -19,7 +19,7 @@
   <main class="card" id="screen" aria-live="polite"></main>
 </div>
 
-<script src="story-kit.js?v=202610301656"></script>
+<script src="story-kit.js?v=202610301705"></script>
 <script>
 const screen = document.getElementById("screen");
 
@@ -310,10 +310,9 @@ function later5() {
     <div class="waitbar" aria-hidden="true"><i id="bar"></i></div>
     <p class="say" id="sub">Watch the bar fill up. When it is full, work time is done.</p>
     <button class="btn" id="n" hidden>The playground!</button>`;
-  speak("Now Noah waits. Work time first. Watch the bar fill up.");
   const bar = document.getElementById("bar"); let p = 0;
   const tick = () => { p += 4; bar.style.width = Math.min(p, 100) + "%"; if (p < 100) later(tick, 400); else later6(); };
-  later(tick, 800);
+  speak("Now Noah waits. Work time first. Watch the bar fill up.", () => later(tick, 400));
 }
 function later6() {
   chime(true);

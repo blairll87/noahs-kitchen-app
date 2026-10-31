@@ -332,7 +332,7 @@ function speak(text, onEnd, lang) {
   lastSpoken = text;
   const id = ++speechId;
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
-  setTimeout(() => { if (id === speechId) speakNow(text, onEnd, lang); }, 180);
+  setTimeout(() => { if (id === speechId) speakNow(text, onEnd ? () => { if (id === speechId) onEnd(); } : onEnd, lang); }, 180);
 }
 function speakNow(text, onEnd, lang) {
   try {
@@ -583,17 +583,24 @@ function youQ() {
 }
 
 function breathe(next, label) {
-  hush();
+  hush(); clearTimers();
   screen.innerHTML = `
     <div class="step">Calm-down break</div>
     <h2 id="cue">Squeeze your hands tight…</h2>
     <div class="breathe" id="ball" aria-hidden="true"></div>
     <button class="btn" id="done" hidden>${label}</button>`;
   const cue = document.getElementById("cue"), ball = document.getElementById("ball"), done = document.getElementById("done");
-  speak("Squeeze your hands tight.");
-  setTimeout(() => { cue.textContent = "Breathe in… like smelling a cookie"; ball.classList.add("go"); speak("Breathe in, like smelling a cookie."); }, 1800);
-  setTimeout(() => { cue.textContent = "Blow out… like cooling hot soup"; speak("Blow out, like cooling hot soup."); }, 4800);
-  setTimeout(() => { cue.textContent = "Let go. Calm hands."; speak("Let go. Calm hands. Now you are ready."); done.hidden = false; done.focus(); }, 8000);
+  // each phrase finishes before the next one starts
+  const pause = (fn) => timers.push(setTimeout(fn, 500));
+  speak("Squeeze your hands tight.", () => pause(() => {
+    cue.textContent = "Breathe in… like smelling a cookie"; ball.classList.add("go");
+    speak("Breathe in, like smelling a cookie.", () => pause(() => {
+      cue.textContent = "Blow out… like cooling hot soup";
+      speak("Blow out, like cooling hot soup.", () => pause(() => {
+        cue.textContent = "Let go. Calm hands."; speak("Let go. Calm hands. Now you are ready."); done.hidden = false; done.focus();
+      }));
+    }));
+  }));
   done.onclick = next;
 }
 

@@ -64,7 +64,7 @@ function speak(text, onEnd, lang) {
   window.__said.push(text);
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
   if (!VOICES.length) loadVoices();
-  setTimeout(() => { if (id === speechId) speakNow(text, onEnd, lang); }, VOICES.length ? 180 : 600);
+  setTimeout(() => { if (id === speechId) speakNow(text, onEnd ? () => { if (id === speechId) onEnd(); } : onEnd, lang); }, VOICES.length ? 180 : 600);
 }
 function speakNow(text, onEnd, lang) {
   try {

@@ -414,7 +414,7 @@ function speak(text, onEnd) {
   lastSpoken = text;
   const id = ++speechId;
   try { speechSynthesis.cancel(); speechSynthesis.resume(); } catch (e) {}
-  setTimeout(() => { if (id === speechId) speakNow(text, onEnd); }, 180);
+  setTimeout(() => { if (id === speechId) speakNow(text, onEnd ? () => { if (id === speechId) onEnd(); } : onEnd); }, 180);
 }
 function speakNow(text, onEnd) {
   try {

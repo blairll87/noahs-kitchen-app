@@ -6,7 +6,7 @@
 <title>Waiting &amp; Turns Kitchen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-<link rel="stylesheet" href="story-kit.css?v=202610301656">
+<link rel="stylesheet" href="story-kit.css?v=202610301705">
 </head>
 <body>
 
@@ -19,7 +19,7 @@
   <main class="card" id="screen" aria-live="polite"></main>
 </div>
 
-<script src="story-kit.js?v=202610301656"></script>
+<script src="story-kit.js?v=202610301705"></script>
 <script>
 const screen = document.getElementById("screen");
 
@@ -192,11 +192,11 @@ function wait(sc) {
   screen.innerHTML = `${progress()}<div class="step">${sc.step}</div>${faceRow(sc.faces)}<h2>${sc.h}</h2>
     <div class="waitbar" aria-hidden="true"><i id="bar"></i></div><p class="say" id="sub">${sc.p}</p>
     <button class="btn" id="n" hidden>My turn!</button>`;
-  speak(sc.h + " " + sc.p);
   const bar = document.getElementById("bar"), steps = 25; let p = 0;
   const tick = () => { p++; bar.style.width = (p / steps * 100) + "%"; if (p < steps) later(tick, sc.ms / steps); else done(); };
   const done = () => { chime(true); const n = document.getElementById("n"); n.hidden = false; document.getElementById("sub").textContent = "The bar is full! Your turn came."; speak("The bar is full! Your turn came."); n.onclick = nextScreen; };
-  later(tick, 800);
+  // start the bar after the explanation has been said
+  speak(sc.h + " " + sc.p, () => later(tick, 400));
 }
 
 function line(sc) {
@@ -205,13 +205,14 @@ function line(sc) {
     <div class="lines" id="lines"></div><p class="say" id="sub">Count the steps.</p>`;
   const el = document.getElementById("lines"); let front = 0;
   const draw = () => { el.innerHTML = kids.slice(front).map(([k, m]) => face(k, m)).join(""); };
-  draw(); speak(sc.h);
+  draw();
   const advance = () => {
     front++; draw();
     if (front >= 3) { chime(true); document.getElementById("sub").textContent = "Noah is next!"; return speak("Noah is next!", nextScreen); }
     speak("One step closer.", () => later(advance, 700));
   };
-  later(advance, 1800);
+  // let the sentence finish before anyone moves
+  speak(sc.h, () => later(advance, 600));
 }
 
 function board(sc) {
