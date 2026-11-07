@@ -287,7 +287,70 @@ const SCENES = [
     no:"Ouch! Mango only wanted to play. Hitting hurts.", feel:"sad", you:"someone hit you",
     yesFeel:"Look at Mango's face. Mango is laughing because you are both having fun.",
     es:["Juguemos a otra cosa.","Let's play something else."],
-    ing:"🍍" }
+    ing:"🍍" },
+  { pack:"touch", friend:"pickle", name:"Pickle", title:"Say it, then play something new",
+    setup:"Pickle walks up and tickles your neck. You did not ask for it, and you do not like it.",
+    ask:"What can you say?",
+    good:{ pic:"✋", text:"\"Stop! I don't like that. Let's play something else.\"" }, bad:{ pic:"💥", text:"Push Pickle" },
+    yes:"You said stop, and then you offered a new game. That is strong and kind.",
+    no:"Ouch! Pushing hurts. Use your words instead.", feel:"sad", you:"someone pushed you",
+    yesFeel:"Look at Pickle's face. Pickle hears you and picks a new game.",
+    es:[["¡Para! No me gusta.","Stop! I don't like that."],["Juguemos a otra cosa.","Let's play something else."]],
+    ing:"🍞" },
+  { pack:"touch", friend:"muffin", name:"Muffin", title:"Too rough",
+    setup:"The tickle game is getting rough. Muffin's face does not look happy anymore.",
+    ask:"What do you do?",
+    good:{ pic:"⏸️", text:"Pause and say \"Gentle, please\"" }, bad:{ pic:"😆", text:"Keep going, harder" },
+    yes:"You paused and looked at Muffin's face. Good friends stop when a face changes.",
+    no:"Muffin got hurt. Rough play can hurt, even when it started as a game.", feel:"sad", you:"someone played too rough with you",
+    yesFeel:"Look at Muffin's face. Muffin feels better when the game is gentle.",
+    es:["Más suave, por favor.","Gentler, please."],
+    ing:"🥐" },
+  { pack:"ask", friend:"muffin", name:"Muffin", title:"Ask first",
+    setup:"You want to play the tickle game with Muffin. Muffin is standing right there.",
+    ask:"What do you do first?",
+    good:{ pic:"🙋", text:"Ask, \"Can I tickle you?\"" }, bad:{ pic:"🤚", text:"Just tickle Muffin" },
+    yes:"Muffin can say yes or no. You asked first, and that is kind.",
+    no:"Muffin did not know it was coming! A surprise touch can feel scary or yucky.", feel:"scared", you:"someone tickled you without asking",
+    yesFeel:"Look at Muffin's face. Muffin is ready, because you asked.",
+    es:["¿Puedo?","Can I?"],
+    ing:"🍎" },
+  { pack:"ask", friend:"toast", name:"Toast", title:"When the answer is no",
+    setup:"You ask Toast, \"Can I tickle you?\" Toast says, \"No, thank you.\"",
+    ask:"What do you do?",
+    good:{ pic:"👍", text:"Say \"Okay\" and pick something else" }, bad:{ pic:"🤚", text:"Tickle Toast anyway" },
+    yes:"Great listening! No means no. Now you can ask Toast to play something else.",
+    no:"Toast said no, and you did it anyway. That felt yucky.", feel:"sad", you:"someone did it after you said no",
+    yesFeel:"Look at Toast's face. Toast feels safe with you.",
+    es:["Está bien.","Okay."],
+    ing:"🥝" },
+  { pack:"ask", friend:"berry", name:"Berry", title:"A safe hello",
+    setup:"You see Berry and you feel so happy! You want to say hi with your hands.",
+    ask:"What is a safe way to say hi?",
+    good:{ pic:"🖐️", text:"A hi-five or a fist bump" }, bad:{ pic:"💥", text:"Push Berry" },
+    yes:"Hi-five! Berry smiles. Hi-fives and fist bumps are safe ways to say hi.",
+    no:"Ouch! A push can knock a friend down, even when you are happy.", feel:"sad", you:"someone pushed you",
+    yesFeel:"Look at Berry's face. Berry loves your hi-five.",
+    es:["¡Choca esos cinco!","Give me five!"],
+    ing:"🍈" },
+  { pack:"ask", friend:"mango", name:"Mango", title:"Ask for a hug",
+    setup:"You love hugs! You want to hug Mango.",
+    ask:"What do you do first?",
+    good:{ pic:"🤗", text:"Ask, \"Want a hug?\"" }, bad:{ pic:"🏃", text:"Run over and grab Mango" },
+    yes:"Mango says yes! Hug time. If Mango says no, a hi-five is a great choice.",
+    no:"Mango was not ready. Grabbing is not gentle.", feel:"scared", you:"someone grabbed you",
+    yesFeel:"Look at Mango's face. Mango is smiling and ready for a hug.",
+    es:["¿Quieres un abrazo?","Do you want a hug?"],
+    ing:"🍏" },
+  { pack:"ask", friend:"pickle", name:"Pickle", title:"When my body wants to push",
+    setup:"A friend is standing next to you. You feel playful, and your body wants to push.",
+    ask:"What can you do instead?",
+    good:{ pic:"🏃", text:"Ask, \"Want to play chase?\"" }, bad:{ pic:"💥", text:"Push your friend" },
+    yes:"Chase is a game with rules. Ask first, and stop when your friend says stop. You can also push the wall to get the wiggles out.",
+    no:"Ouch! A push can knock someone down, even if you are playing.", feel:"sad", you:"someone pushed you",
+    yesFeel:"Look at Pickle's face. Pickle is excited to play chase.",
+    es:["¿Quieres jugar?","Do you want to play?"],
+    ing:"🥜" }
 ];
 SCENES.forEach(s => { if (!s.pack) s.pack = "play"; });
 const ACTS = {
@@ -308,7 +371,14 @@ const ACTS = {
   "A friend is crying":"Put your hand on your heart and say, Are you okay?",
   "Tickle game":"Hold your hand out strong like a stop sign. Say, Stop! I don't like that!",
   "They did not stop":"Pretend to walk to a grown-up. Say, Teacher, I need help!",
-  "Play a different way":"Say, Let's play something else! Then pick a game: chase, catch, or tag."
+  "Play a different way":"Say, Let's play something else! Then pick a game: chase, catch, or tag.",
+  "Say it, then play something new":"Hold up your stop hand. Say, Stop! I don't like that. Then say, Let's play something else!",
+  "Too rough":"Hold up your hand like a pause button. Say, Gentle, please. Then do a gentle high-five.",
+  "Ask first":"Stand tall. Ask your friend, Can I? Then wait for the answer.",
+  "When the answer is no":"Put your thumb up and say, Okay. Then ask, Want to play something else?",
+  "A safe hello":"Hold up your hand for a hi-five. Give a soft pat. Now make a fist and do a gentle fist bump.",
+  "Ask for a hug":"Open your arms a little and ask, Want a hug? Wait for yes. If it's no, give a hi-five.",
+  "When my body wants to push":"Say, Want to play chase? Wait for yes. Then push the wall to get the wiggles out."
 };
 SCENES.forEach(s => { s.act = ACTS[s.title]; });
 
@@ -366,6 +436,8 @@ function renderBowl() {
   slotsEl.innerHTML = round.map((s, i) => `<span class="slot ${bowl[i] ? "full" : ""}">${bowl[i] ? s.ing : ""}</span>`).join("");
 }
 
+function esPairs(s) { return Array.isArray(s.es[0]) ? s.es : [s.es]; }
+
 function start() {
   hush(); clearTimers(); idx = 0; bowl = []; renderBowl();
   screen.innerHTML = `
@@ -380,6 +452,7 @@ function start() {
       <button class="btn" data-pack="friend">Being a friend</button>
     </div>
     <div class="row">
+      <button class="btn" data-pack="ask">Ask first &amp; safe hellos</button>
       <button class="btn" data-pack="touch">When someone touches me</button>
       <button class="btn alt" data-pack="all">All the friends</button>
       <button class="btn alt" id="calm">Squeeze &amp; breathe</button>
@@ -435,7 +508,7 @@ function act() {
     <div class="step">Act it out · Get up and move!</div>
     <div class="stage bounce">${face("chef","excited")}</div>
     <h2 id="actcue">${s.act}</h2>
-    ${s.es ? `<div class="phrase"><b>${s.es[0]}</b><span>${s.es[1]}</span><br><button class="btn alt" id="sayes" style="margin-top:8px">🔊 Say it with me</button></div>` : ""}
+    ${s.es ? `<div class="phrase">${esPairs(s).map(pr => `<b>${pr[0]}</b><span>${pr[1]}</span>`).join('<div style="height:8px"></div>')}<br><button class="btn alt" id="sayes" style="margin-top:8px">🔊 Say it with me</button></div>` : ""}
     <div class="row">
       <button class="btn" id="did">I did it!</button>
       <button class="btn alt" id="hear">Hear it again</button>
@@ -449,7 +522,13 @@ function act() {
   go();
   document.getElementById("hear").onclick = go;
   const sayes = document.getElementById("sayes");
-  if (sayes) sayes.onclick = () => { hush(); clearTimers(); speak(s.es[0], () => timers.push(setTimeout(() => speak(s.es[1]), 2200)), "es-MX"); };
+  if (sayes) sayes.onclick = () => {
+    hush(); clearTimers();
+    // Spanish, a pause to say it back, then the English, for each phrase in turn
+    const run = (i) => { const pr = esPairs(s)[i]; if (!pr) return;
+      speak(pr[0], () => timers.push(setTimeout(() => speak(pr[1], () => timers.push(setTimeout(() => run(i + 1), 500))), 2200)), "es-MX"); };
+    run(0);
+  };
   document.getElementById("did").onclick = () => { clearTimers(); idx++; last ? finish() : scene(); };
 }
 
