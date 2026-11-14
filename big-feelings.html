@@ -201,7 +201,37 @@ function plan2() {
     <p class="say"><b>I can do something else!</b></p>
     <button class="btn" id="n">Show me what</button>`;
   speak("Big feelings make my body hot and tight. My body might want to throw, hit, yell, or drop down. But those can hurt. I can do something else!");
-  document.getElementById("n").onclick = plan3;
+  document.getElementById("n").onclick = plan2b;
+}
+
+// Step 2, part 2: a potty check, because big feelings can hide the potty feeling
+function plan2b() {
+  hush(); clearTimers();
+  screen.innerHTML = `
+    ${dots(4, 1)}
+    <div class="step">Step 2 of 4: Notice my body</div>
+    <div class="bigpic" aria-hidden="true">🚽</div>
+    <h2>Check your tummy. Do you need the potty?</h2>
+    <p class="say">Big feelings can hide the potty feeling.</p>
+    <div class="choices">
+      <button class="choice" id="pyes"><span class="pic" aria-hidden="true">🚽</span>Yes, I need the potty</button>
+      <button class="choice" id="pno"><span class="pic" aria-hidden="true">🙂</span>No, I am okay</button>
+    </div>`;
+  speak("Check your tummy. Do you need the potty? Big feelings can hide the potty feeling.");
+  document.getElementById("pno").onclick = () => { chime(true); speak("Okay! Let's keep going.", plan3); };
+  document.getElementById("pyes").onclick = () => {
+    chime(true);
+    screen.innerHTML = `
+      ${dots(4, 1)}
+      <div class="step">Step 2 of 4: Notice my body</div>
+      <h2>Potty first, then calm down.</h2>
+      <div class="phrase"><b>Necesito ir al baño</b><span>I need to go to the bathroom</span><br><button class="btn alt" id="sayit" style="margin-top:8px">🔊 Say it with me</button></div>
+      <p class="say">Tell a grown-up. Then come back and finish the plan.</p>
+      <button class="btn" id="n">I told a grown-up</button>`;
+    speak("Potty first, then calm down. Tell a grown-up.");
+    document.getElementById("sayit").onclick = () => speak("Necesito ir al baño", () => later(() => speak("I need to go to the bathroom", null, "en-US"), 2200), "es-MX");
+    document.getElementById("n").onclick = plan3;
+  };
 }
 
 function plan3() {
@@ -231,7 +261,7 @@ function planDone() {
     <div class="step">Recipe complete</div>
     <h1>You are the boss of your body!</h1>
     <div class="stage bounce">${face("chef","excited")}</div>
-    <p class="say">Show your feeling. Notice your body. Pick a tool. Ask for help.</p>
+    <p class="say">Show your feeling. Notice your body and check the potty. Pick a tool. Ask for help.</p>
     <div class="row"><button class="btn" id="again">Do the plan again</button><button class="btn alt" id="m">Menu</button></div>`;
   speak("Hooray! You are the boss of your body! Show your feeling. Notice your body. Pick a tool. Ask for help.");
   document.getElementById("again").onclick = plan1;
