@@ -368,6 +368,20 @@ const MORE = [
       { t: "phrase", step: "When I'm ready", h: "When I am calm, I can fix it.", items: [{ pic: "💛", es: "Perdón", en: "Sorry" }, { pic: "🤝", es: "¿Estás bien?", en: "Are you okay?" }] },
       { t: "end", h: "Then Noah comes back!", p: "Sitting out is for a little while. I can try again." },
     ] },
+  { id: "potty", pic: "🚽", title: "My body says potty", sub: "Even when I'm upset",
+    screens: [
+      { t: "say", step: "Story: My body talks", faces: [["chef","neutral"]], h: "My body talks to me.", p: "Sometimes it says, \"I need to go potty!\"" },
+      { t: "say", step: "Big feelings", faces: [["chef","mad"]], h: "Big feelings can hide the potty feeling.", p: "When I am upset or busy, my body still needs the potty." },
+      { t: "phrase", step: "My words", h: "I can ask a grown-up.", items: [{ pic: "🚽", es: "¿Puedo ir al baño?", en: "Can I go to the bathroom?" }, { pic: "🙋", es: "Necesito ir al baño", en: "I need to go to the bathroom" }] },
+      { t: "pick", step: "What does Noah do?", faces: [["chef","worried"]], h: "Noah is upset, and his tummy squeezes. What does he do?",
+        opts: [{ pic: "🤞", text: "Stay upset and wait", bad: "Waiting too long can make an accident. My body needs the potty." },
+               { pic: "🙋", text: "Ask the teacher", good: "Asking is smart! Potty first, then calm down." }] },
+      { t: "say", step: "Accidents happen", faces: [["chef","happy"]], h: "Sometimes accidents happen.", p: "Everybody has them. I am not in trouble. I tell my teacher, and I get clean clothes." },
+      { t: "pick", step: "Oops!", faces: [["chef","worried"]], h: "Oops, an accident! What does Noah do?",
+        opts: [{ pic: "🙈", text: "Hide it", bad: "Hiding makes it harder. My teacher can help me." },
+               { pic: "🙋", text: "Tell my teacher", good: "Telling is brave! My teacher helps me. I am not in trouble." }] },
+      { t: "end", h: "I listen to my body.", p: "Potty first, then calm down." },
+    ] },
 ];
 let st = null, sp = 0, stTool = null;
 function stRun(story) { st = story; sp = 0; stTool = null; stShow(); }
