@@ -378,7 +378,23 @@ const CUP = [
     yes:"You stayed with the group! First group time, then something you like.",
     no:"You left your group. Your teacher had to stop to find you, and your friends missed you.",
     rule:"First group time, then free time.",
-    say:{ line:"«Necesito un descanso»", en:"I need a break. Use your words if it is too hard." } }
+    say:{ line:"«Necesito un descanso»", en:"I need a break. Use your words if it is too hard." } },
+  { title:"Asking to leave", who:"maestra", mood:"happy",
+    setup:"You are in class. You want to walk around, or you need the baño.",
+    ask:"What do you do?",
+    good:["🙋","Ask the teacher first"], bad:["🚪","Walk out of the room"],
+    yes:"You asked, and you waited for a yes! Then walk straight there and straight back.",
+    no:"Your teacher did not know where you were. Walking out is not safe, and she had to stop to find you.",
+    rule:"Ask first, then go.",
+    say:{ line:"«¿Puedo ir al baño?»", en:"Can I go to the bathroom? If you feel bored, say «Necesito un descanso» (I need a break)." } },
+  { title:"Pencils are for writing", who:"maestra", mood:"happy",
+    setup:"You have a pencil in your hand. A friend is nearby, and running with it sounds fun!",
+    ask:"What do you do with the pencil?",
+    good:["✏️","Use it for writing and drawing"], bad:["🏃","Chase my friend with it"],
+    yes:"Pencils are for writing and drawing. Chasing is for outside, and only after you ask a friend.",
+    no:"A pencil can poke and hurt a friend. The fun had to stop.",
+    rule:"Pencils are for writing.",
+    act:"Pretend to hold a pencil. Draw a big circle in the air. Then put the pencil down on your desk." }
 ];
 
 /* ---------- helpers ---------- */

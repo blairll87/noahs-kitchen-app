@@ -59,11 +59,13 @@ function menu() {
       <button class="bigcard primary" id="goTools"><span class="pic" aria-hidden="true">🧰</span><span>Calm Tools<small>Pick one right now</small></span></button>
       <button class="bigcard" id="goPlan"><span class="pic" aria-hidden="true">📖</span><span>My Feelings Plan<small>A story with 4 steps</small></span></button>
       <button class="bigcard" id="goLater"><span class="pic" aria-hidden="true">🛝</span><span>Not Now, Later<small>When I can't do what I want</small></span></button>
+      ${MORE.map(m => `<button class="bigcard" data-more="${m.id}"><span class="pic" aria-hidden="true">${m.pic}</span><span>${m.title}<small>${m.sub}</small></span></button>`).join("")}
     </div>`;
   speak("Big feelings are okay! What do you want to do?");
   document.getElementById("goTools").onclick = () => tools();
   document.getElementById("goPlan").onclick = () => plan1();
   document.getElementById("goLater").onclick = () => later1();
+  screen.querySelectorAll("[data-more]").forEach(b => b.onclick = () => stRun(MORE.find(m => m.id === b.dataset.more)));
 }
 
 /* ---------- Calm Tools ---------- */
@@ -334,6 +336,112 @@ function laterDone() {
   document.getElementById("again").onclick = later1;
   document.getElementById("m").onclick = menu;
 }
+
+/* ---------- More stories (a small screen-by-screen runner) ---------- */
+const MORE = [
+  { id: "prize", pic: "🎁", title: "No prize this time", sub: "When I can't get the premio",
+    screens: [
+      { t: "say", step: "Story: The premio box", faces: [["chef","happy"]], h: "Noah's class has a premio box.", p: "When someone makes good choices, they pick a prize." },
+      { t: "phrase", step: "A new word", h: "In Spanish, a prize is…", items: [{ pic: "🎁", es: "El premio", en: "The prize" }] },
+      { t: "say", step: "Today", faces: [["chef","sad"]], h: "Today the teacher says, \"Not this time.\"", p: "No premio today. That is disappointing." },
+      { t: "feelany", step: "Show your face", h: "How does Noah feel? Show your face." },
+      { t: "pick", step: "A big feeling!", faces: [["chef","mad"]], h: "Noah's body feels big. What can he do?",
+        opts: [{ pic: "💥", text: "Throw something", bad: "Throwing can hurt someone. Let's try a calm tool." },
+               { pic: "🧱", text: "Push the wall", good: "Pushing the wall is a calm tool!", tool: "wall" },
+               { pic: "🍲", text: "Cool the soup", good: "Breathing is a calm tool!", tool: "soup" }] },
+      { t: "do", step: "Do it with the chef" },
+      { t: "board", step: "First and then", h: "First good choices. Then maybe a premio next time.", first: ["✋", "Good choices"], then: ["🎁", "Premio"] },
+      { t: "end", h: "Not this time is not never.", p: "Noah can try again tomorrow." },
+    ] },
+  { id: "sitout", pic: "⏸️", title: "When I have to sit out", sub: "A break, then I come back",
+    screens: [
+      { t: "say", step: "Story: Sitting out", faces: [["chef","worried"]], h: "Noah made a not-safe choice in the biblioteca.", p: "Noah is not a bad kid. He made a choice that was not safe." },
+      { t: "phrase", step: "A new word", h: "In Spanish, the library is…", items: [{ pic: "📚", es: "La biblioteca", en: "The library" }] },
+      { t: "say", step: "The teacher says…", faces: [], h: "\"You need to sit out for a little while.\"", p: "A sit-out is a break. It is not forever." },
+      { t: "feelany", step: "Show your face", h: "Sitting out can feel left out. How does Noah feel?" },
+      { t: "say", step: "The big idea", faces: [["chef","happy"]], h: "I am still part of my class.", p: "My teacher still cares about me. I can come back." },
+      { t: "pick", step: "While I sit out", faces: [["chef","neutral"]], h: "What can Noah do while he sits out?",
+        opts: [{ pic: "🚪", text: "Walk out of the room", bad: "Walking out is not safe. My teacher needs to know where I am." },
+               { pic: "🍲", text: "Cool the soup", good: "Breathing helps my body calm down.", tool: "soup" },
+               { pic: "🪑", text: "Squish the dough", good: "Squishing helps my body calm down.", tool: "squish" }] },
+      { t: "do", step: "Do it with the chef" },
+      { t: "phrase", step: "When I'm ready", h: "When I am calm, I can fix it.", items: [{ pic: "💛", es: "Perdón", en: "Sorry" }, { pic: "🤝", es: "¿Estás bien?", en: "Are you okay?" }] },
+      { t: "end", h: "Then Noah comes back!", p: "Sitting out is for a little while. I can try again." },
+    ] },
+];
+let st = null, sp = 0, stTool = null;
+function stRun(story) { st = story; sp = 0; stTool = null; stShow(); }
+function stNext() { sp++; stShow(); }
+function stShow() { hush(); clearTimers(); const sc = st.screens[sp]; ST[sc.t](sc); }
+function stFaces(list) { return list && list.length ? `<div class="stage">${list.map(([k, m]) => face(k, m)).join("")}</div>` : ""; }
+function stDots() { return dots(st.screens.length - 1, Math.min(sp, st.screens.length - 1)); }
+const FEELMSG = { happy: "You feel happy.", sad: "You feel sad.", scared: "You feel scared.", mad: "You feel mad." };
+const ST = {
+  say(sc) {
+    screen.innerHTML = `${stDots()}<div class="step">${sc.step}</div>${stFaces(sc.faces)}<h2>${sc.h}</h2><p class="say">${sc.p || ""}</p><button class="btn" id="n">Next</button>`;
+    speak(sc.h + " " + (sc.p || "")); document.getElementById("n").onclick = stNext;
+  },
+  phrase(sc) {
+    screen.innerHTML = `${stDots()}<div class="step">${sc.step}</div><h2>${sc.h}</h2>
+      ${sc.items.map((it, i) => `<div class="phrase"><span aria-hidden="true" style="font-size:2rem">${it.pic}</span><b>${it.es}</b><span>${it.en}</span><br><button class="btn alt say-btn" data-i="${i}" style="margin-top:8px">🔊 Say it with me</button></div>`).join("")}
+      <button class="btn" id="n">Next</button>`;
+    speak(sc.h);
+    screen.querySelectorAll(".say-btn").forEach(b => b.onclick = () => {
+      const it = sc.items[+b.dataset.i];
+      speak(it.es, () => later(() => speak(it.en, null, "en-US"), 2200), "es-MX");
+    });
+    document.getElementById("n").onclick = stNext;
+  },
+  feelany(sc) {
+    screen.innerHTML = `${stDots()}<div class="step">${sc.step}</div><div class="stage">${face("chef","neutral")}</div><h2>${sc.h}</h2>
+      <p class="say">Tap the face that feels like you.</p>${feelGrid("chef")}`;
+    speak(sc.h + " Tap the face that feels like you.");
+    screen.querySelectorAll(".feel").forEach(b => b.onclick = () => {
+      const m = b.dataset.m; chime(true);
+      screen.innerHTML = `${stDots()}<div class="step">${sc.step}</div><div class="stage">${face("chef", m)}</div>
+        <h2>${FEELMSG[m]} That is okay.</h2><p class="say">All feelings are okay. I can tell someone, and I can use a calm tool.</p><button class="btn" id="n">Next</button>`;
+      speak(FEELMSG[m] + " That is okay. All feelings are okay.");
+      document.getElementById("n").onclick = stNext;
+    });
+  },
+  pick(sc) {
+    screen.innerHTML = `${stDots()}<div class="step">${sc.step}</div>${stFaces(sc.faces)}<h2>${sc.h}</h2>
+      <div class="toolgrid">${sc.opts.map((o, i) => `<button class="tool" data-i="${i}"><span class="pic" aria-hidden="true">${o.pic}</span>${o.text}</button>`).join("")}</div>
+      <p class="wrongmsg" id="wm"></p>`;
+    speak(sc.h + " " + sc.opts.map(o => o.text).join(". Or ") + "?");
+    screen.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
+      const o = sc.opts[+b.dataset.i];
+      if (o.good) { chime(true); stTool = o.tool; speak(o.good, stNext); }
+      else { chime(false); document.getElementById("wm").textContent = o.bad; speak(o.bad); }
+    });
+  },
+  do(sc) {
+    const t = TOOLS.find(x => x.id === stTool) || TOOLS[4];
+    screen.innerHTML = `${stDots()}<div class="step">${sc.step}</div><div class="stage">${face("chef","excited")}</div>
+      ${t.breathe ? '<div class="breathe" id="ball" aria-hidden="true"></div>' : ""}<div class="cuebig" id="cue">Ready?</div><p class="say">${t.name}. Do it with the chef.</p>`;
+    const cue = document.getElementById("cue"), ball = document.getElementById("ball"); let i = 0;
+    const step = () => {
+      if (i >= t.steps.length) { chime(true); return stNext(); }
+      const [s, shown] = t.steps[i++]; cue.textContent = shown;
+      if (ball) { ball.classList.remove("go"); void ball.offsetWidth; ball.classList.add("go"); }
+      speak(s, () => later(step, 500));
+    };
+    later(step, 600);
+  },
+  board(sc) {
+    screen.innerHTML = `${stDots()}<div class="step">${sc.step}</div><h2>${sc.h}</h2>
+      <div class="board"><div class="first"><span class="pic" aria-hidden="true">${sc.first[0]}</span>FIRST<br>${sc.first[1]}</div><div class="then"><span class="pic" aria-hidden="true">${sc.then[0]}</span>THEN<br>${sc.then[1]}</div></div>
+      <button class="btn" id="n">Next</button>`;
+    speak(sc.h); document.getElementById("n").onclick = stNext;
+  },
+  end(sc) {
+    hush(); chime(true);
+    screen.innerHTML = `<div class="step">Story complete</div><h1>${sc.h}</h1><div class="stage bounce">${face("chef","excited")}</div>
+      <p class="say">${sc.p}</p><div class="row"><button class="btn" id="again">Read it again</button><button class="btn alt" id="m">Menu</button></div>`;
+    speak(sc.h + " " + sc.p);
+    document.getElementById("again").onclick = () => stRun(st); document.getElementById("m").onclick = menu;
+  },
+};
 
 wireChrome(menu);
 menu();
